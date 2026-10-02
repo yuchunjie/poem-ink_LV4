@@ -1,15 +1,42 @@
-<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>我愛讀詩・水墨動畫</title>
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>我愛讀詩・水墨動畫</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#e9e2d0;color:#222;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif}
-h1{margin:0;padding:14px 18px 4px;font-size:22px;letter-spacing:.3em}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0 auto;max-width:1280px;background:#e9e2d0;color:#222;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+h1{margin:0;padding:14px 18px 4px;font-size:clamp(18px,4.5vw,24px);letter-spacing:.3em}
 #nav{padding:6px 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}#nav b{font-size:13px;color:#8a2a22;margin:0 2px 0 8px}
-button{font:inherit;font-size:14px;padding:4px 10px;border:1px solid #6b5f4a;background:#f4eedd;border-radius:3px;cursor:pointer}button.on{background:#222;color:#f4eedd}
-#stage{display:flex;gap:12px;padding:8px 14px;flex-wrap:wrap}
-#cv{flex:1 1 520px;min-width:0;max-width:100%;aspect-ratio:5/3;border:2px solid #3a3226;display:block}
-#poem{writing-mode:vertical-rl;flex:0 0 210px;min-height:260px;background:#f4eee0;border:2px solid #3a3226;padding:14px 12px;font-size:21px;line-height:1.7;letter-spacing:.15em}
-#poem h2{margin:0 0 0 14px;font-size:27px}#poem small{color:#a8352b;font-size:14px;margin-left:16px}
+button{font:inherit;font-size:14px;padding:6px 12px;min-height:36px;border:1px solid #6b5f4a;background:#f4eedd;border-radius:3px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button.on{background:#222;color:#f4eedd}button:active{opacity:.7}
+@media(hover:hover){button:not(.on):hover{background:#e8dfc6}}
+#stage{display:flex;gap:12px;padding:8px 14px;flex-wrap:wrap;align-items:flex-start}
+#cv{flex:1 1 520px;min-width:0;width:100%;max-width:100%;height:auto;aspect-ratio:5/3;object-fit:contain;border:2px solid #3a3226;display:block}
+#poem{writing-mode:vertical-rl;flex:0 0 clamp(180px,18vw,230px);align-self:stretch;min-height:260px;background:#f4eee0;border:2px solid #3a3226;padding:14px 12px;font-size:clamp(18px,2.2vw,22px);line-height:1.7;letter-spacing:.15em;overflow:auto}
+#poem h2{margin:0 0 0 14px;font-size:1.3em}#poem small{color:#a8352b;font-size:.7em;margin-left:16px}
 #poem p{margin:0 0 0 10px;opacity:0;animation:f 1.3s forwards}@keyframes f{to{opacity:1}}
-#ctl{padding:4px 14px 18px;display:flex;gap:8px}
+#ctl{padding:4px 14px 18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#ctl select{font:inherit;font-size:16px}
+#vn{flex:1 1 100%}
+/* 平板直式／窄視窗：畫面與詩句上下排列，詩句橫跨整行 */
+@media(max-width:820px){#poem{flex:1 1 100%;min-height:240px;align-self:auto}body{display:flex;flex-direction:column}#stage{order:1}#ctl{order:2}#nav{order:3}}
+/* 手機直式：畫面最優先，按鈕區可捲動，不再把畫面擠到下方 */
+@media(max-width:700px){
+body{display:flex;flex-direction:column}
+h1{padding:10px 14px 2px;letter-spacing:.2em}
+#stage{order:1;padding:6px 8px;gap:8px}
+#ctl{order:2;padding:4px 8px 10px;gap:6px}
+#ctl button{flex:1 1 calc(33.3% - 6px);min-height:42px}
+#ctl label{flex:1 1 auto;font-size:14px}
+#nav{order:3;padding:6px 8px 18px;max-height:36vh;max-height:36dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid #c9bfa6}
+#nav button{font-size:13px;padding:5px 9px}
+}
+/* 手機橫式：左右並排，畫面不超出螢幕高度 */
+@media(orientation:landscape) and (max-height:520px){
+body{display:flex;flex-direction:column}#stage{order:1}#ctl{order:2}#nav{order:3}
+h1{display:none}
+#stage{flex-wrap:nowrap;padding:6px 10px}
+#cv{flex:1 1 0;width:auto;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
+#poem{flex:0 0 190px;min-height:0;font-size:17px;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
+#ctl,#nav{padding-left:10px;padding-right:10px}
+}
 </style></head><body>
 <h1>我愛讀詩 ‧ 水墨動畫</h1><div id="nav"></div>
 <div id="stage"><canvas id="cv" width="1500" height="900"></canvas><div id="poem"></div></div>
@@ -123,10 +150,14 @@ if(SS){findVoice();SS.onvoiceschanged=findVoice}else document.getElementById('vn
 function stopSpeak(){sid++;if(SS)SS.cancel();const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'})}
 function speak(){if(!SS)return;stopSpeak();const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
 t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
+let evOK=false;const t00=performance.now();
 const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
+const reveal=k=>{if(my!=sid||!k)return;const e=ps[k-1];ps.forEach(x=>x.style.background='');if(LS[k-1]===Infinity){LS[k-1]=T;e.style.animation='f 1s forwards'}e.style.background='rgba(176,48,38,.18)'};
+// 手機瀏覽器常不觸發 onstart：2.5 秒內沒收到事件，就改用估算時間推進動畫
+setTimeout(()=>{if(my!=sid||evOK)return;let acc=0;lines.forEach((t,k)=>{const at=acc*1000-(performance.now()-t00);if(k)setTimeout(()=>reveal(k),Math.max(0,at));acc+=t.length/(4*rate*.9)+.7})},2500);
 lines.forEach((t,k)=>{const u=new SpeechSynthesisUtterance(t);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=k?rate*.9:rate;u.pitch=1.05;
-u.onstart=()=>{if(my!=sid)return;ps.forEach(e=>e.style.background='');if(k){const e=ps[k-1];LS[k-1]=T;e.style.animation='f 1s forwards';e.style.background='rgba(176,48,38,.18)'}};
-u.onend=()=>{if(my==sid&&k==lines.length-1)ps.forEach(e=>e.style.background='')};SS.speak(u)})}
+u.onstart=()=>{if(my!=sid)return;evOK=true;ps.forEach(e=>e.style.background='');reveal(k)};
+u.onend=()=>{evOK=true;if(my==sid&&k==lines.length-1)ps.forEach(e=>e.style.background='')};SS.speak(u)})}
 document.getElementById('sp').onclick=speak;document.getElementById('ss').onclick=stopSpeak;
 const _pick=pick;pick=function(i){stopSpeak();_pick(i);if(window._started&&document.getElementById('au').checked)setTimeout(speak,350)};
 pick(1);window._started=1;requestAnimationFrame(frame);
