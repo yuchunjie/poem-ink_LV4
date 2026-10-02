@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>我愛讀詩・水墨動畫</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e9e2d0;color:#222;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif}
+h1{margin:0;padding:14px 18px 4px;font-size:22px;letter-spacing:.3em}
+#nav{padding:6px 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}#nav b{font-size:13px;color:#8a2a22;margin:0 2px 0 8px}
+button{font:inherit;font-size:14px;padding:4px 10px;border:1px solid #6b5f4a;background:#f4eedd;border-radius:3px;cursor:pointer}button.on{background:#222;color:#f4eedd}
+#stage{display:flex;gap:12px;padding:8px 14px;flex-wrap:wrap}
+#cv{flex:1 1 520px;min-width:0;max-width:100%;aspect-ratio:5/3;border:2px solid #3a3226;display:block}
+#poem{writing-mode:vertical-rl;flex:0 0 210px;min-height:260px;background:#f4eee0;border:2px solid #3a3226;padding:14px 12px;font-size:21px;line-height:1.7;letter-spacing:.15em}
+#poem h2{margin:0 0 0 14px;font-size:27px}#poem small{color:#a8352b;font-size:14px;margin-left:16px}
+#poem p{margin:0 0 0 10px;opacity:0;animation:f 1.3s forwards}@keyframes f{to{opacity:1}}
+#ctl{padding:4px 14px 18px;display:flex;gap:8px}
+</style></head><body>
+<h1>我愛讀詩 ‧ 水墨動畫</h1><div id="nav"></div>
+<div id="stage"><canvas id="cv" width="1500" height="900"></canvas><div id="poem"></div></div>
+<div id="ctl"><button id="pr">← 上一首</button><button id="rp">↻ 重播</button><button id="nx">下一首 →</button><button id="sp">🔊 朗讀</button><button id="ss">⏹ 停止</button><label style="align-self:center;font-size:14px"><input type="checkbox" id="au" checked> 切換時自動朗讀</label><label style="align-self:center;font-size:14px">語速 <select id="rt"><option value=".6">慢</option><option value=".8" selected>適中</option><option value="1">快</option></select></label><span id="vn" style="align-self:center;font-size:12px;color:#6b5f4a"></span></div>
+<script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d');let T=0,Q=0,R=0,N=0,t0=null,cur=0,mix=0;
+const rd=i=>{let x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)};
+const I=(a,col)=>`rgba(${col||(N?'225,225,215':'30,30,32')},${a})`;
+const E={
+mt:(x,y,w,h,a,col)=>{h*=R;let g=c.createLinearGradient(0,y-h,0,y);g.addColorStop(0,I(a*.9,col));g.addColorStop(1,I(0,col));c.fillStyle=g;c.beginPath();c.moveTo(x-w/2,y);c.bezierCurveTo(x-w*.28,y-h*.25,x-w*.1,y-h*.95,x,y-h);c.bezierCurveTo(x+w*.12,y-h*.85,x+w*.25,y-h*.3,x+w/2,y);c.fill();c.strokeStyle=I(a*.5,col);c.lineWidth=1.2;for(let i=0;i<5;i++){c.beginPath();c.moveTo(x+(i-2)*w*.06,y-h*(.9-i*.1));c.lineTo(x+(i-2)*w*.09,y-h*(.4-i*.05));c.stroke()}},
+mo:(x,y,r,dy=0)=>{y+=Math.min(Q,8)*dy;let g=c.createRadialGradient(x,y,r*.8,x,y,r*2.2);g.addColorStop(0,N?'rgba(255,250,210,.35)':'rgba(120,110,90,.18)');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,r*2.2,0,7);c.fill();c.fillStyle=N?'#fff6d8':'#fbf8ee';c.strokeStyle=I(.35);c.beginPath();c.arc(x,y,r,0,7);c.fill();c.stroke()},
+sn:(x,y,r,rise=0)=>{y-=Math.min(Q,12)*rise;let g=c.createRadialGradient(x,y,r*.6,x,y,r*2);g.addColorStop(0,'rgba(220,90,60,.35)');g.addColorStop(1,'rgba(220,90,60,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,r*2,0,7);c.fill();c.fillStyle='rgba(176,48,38,.9)';c.beginPath();c.arc(x,y,r,0,7);c.fill()},
+wa:(y,h,a=.4)=>{c.fillStyle=I(.06);c.fillRect(0,y,1000,h);c.lineWidth=1.3;for(let i=0;i<14;i++){let yy=y+h*i/14;c.strokeStyle=I(a*(1-i/18));c.beginPath();for(let x=0;x<=1000;x+=20){let v=yy+Math.sin(x*.02+T*1.2+i)*(1.5+i*.3);x?c.lineTo(x,v):c.moveTo(x,v)}c.stroke()}},
+bo:(x,y,s,vx=0,lamp=0,sh=0)=>{let k=Math.min(Q,14);x+=k*vx;s*=Math.max(.3,1-sh*k);y+=Math.sin(T*1.5)*2;c.fillStyle=I(.85);c.beginPath();c.moveTo(x-30*s,y-6*s);c.quadraticCurveTo(x,y+14*s,x+30*s,y-8*s);c.quadraticCurveTo(x,y-s,x-30*s,y-6*s);c.fill();c.strokeStyle=I(.8);c.lineWidth=3*s;c.beginPath();c.arc(x,y-8*s,13*s,Math.PI,0);c.stroke();if(lamp){let g=c.createRadialGradient(x+24*s,y-14*s,1,x+24*s,y-14*s,26*s);g.addColorStop(0,'rgba(255,190,90,.95)');g.addColorStop(1,'rgba(255,190,90,0)');c.fillStyle=g;c.beginPath();c.arc(x+24*s,y-14*s,26*s,0,7);c.fill()}},
+bi:(n,x,y,dx,dy,s,loop)=>{c.strokeStyle=I(.85);c.lineWidth=2*s;for(let i=0;i<n;i++){let bx=x+i*38*s+dx*T;if(loop)bx=((bx+100)%1200+1200)%1200-100;let by=y+Math.sin(T*1.3+i)*14+(i%2?10:-10)*i*.4+dy*T,w=Math.sin(T*7+i*1.7)*8;c.beginPath();c.moveTo(bx-12*s,by-w*.6);c.quadraticCurveTo(bx-5*s,by-6*s,bx,by);c.quadraticCurveTo(bx+5*s,by-6*s,bx+12*s,by-w*.6);c.stroke()}},
+cl:(x,y,s,v,a=.18)=>{x=((x+v*T+200)%1400)-200;c.fillStyle=I(a);for(let i=0;i<5;i++){c.beginPath();c.ellipse(x+(i-2)*34*s,y+(i%2?-8:6)*s,46*s,18*s,0,0,7);c.fill()}},
+tr:(x,y,s,t)=>{let H=130*s*(.4+.6*R),cx=x+4*s,cy=y-H;c.strokeStyle=I(.85);c.lineWidth=7*s;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.bezierCurveTo(x-18*s,y-H*.4,x+22*s,y-H*.7,cx,cy);c.stroke();
+if(!t){c.fillStyle=I(.78);for(let k=0;k<5;k++){c.beginPath();c.ellipse(cx+(k%2?24:-24)*s,cy+k*17*s-8*s,36*s,8*s,0,0,7);c.fill()}}
+else if(t==1){c.lineWidth=1.5;c.strokeStyle=I(.6,'85,115,70');for(let k=0;k<18;k++){let sx=cx+(k-9)*7*s,w=Math.sin(T*1.2+k)*6*s;c.beginPath();c.moveTo(cx+(k-9)*3*s,cy);c.quadraticCurveTo(sx+w,cy+40*s,sx+w*1.5,cy+85*s);c.stroke()}}
+else{c.fillStyle=I(.6,t==2?'176,48,38':'225,125,145');for(let k=0;k<46;k++){let a=rd(k+x)*6.3,d=rd(k*3+y)*48*s;c.beginPath();c.arc(cx+Math.cos(a)*d*1.3,cy+Math.sin(a)*d*.8,5*s,0,7);c.fill()}}},
+ra:(n,len,wind)=>{c.strokeStyle=I(.35);c.lineWidth=1.2;for(let i=0;i<n;i++){let y=(rd(i+99)*700+T*520)%700-50,x=rd(i)*1300-y*wind/len;c.beginPath();c.moveTo(x,y);c.lineTo(x-wind,y+len);c.stroke()}},
+pt:(n,col,sz,sp,dr)=>{for(let i=0;i<n;i++){let y=(rd(i)*700+T*sp)%700-50,x=(rd(i+7)*1000+Math.sin(T+i)*dr+T*dr*.3)%1000;c.fillStyle=I(.8,col);c.beginPath();c.ellipse(x,y,sz,sz*.55,T+i,0,7);c.fill()}},
+fg:(x,y,s,p=0,col)=>{c.fillStyle=c.strokeStyle=I(.9,col);c.lineWidth=3*s;
+if(p==3){c.beginPath();c.ellipse(x,y-6*s,32*s,7*s,0,0,7);c.fill();c.beginPath();c.arc(x-36*s,y-8*s,6*s,0,7);c.fill();return}
+if(p==1){c.beginPath();c.ellipse(x,y-6*s,17*s,9*s,0,0,7);c.fill();c.beginPath();c.moveTo(x-8*s,y-8*s);c.lineTo(x-5*s,y-36*s);c.lineTo(x+5*s,y-36*s);c.lineTo(x+8*s,y-8*s);c.fill()}
+else{let w=p==2?Math.sin(T*4)*3*s:0;c.beginPath();c.moveTo(x-9*s+w,y);c.lineTo(x-5*s,y-34*s);c.lineTo(x+5*s,y-34*s);c.lineTo(x+9*s-w,y);c.fill()}
+c.beginPath();c.arc(x,y-43*s,6*s,0,7);c.fill();
+if(p==4){c.beginPath();c.moveTo(x+3*s,y-30*s);c.lineTo(x+24*s,y-42*s);c.stroke()}
+if(p==5){c.beginPath();c.moveTo(x+3*s,y-30*s);c.lineTo(x+20*s,y-48*s);c.stroke();c.beginPath();c.arc(x+22*s,y-50*s,4*s,0,7);c.fill()}},
+pv:(x,y,s,t)=>{c.fillStyle=I(.85);const rf=(yy,w)=>{c.beginPath();c.moveTo(x-w*s,yy);c.quadraticCurveTo(x,yy-16*s,x+w*s,yy);c.quadraticCurveTo(x,yy-6*s,x-w*s,yy);c.fill()};
+if(t==0){c.fillRect(x-20*s,y-28*s,4*s,28*s);c.fillRect(x+16*s,y-28*s,4*s,28*s);rf(y-28*s,34)}
+else if(t==1){for(let k=0;k<2;k++){c.fillRect(x-16*s,y-k*34*s-30*s,4*s,30*s);c.fillRect(x+12*s,y-k*34*s-30*s,4*s,30*s);rf(y-k*34*s-30*s,30-k*6)}}
+else if(t==2){c.fillRect(x-26*s,y-30*s,52*s,30*s);c.beginPath();c.moveTo(x-34*s,y-30*s);c.lineTo(x,y-54*s);c.lineTo(x+34*s,y-30*s);c.fill();c.fillStyle=`rgba(255,200,100,${.75+.2*Math.sin(T*7)})`;c.fillRect(x-6*s,y-22*s,12*s,12*s)}
+else{c.fillRect(x-24*s,y-40*s,48*s,40*s);for(let k=0;k<4;k++)c.fillRect(x-24*s+k*14*s,y-47*s,8*s,8*s)}},
+wl:(y,x0,x1)=>{const ry=x=>y-(x-x0)*.22+Math.sin(x*.04)*8,xe=x0+(x1-x0)*R;c.strokeStyle=I(.75);c.lineWidth=8;c.beginPath();for(let x=x0;x<=xe;x+=10)x==x0?c.moveTo(x,ry(x)):c.lineTo(x,ry(x));c.stroke();c.fillStyle=I(.85);for(let x=x0+60;x<xe;x+=110){c.fillRect(x-9,ry(x)-28,18,28);c.fillRect(x-11,ry(x)-34,6,6);c.fillRect(x+5,ry(x)-34,6,6)}},
+ca:(x,y,s,dr)=>{let g=c.createRadialGradient(x,y-70*s,2,x,y-70*s,95*s);g.addColorStop(0,'rgba(255,190,90,.4)');g.addColorStop(1,'rgba(255,190,90,0)');c.fillStyle=g;c.beginPath();c.arc(x,y-70*s,95*s,0,7);c.fill();c.fillStyle=N?'#e8dcc0':'#e6dcc4';c.strokeStyle=I(.8);c.lineWidth=2;c.fillRect(x-9*s,y-60*s,18*s,60*s);c.strokeRect(x-9*s,y-60*s,18*s,60*s);c.fillStyle='rgba(255,170,60,.95)';c.beginPath();c.ellipse(x+Math.sin(T*9)*2,y-72*s,5*s,11*s,0,0,7);c.fill();if(dr)for(let k=0;k<2;k++){c.fillStyle='rgba(235,230,210,.95)';c.beginPath();c.arc(x+(k?9:-9)*s,y-56*s+((T*30+k*40)%(56*s)),2.6*s,0,7);c.fill()}},
+cu:(x,y,w,h)=>{for(let k=0;k<14;k++){let bx=x+k*w/13,sw=Math.sin(T*1.3+k*.5)*4;c.strokeStyle=I(.4);c.lineWidth=1;c.beginPath();c.moveTo(bx,y);c.lineTo(bx+sw,y+h*R);c.stroke();c.fillStyle=I(.7);for(let j=1;j<8;j++){c.beginPath();c.arc(bx+sw*j/8,y+h*j/8*R,2.6,0,7);c.fill()}}c.strokeStyle=I(.8);c.lineWidth=4;c.beginPath();c.moveTo(x-8,y);c.lineTo(x+w+8,y);c.stroke()},
+st:(n)=>{for(let i=0;i<n;i++){c.fillStyle=`rgba(255,250,220,${.4+.5*Math.abs(Math.sin(T*1.5+i))})`;c.beginPath();c.arc(rd(i)*1000,rd(i+50)*300+10,1.2+rd(i+9)*1.4,0,7);c.fill()}},
+bs:(x,y,s)=>{let g=c.createRadialGradient(x,y,1,x,y,26*s);g.addColorStop(0,`rgba(255,246,208,${.6+.3*Math.sin(T*2+x)})`);g.addColorStop(1,'rgba(255,246,208,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,26*s,0,7);c.fill();c.fillStyle='#fff6d0';c.beginPath();c.arc(x,y,3.5*s,0,7);c.fill()},
+ff:(n,x,y,w,h)=>{for(let i=0;i<n;i++){let px=x+rd(i)*w+Math.sin(T*.8+i*3)*30,py=y+rd(i+9)*h+Math.cos(T*.7+i*2)*20,a=.3+.7*Math.abs(Math.sin(T*2+i*5)),g=c.createRadialGradient(px,py,0,px,py,9);g.addColorStop(0,`rgba(220,255,140,${a})`);g.addColorStop(1,'rgba(220,255,140,0)');c.fillStyle=g;c.beginPath();c.arc(px,py,9,0,7);c.fill()}},
+gr:(x,y,w,n,col)=>{c.strokeStyle=I(.6,col||'70,100,70');c.lineWidth=1.6;for(let i=0;i<n;i++){let gx=x+i*w/n,hh=(14+rd(i)*20)*R,sw=Math.sin(T*2+i);c.beginPath();c.moveTo(gx,y);c.quadraticCurveTo(gx+sw*4,y-hh*.6,gx+sw*8,y-hh);c.stroke()}},
+ri:(x0,y0,x1,y1,w0,col)=>{let d=y0-y1;c.fillStyle=I(.45,col||'180,160,100');c.beginPath();c.moveTo(x0-w0/2,y0);c.bezierCurveTo(x0-w0/2,y0-d*.5,x1-4,y1+d*.4,x1-4,y1);c.lineTo(x1+4,y1);c.bezierCurveTo(x1+4,y1+d*.4,x0+w0/2,y0-d*.5,x0+w0/2,y0);c.fill();c.strokeStyle=I(.3,'255,255,240');c.lineWidth=2;c.setLineDash([22,34]);c.lineDashOffset=-T*40;for(let k=-1;k<=1;k++){c.beginPath();c.moveTo(x0+k*w0*.22,y0);c.bezierCurveTo(x0+k*w0*.22,y0-d*.5,x1+k*2,y1+d*.4,x1+k*2,y1);c.stroke()}c.setLineDash([])},
+br:(x,y,w)=>{c.strokeStyle=I(.85);c.lineWidth=7;c.beginPath();c.ellipse(x,y,w/2,w*.32,0,Math.PI,2*Math.PI);c.stroke();c.lineWidth=5;c.beginPath();c.moveTo(x-w*.62,y-w*.02);c.quadraticCurveTo(x,y-w*.4,x+w*.62,y-w*.02);c.stroke();c.strokeStyle=I(.25);c.lineWidth=5;c.beginPath();c.ellipse(x,y+4,w/2,w*.25,0,0,Math.PI);c.stroke()},
+wv:(x,y,s)=>{const k=.9+.1*Math.sin(T*1.5);c.fillStyle=I(.8);c.beginPath();c.moveTo(x-260*s,y);c.bezierCurveTo(x-200*s,y-90*s*k,x-100*s,y-230*s*k,x+60*s,y-190*s*k);c.bezierCurveTo(x+120*s,y-170*s*k,x+130*s,y-110*s,x+90*s,y-100*s);c.bezierCurveTo(x+110*s,y-140*s*k,x+40*s,y-170*s*k,x-20*s,y-120*s*k);c.bezierCurveTo(x+40*s,y-60*s,x+120*s,y-30*s,x+260*s,y);c.fill();c.fillStyle=N?'#dcdcd0':'#f4eee0';for(let i=0;i<14;i++){c.beginPath();c.arc(x+90*s+Math.cos(i*1.3+T)*(20+i*3)*s,y-170*s*k+Math.sin(i*1.7+T)*(14+i*2)*s+i*3*s,(2+i%3)*s,0,7);c.fill()}},
+cp:(x,y,s)=>{c.fillStyle=I(.8);c.beginPath();c.ellipse(x,y-18*s,22*s,20*s,0,0,7);c.fill();c.fillRect(x-7*s,y-48*s,14*s,14*s);c.beginPath();c.ellipse(x+40*s,y-10*s,15*s,11*s,0,0,Math.PI);c.fill()},
+bk:(x,y,s)=>{for(let k=0;k<3;k++){c.fillStyle=I(.85-.2*k);c.fillRect(x-30*s+k*4*s,y-(k+1)*10*s,60*s-k*8*s,9*s)}},
+sa:(x,y,s)=>{c.fillStyle=I(.8);c.beginPath();c.moveTo(x-30*s,y);c.quadraticCurveTo(x-30*s,y-22*s,x-8*s,y-26*s);c.quadraticCurveTo(x+22*s,y-30*s,x+32*s,y);c.fill()},
+bu:(x,y,s,t)=>{y+=Math.sin(T*3)*3;c.fillStyle=N?'#e8e4d0':'#fbf8ee';c.strokeStyle=I(.8);c.lineWidth=2;c.beginPath();c.ellipse(x,y,26*s,20*s,0,0,7);c.fill();c.stroke();c.beginPath();c.moveTo(x-8*s,y+18*s);c.lineTo(x-16*s,y+32*s);c.lineTo(x+4*s,y+19*s);c.fill();c.stroke();c.fillStyle='#8a2a22';c.font=`${26*s}px serif`;c.textAlign='center';c.fillText(t,x,y+9*s)},
+rg:(x,y)=>{for(let k=0;k<4;k++){let r=(T*45+k*50)%200;c.strokeStyle=I(.5*(1-r/200));c.lineWidth=2;c.beginPath();c.ellipse(x,y,r,r*.35,0,0,7);c.stroke()}},
+te:(x,y)=>{for(let k=0;k<2;k++){let d=(T*40+k*30)%70;c.fillStyle=`rgba(150,190,240,${1-d/70})`;c.beginPath();c.ellipse(x+(k?8:-8),y+d,2.5,4,0,0,7);c.fill()}},
+th:(x,y)=>{c.strokeStyle=I(.85,'176,48,38');c.lineWidth=2;c.beginPath();c.moveTo(x,y);let n=Math.floor(24*R);for(let k=1;k<=n;k++)c.lineTo(x+k*5,y+(k%2?-9:9));c.stroke();c.fillStyle=I(.9);c.beginPath();c.arc(x+n*5,y+(n%2?-9:9),3,0,7);c.fill()},
+mi:(y,h,a)=>{const P=N?'25,30,50':'244,238,224';for(let k=0;k<3;k++){let x=500+Math.sin(T*.3+k*2)*120+(k-1)*260,g=c.createRadialGradient(0,0,10,0,0,260);g.addColorStop(0,`rgba(${P},${a})`);g.addColorStop(1,`rgba(${P},0)`);c.save();c.translate(x,y);c.scale(1,h/260);c.fillStyle=g;c.beginPath();c.arc(0,0,260,0,7);c.fill();c.restore()}}
+};
+const Y='225,150,160',G='200,190,150';
+// [標題,詩人,全文,背景(0日/1夜/2黎明),場景]
+const P=[
+['回鄉偶書','唐・賀知章','少小離家老大回，鄉音無改鬢毛催。兒童相見不相識，笑問客從何處來。',0,[['mt',0,300,430,420,230,.3],['mt',.3,780,430,500,280,.4],['cl',.5,300,110,1,6],['pv',1,180,445,1.4,2],['tr',1,760,440,1.4,1],['gr',1.2,60,470,880,60],['fg',2,420,450,1.2,2],['fg',2.6,520,452,.7,0],['fg',2.8,560,452,.65,0]]],
+['楓橋夜泊','唐・張繼','月落烏啼霜滿天，江楓漁火對愁眠。姑蘇城外寒山寺，夜半鐘聲到客船。',1,[['st',0,60],['mo',.3,760,150,34,10],['mt',.8,260,470,520,150,.5],['pv',1,140,450,1.1,1],['wa',1,470,130,.5],['br',1.5,330,455,170],['tr',1.8,780,470,1.5,2],['tr',2,650,475,1.1,2],['bo',2.6,520,505,1.4,0,1],['bi',3,5,850,200,-12,0,.9,1],['pt',3.5,70,'230,235,245',2,22,4]]],
+['秋夕','唐・杜牧','銀燭秋光冷畫屏，輕羅小扇撲流螢。天階夜色涼如水，臥看牽牛織女星。',1,[['st',0,80],['mt',.3,500,520,900,120,.35],['ca',.8,170,470,1.5,1],['fg',1.6,420,470,1.3,1],['ff',2,14,250,330,450,120],['bs',2.4,720,140,1.4],['bs',2.6,860,150,1.2]]],
+['九月九日憶山東兄弟','唐・王維','獨在異鄉為異客，每逢佳節倍思親。遙知兄弟登高處，遍插茱萸少一人。',0,[['cl',0,200,100,1,5],['mt',.3,300,480,500,300,.35],['mt',.6,720,480,600,380,.5],['fg',2,640,265,.6,0],['fg',2.3,665,235,.6,0],['fg',2.6,690,205,.6,0],['tr',3,160,520,1.6,2],['fg',1.8,330,525,1.4,1],['bi',3,3,150,120,18,-2,1.1,1]]],
+['偶成','宋・朱熹','少年易老學難成，一寸光陰不可輕。未覺池塘春草夢，階前梧葉已秋聲。',0,[['mt',.2,200,380,420,100,.25],['cl',.3,500,100,1.2,6],['wa',.3,380,200,.45],['gr',1,40,395,900,80],['tr',.6,800,400,2,2],['pt',2,40,'176,48,38',6,30,12]]],
+['送孟浩然之廣陵','唐・李白','故人西辭黃鶴樓，煙花三月下揚州。孤帆遠影碧山盡，惟見長江天際流。',0,[['cl',0,300,100,1.2,5],['mt',0,150,400,420,230,.3],['mt',.3,880,400,500,260,.35],['ri',.5,500,600,560,400,700],['sa',.6,190,430,3],['pv',1,190,425,1.8,1],['bo',1.5,430,470,1.6,18,0,.06],['mi',2,420,60,.5],['pt',2,40,Y,5,22,10]]],
+['出塞','唐・王昌齡','秦時明月漢時關，萬里長征人未還。但使龍城飛將在，不教胡馬度陰山。',1,[['st',0,60],['mo',.3,500,150,70,0],['mt',.6,180,470,520,250,.5],['mt',.8,820,470,560,300,.55],['wl',1.2,520,0,1000],['fg',3,260,520,1.3,0]]],
+['金縷衣','唐・杜秋娘','勸君莫惜金縷衣，勸君惜取少年時。花開堪折直須折，莫待無花空折枝。',0,[['mt',0,820,420,500,200,.2],['cl',.3,300,110,1.2,5],['tr',.5,300,520,2,3],['gr',1,100,520,800,70],['fg',2,560,520,1.4,0],['pt',1.5,50,'225,130,150',5,26,18]]],
+['觀書有感','宋・朱熹','半畝方塘一鑑開，天光雲影共徘徊。問渠哪得清如許？為有源頭活水來。',0,[['mt',0,200,300,500,140,.2],['cl',.5,420,110,1.2,8],['wa',.3,340,220,.35],['cl',.8,330,370,1.3,9,.25],['gr',1,60,340,880,80],['tr',1.5,860,350,1.4,1]]],
+['涼州詞','唐・王翰','葡萄美酒夜光杯，欲飲琵琶馬上催。醉臥沙場君莫笑，古來征戰幾人回？',1,[['st',0,60],['mo',.3,780,130,44,0],['mt',.5,300,500,800,110,.5,'170,140,90'],['mt',.8,820,500,700,150,.5,'150,120,80'],['cp',1.3,330,505,2.2],['fg',2,600,500,1.4,3],['pt',2.5,30,'200,180,130',1.5,60,25]]],
+['桃花谿','唐・張旭','隱隱飛橋隔野煙，石磯西畔問漁船。桃花盡日隨流水，洞在清谿何處邊？',0,[['mt',0,200,360,500,230,.3],['mt',.3,780,360,520,260,.35],['br',1,420,350,170],['mi',.6,360,70,.55],['wa',1.2,420,170,.4],['bo',2,640,500,1.6,2,0,0],['tr',1.8,860,420,1.5,3],['pt',2.5,60,Y,4,24,12]]],
+['遊子吟','唐・孟郊','慈母手中線，遊子身上衣；臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉？',0,[['mt',0,300,420,520,200,.2],['sn',.3,180,130,50,0],['pv',.6,780,450,2.2,2],['gr',1,40,480,920,80],['tr',1,900,450,1.5,3],['fg',1.5,520,470,2,0],['fg',2.2,620,470,1.5,0],['pt',2.2,30,Y,4,22,10]]],
+['獨坐敬亭山','唐・李白','眾鳥高飛盡，孤雲獨去閒。相看兩不厭，只有敬亭山。',0,[['mt',0,520,430,700,320,.45],['cl',.5,250,140,1.4,5],['cl',.8,700,120,1.2,14,.22],['sa',1.2,300,500,2.2],['fg',1.6,300,477,1.5,1],['bi',2,6,200,160,35,-3,1,0]]],
+['題西林壁','宋・蘇軾','橫看成嶺側成峰，遠近高低各不同。不識廬山真面目，只緣身在此山中。',0,[['mt',0,200,430,460,260,.3],['mt',.2,500,430,520,330,.45],['mt',.4,820,430,480,280,.35],['mi',.8,300,80,.5],['mi',1.2,400,50,.4],['pv',1.5,880,462,1.2,0],['tr',1.8,150,470,1.6,0]]],
+['涼州詞','唐・王之渙','黃河遠上白雲間，一片孤城萬仞山。羌笛何須怨楊柳，春風不度玉門關。',0,[['cl',.5,300,120,1.5,6],['mt',0,820,430,420,280,.4],['ri',.6,420,600,520,300,360,'200,170,100'],['mt',1,820,430,400,300,.5],['pv',1.5,780,430,1.6,3],['tr',2,180,520,1.6,1],['pt',2.5,18,G,2,50,40]]],
+['答人','唐・太上隱者','偶來松樹下，高枕石頭眠。山中無曆日，寒盡不知年。',0,[['mt',0,780,430,600,300,.3],['cl',.4,300,120,1.3,5],['tr',.5,240,500,2.2,0],['sa',1,520,500,2.4],['fg',1.6,520,444,1.4,3],['gr',1,380,500,300,40]]],
+['怨情','唐・李白','美人捲珠簾，深坐蹙蛾眉。但見淚痕濕，不知心恨誰？',1,[['st',0,40],['mo',.3,800,120,32,0],['fg',1,500,500,2,1],['cu',1.6,300,60,400,200]]],
+['贈別','唐・杜牧','多情卻似總無情，唯覺樽前笑不成。蠟燭有心還惜別，替人垂淚到天明。',1,[['ca',.5,500,500,3.2,1],['fg',1.5,260,500,1.6,1],['fg',1.8,740,500,1.6,1]]],
+['論詩','清・趙翼','李杜詩篇萬口傳，至今已覺不新鮮。江山代有才人出，各領風騷數百年。',0,[['sn',0,520,330,60,6],['mt',.3,700,430,500,150,.25],['wa',.8,500,100,.5],['wv',1,430,520,1.6]]],
+['清明','唐・杜牧','清明時節雨紛紛，路上行人欲斷魂。借問酒家何處有，牧童遙指杏花村。',0,[['mt',0,180,400,420,200,.25],['mt',.2,800,400,520,220,.3],['pv',.8,820,428,1.3,2],['tr',1,740,430,1.2,3],['mi',.7,380,60,.5],['gr',1,100,520,800,60],['fg',1.5,280,520,1.5,2],['fg',2,440,522,1,4],['ra',2.5,120,22,10]]],
+['夜雨寄北','唐・李商隱','君問歸期未有期，巴山夜雨漲秋池。何當共剪西窗燭，卻話巴山夜雨時？',1,[['mt',0,300,500,700,200,.4],['wa',.5,470,130,.4],['pv',1,700,480,2,2],['ca',1.6,180,520,2.2,0],['ra',2,170,26,14]]],
+['月下獨酌','唐・李白','花間一壺酒，獨酌無相親。舉杯邀明月，對影成三人。',1,[['st',0,70],['mo',.3,500,120,50,0],['tr',.8,160,520,2,3],['cp',1.6,420,505,1.6],['fg',1.8,560,500,1.5,5],['fg',2.4,690,500,1.5,0,'120,130,150'],['pt',2.5,40,'235,150,170',4,22,18]]],
+['金陵圖','唐・韋莊','江雨霏霏江草齊，六朝如夢鳥空啼。無情最是臺城柳，依舊煙籠十里堤。',0,[['mt',0,500,400,900,120,.2],['mi',.5,350,70,.55],['wa',.8,460,140,.35],['tr',1.2,300,480,2,1],['tr',1.5,600,490,1.8,1],['tr',1.8,860,500,1.6,1],['bi',2.4,4,200,160,18,-2,1,1],['ra',2,120,16,6]]],
+['勸學','唐・顏真卿','三更燈火五更雞，正是男兒讀書時；黑髮不知勤學早，白首方悔讀書遲。',2,[['st',0,50],['sn',.5,500,520,50,8],['mt',.4,400,470,900,120,.4],['pv',.8,820,470,1.8,2],['ca',1.2,330,510,2,0],['fg',1.8,400,510,1.6,1],['bk',1.5,470,510,1.5]]]
+];
+E.rg=(x,y,f=.3)=>{for(let k=0;k<3;k++){const ph=(T*.5+k/3)%1,r=ph*80;c.strokeStyle=I(.55*(1-ph));c.lineWidth=2;c.beginPath();c.ellipse(x,y,r,r*f,0,0,7);c.stroke()}};
+P[1][4].push(['rg',0,150,400,1]);P[4][4].push(['sn',0,820,140,36,5]);P[8][4].push(['rg',0,500,440]);P[16][4].push(['pt',0,12,'170,200,240',2,60,4]);P[17][4].push(['sn',0,860,560,36,6]);P[18][4].push(['cl',0,500,150,1.4,10]);P[19][4].push(['cp',0,320,525,1]);P[20][4].push(['rg',0,420,500]);P[23][4].push(['bi',0,3,100,180,12,-2,1,1]);
+// 每個場景元素所屬的「句」編號（0起算，順序同上方元素）：該句開始念／出現時，才畫出屬於它的動畫
+const LN=[[0,0,0,0,1,1,0,2,3],[0,0,2,2,1,1,1,1,1,0,0,3],[2,2,0,1,1,3,3],[1,2,2,2,2,2,3,0,1],[0,1,2,0,3,3,1],[0,2,2,3,0,0,2,1,1],[0,0,1,3,0,2],[0,1,2,1,0,3],[0,1,0,1,0,2,3],[3,0,2,2,0,2,1],[0,3,0,0,1,1,2,2],[3,5,0,4,5,0,1,2],[3,1,1,2,2,0],[0,1,1,2,2,3,3],[0,1,0,1,1,2,3],[2,3,0,1,1,0],[3,3,1,0,2],[2,0,1,3],[3,2,0,0,1],[0,0,3,3,0,1,1,3,0,2],[1,1,0,2,1,3],[2,2,0,0,1,3,0],[1,3,0,2,2,3,1,0],[0,1,2,0,0,1,1,3]];
+let act=[],off=[];
+// 每個元素屬於第幾句（依場景元素順序，後面接額外元素）
+const M=['0011110223','002212111003','2201133','0022223011','0022331','001300211','00130123','0021031','01010223','002202313','00002122 13'.replace(' ',''),'0504501523','311220','00122333','01011232','2201133'.slice(0,0)+'2201133'.slice(0,0)+'2201133'.slice(0,0)+'220113'+'3','031023','20013','301201','0033011302','11021033','22001303','130233100','03300112'];
+const X={0:[['bu',0,560,380,1.2,'？']],1:[['rg',0,140,440]],3:[['pt',0,25,'176,48,38',4,20,10]],4:[['sn',0,250,120,34,-10]],7:[['sn',0,820,110,36,0]],8:[['rg',0,500,300],['ri',0,720,590,640,340,120,'120,170,200']],9:[['rg',0,330,430],['bi',0,3,100,180,15,-2,1,0]],10:[['sa',0,180,480,2.5],['bu',0,640,400,1.3,'？']],11:[['th',0,540,440],['cl',0,500,160,1.3,3]],6:[['fg',0,700,362,1.2,0],['pt',0,30,'200,180,130',1.5,60,25]],13:[['fg',0,500,470,1.2,0]],14:[['rg',0,230,430]],15:[['pt',0,20,'176,48,38',5,20,10]],16:[['te',0,497,440],['bu',0,640,380,1.3,'？']],17:[['cp',0,350,510,1.4],['sn',0,880,300,34,10]],18:[['rg',0,500,360],['cl',0,300,120,1.3,2,.12]],19:[['bu',0,380,430,1.3,'？']],20:[['bu',0,700,400,1.3,'？'],['fg',0,120,520,1.4,1],['fg',0,245,520,1.4,1]],21:[['fg',0,810,500,1.5,0,'120,130,150']],22:[['gr',0,40,520,900,80]],23:[['fg',0,700,520,1.3,3]]};
+let LS=[],elems=[],nl=0;
+function setup(){const ps=[...poem.querySelectorAll('p')];nl=ps.length;LS=ps.map((_,k)=>1+k*4);elems=[...P[cur][4],...(X[cur]||[])].map((e,i)=>({e,l:Math.min(+M[cur][i]||0,nl-1)}));ps.forEach((e,k)=>{e.style.cursor='pointer';e.onclick=()=>{LS[k]=T;if(SS){SS.cancel();const u=new SpeechSynthesisUtterance(e.textContent);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=+document.getElementById('rt').value*.9;SS.speak(u)}}})}
+const nav=document.getElementById('nav'),poem=document.getElementById('poem');
+P.forEach((p,i)=>{if(i%12==0){let b=document.createElement('b');b.textContent=i?'下學期':'上學期';nav.appendChild(b)}let b=document.createElement('button');b.textContent=(i%12+1)+'.'+p[0];b.onclick=()=>pick(i);nav.appendChild(b)});
+const btns=[...nav.querySelectorAll('button')];
+function pick(i){cur=(i+P.length)%P.length;t0=null;btns.forEach((b,k)=>b.classList.toggle('on',k==cur));let p=P[cur];poem.innerHTML=`<h2>${p[0]}</h2><small>${p[1]}</small>`+(p[2].match(/[^，。；？]+[，。；？]/g)||[]).map((s,k)=>`<p style="animation-delay:${1+k*4}s">${s}</p>`).join('');setup()}
+document.getElementById('rp').onclick=()=>pick(cur);document.getElementById('pr').onclick=()=>pick(cur-1);document.getElementById('nx').onclick=()=>pick(cur+1);
+addEventListener('keydown',e=>{if(e.key=='ArrowLeft')pick(cur-1);if(e.key=='ArrowRight')pick(cur+1)});
+const L=(a,b,t)=>Math.round(a+(b-a)*t);
+function frame(ts){if(t0===null)t0=ts;T=(ts-t0)/1000;const p=P[cur];mix=p[3]==2?Math.min(Math.max((T-(LS[3]??1e9))/8,0),1):0;N=p[3]==1||(p[3]==2&&mix<.55)?1:0;
+c.setTransform(1.5,0,0,1.5,0,0);c.lineCap='round';c.globalAlpha=1;let g=c.createLinearGradient(0,0,0,600);
+if(p[3]==2){g.addColorStop(0,`rgb(${L(15,238,mix)},${L(20,205,mix)},${L(36,165,mix)})`);g.addColorStop(1,`rgb(${L(42,245,mix)},${L(53,225,mix)},${L(80,190,mix)})`)}
+else if(N){g.addColorStop(0,'#0f1424');g.addColorStop(1,'#2b3654')}else{g.addColorStop(0,'#f3ede0');g.addColorStop(1,'#ddd3bb')}
+c.fillStyle=g;c.fillRect(0,0,1000,600);
+for(const {e,l} of elems){const [n,d,...a]=e;Q=T-(LS[l]+d*.25);if(!(Q>0))continue;R=Math.min(1,Q/1.6);R=R*R*(3-2*R);c.save();c.globalAlpha=Math.min(1,R*2);E[n](...a);c.restore()}
+c.globalAlpha=1;c.fillStyle='#b03026';c.fillRect(940,540,36,36);c.fillStyle='#f4eee0';c.font='24px serif';c.textAlign='center';c.fillText('詩',958,566);
+requestAnimationFrame(frame)}
+// ===== 語音 =====
+const SS=window.speechSynthesis;let voice=null,sid=0;
+function findVoice(){if(!SS)return;const v=SS.getVoices();voice=v.find(x=>/zh[-_]TW/i.test(x.lang))||v.find(x=>/zh[-_]HK/i.test(x.lang))||v.find(x=>/^zh/i.test(x.lang))||null;document.getElementById('vn').textContent=voice?'語音：'+voice.name:'（此瀏覽器找不到中文語音）'}
+if(SS){findVoice();SS.onvoiceschanged=findVoice}else document.getElementById('vn').textContent='（此瀏覽器不支援語音）';
+function stopSpeak(){sid++;if(SS)SS.cancel();const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'})}
+function speak(){if(!SS)return;stopSpeak();const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
+t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
+const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
+lines.forEach((t,k)=>{const u=new SpeechSynthesisUtterance(t);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=k?rate*.9:rate;u.pitch=1.05;
+u.onstart=()=>{if(my!=sid)return;ps.forEach(e=>e.style.background='');if(k){const e=ps[k-1];LS[k-1]=T;e.style.animation='f 1s forwards';e.style.background='rgba(176,48,38,.18)'}};
+u.onend=()=>{if(my==sid&&k==lines.length-1)ps.forEach(e=>e.style.background='')};SS.speak(u)})}
+document.getElementById('sp').onclick=speak;document.getElementById('ss').onclick=stopSpeak;
+const _pick=pick;pick=function(i){stopSpeak();_pick(i);if(window._started&&document.getElementById('au').checked)setTimeout(speak,350)};
+pick(1);window._started=1;requestAnimationFrame(frame);
+</script></body></html>
