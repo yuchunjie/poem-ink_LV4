@@ -291,10 +291,17 @@ c.globalAlpha=N?.9:1;c.drawImage(VIG,0,0,1000,600);c.globalAlpha=N?.5:1;c.drawIm
 c.globalAlpha=1;c.save();c.translate(958,558);c.rotate(-.05);c.fillStyle='#b03026';c.fillRect(-18,-18,36,36);c.strokeStyle='rgba(244,238,224,.6)';c.lineWidth=1.2;c.strokeRect(-15,-15,30,30);c.fillStyle='#f4eee0';c.font='bold 22px "Noto Serif TC",serif';c.textAlign='center';c.fillText('詩',0,8);c.restore()}
 // ===== 語音 =====
 const SS=window.speechSynthesis;let voice=null,sid=0;
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const INAPP=/Line\/|FBAN|FBAV|Instagram|MicroMessenger|Messenger/i.test(navigator.userAgent);
+let unlocked=false;
+function unlockSpeech(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
+['touchend','pointerup','click'].forEach(t=>addEventListener(t,unlockSpeech,{once:false,passive:true,capture:true}));
+function voiceHint(){const el=document.getElementById('vn');if(!el||!IOS&&!INAPP)return;const extra=INAPP?'（請用 Safari 開啟才有聲音）':'（沒聲音請檢查：側邊靜音撥桿、媒體音量）';if(!el.textContent.includes('Safari')&&!el.textContent.includes('靜音'))el.textContent+=extra}
 function findVoice(){if(!SS)return;const v=SS.getVoices();voice=v.find(x=>/zh[-_]TW/i.test(x.lang))||v.find(x=>/zh[-_]HK/i.test(x.lang))||v.find(x=>/^zh/i.test(x.lang))||null;document.getElementById('vn').textContent=voice?'語音：'+voice.name:'（此瀏覽器找不到中文語音）'}
-if(SS){findVoice();SS.onvoiceschanged=findVoice}else document.getElementById('vn').textContent='（此瀏覽器不支援語音）';
-function stopSpeak(){exStop();sid++;if(SS)SS.cancel();const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'})}
-function speak(){if(!SS)return;stopSpeak();const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
+if(SS){findVoice();voiceHint();SS.onvoiceschanged=()=>{findVoice();voiceHint()}}else{document.getElementById('vn').textContent='（此瀏覽器不支援語音，請改用 Safari）'}
+function stopSpeak(){exStop();sid++;if(SS&&!window._exGo)SS.cancel();const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'})}
+function speak(){if(!SS)return;stopSpeak();const my0=sid;setTimeout(()=>{if(my0==sid)speakNow()},IOS?180:0)}
+function speakNow(){if(!SS)return;const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
 t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
 const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
 let broken=false;const done=[],wd=[],est=t=>t.length/(4*rate*.9)+.7;
@@ -315,7 +322,7 @@ const EX=[["賀知章年輕時就離開了家鄉，到很老才回來。他說�
 function renderEx(){const e=EX[cur],d=document.getElementById('ex');if(!e||!d)return;d.innerHTML='<p style="margin:0 0 8px"><button id="exs">🔊 聽解說</button></p><p class="s"><b>🗣 白話說一說</b><br>'+e[0]+'</p><p class="s"><b>🔤 小小字詞</b><br>'+e[1]+'</p><p class="s" style="margin:0"><b>⭐ 記住這句</b><br>'+e[2]+'</p>'}
 let exOn=false;
 function exStop(){exOn=false;const b=document.getElementById('exs');if(b)b.textContent='🔊 聽解說';document.querySelectorAll('#ex p.s').forEach(e=>e.style.background='')}
-function speakEx(){if(!SS)return;if(exOn){stopSpeak();return}stopSpeak();const my=sid,rate=+document.getElementById('rt').value,ps=[...document.querySelectorAll('#ex p.s')],e=EX[cur],tx=[e[0],'詩裡有幾個詞，我們先來認識一下。'+e[1].split('。').filter(Boolean).map(w=>{const[a,...r]=w.split('：');return '「'+a+'」的意思是'+r.join('：')+'。'}).join(''),'簡單來說，'+e[2]];exOn=true;document.getElementById('exs').textContent='⏹ 停止解說';window._U=[];
+function speakEx(){if(!SS)return;if(exOn){stopSpeak();return}stopSpeak();const my=sid;if(IOS&&!window._exGo){setTimeout(()=>{if(my==sid){window._exGo=1;speakEx();window._exGo=0}},180);return}const rate=+document.getElementById('rt').value,ps=[...document.querySelectorAll('#ex p.s')],e=EX[cur],tx=[e[0],'詩裡有幾個詞，我們先來認識一下。'+e[1].split('。').filter(Boolean).map(w=>{const[a,...r]=w.split('：');return '「'+a+'」的意思是'+r.join('：')+'。'}).join(''),'簡單來說，'+e[2]];exOn=true;document.getElementById('exs').textContent='⏹ 停止解說';window._U=[];
 tx.forEach((t,k)=>{const u=new SpeechSynthesisUtterance(t);window._U.push(u);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=rate*.95;u.pitch=1.05;u.onstart=()=>{if(my==sid)ps.forEach((x,i)=>x.style.background=i==k?'rgba(176,48,38,.15)':'')};u.onend=u.onerror=()=>{if(my==sid&&k==tx.length-1)exStop()};SS.speak(u)});
 setTimeout(()=>{if(my==sid)exStop()},(tx.join('').length/(4*rate*.9)+3)*1300)}
 document.getElementById('ex').addEventListener('click',ev=>{if(ev.target.id=='exs')speakEx()});

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我愛讀詩・水墨動畫 系統架構</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f5f5;
+    --paper-2: #ececec;
+    --ink: #2d3142;
+    --muted: #4f5d75;
+    --soft: #7a8399;
+    --rule: rgba(45, 49, 66, 0.12);
+    --rule-solid: #bfc0c0;
+    --accent: #eb6c36;
+    --accent-tint: rgba(235, 108, 54, 0.08);
+    --link: #2e5aa8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Geist', sans-serif;
+    padding: 32px 24px 48px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    width: 100%;
+    max-width: 960px;
+  }
+  header {
+    margin-bottom: 24px;
+  }
+  .eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .subtitle {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .diagram-frame {
+    background: #ffffff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cards {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 0.95fr;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 20px;
+  }
+  .card-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .card-dot.coral { background: var(--accent); }
+  .card-dot.ink { background: var(--ink); }
+  .card-dot.link { background: var(--link); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--soft);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <p class="eyebrow">SYSTEM ARCHITECTURE</p>
+    <h1>我愛讀詩・水墨動畫</h1>
+    <p class="subtitle">零外部依賴單檔架構：雙軌時序同步與程序化向量水墨渲染引擎</p>
+  </header>
+
+  <div class="diagram-frame">
+    <svg role="img" aria-labelledby="arch-title arch-desc" viewBox="0 0 880 520" width="880" height="520">
+      <title id="arch-title">我愛讀詩・水墨動畫 系統架構圖</title>
+      <desc id="arch-desc">展示前端展示層、雙軌語音時序同步核心以及程序化水墨繪製引擎的資料流與協同關係。</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+        </marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/>
+        </marker>
+      </defs>
+
+      <!-- Background -->
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ZONES (Tier boundaries) -->
+      <!-- Zone 1: Presentation & Interaction -->
+      <rect x="32" y="64" width="232" height="368" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="44" y="68" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="100" y="77" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">INTERACTION TIER</text>
+
+      <!-- Zone 2: Audio & Timing Engine -->
+      <rect x="296" y="64" width="248" height="368" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="308" y="68" width="108" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="362" y="77" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">TIMING & AUDIO</text>
+
+      <!-- Zone 3: Procedural Graphics Engine -->
+      <rect x="576" y="64" width="272" height="368" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="588" y="68" width="112" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="644" y="77" fill="rgba(45,49,66,0.50)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">GRAPHICS CORE</text>
+
+      <!-- CONNECTORS (drawn before nodes so they sit underneath) -->
+      <!-- 1. Nav Controls -> Sync Engine (User picks poem / controls playback) -->
+      <path d="M 240,132 H 272 Q 280,132 280,140 V 168 Q 280,176 288,176 H 324" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="264" y="146" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="280" y="155" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">START</text>
+
+      <!-- 2. Sync Engine -> Web Speech API (TTS triggers speech utterance) -->
+      <line x1="420" y1="232" x2="420" y2="288" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="402" y="254" width="36" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="420" y="263" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">SPEAK</text>
+
+      <!-- 3. Web Speech API -> Sync Engine (Fallback / onstart event return) -->
+      <path d="M 372,288 V 244" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+      <rect x="348" y="254" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="372" y="263" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">EVENT</text>
+
+      <!-- 4. Sync Engine -> Vertical Poem View (Highlight active sentence) -->
+      <path d="M 324,208 H 268 Q 260,208 260,216 V 236 Q 260,244 252,244 H 240" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- 5. Sync Engine -> Cue Matrix (Fetch visual cues for current line) -->
+      <path d="M 516,168 H 552 Q 560,168 560,160 V 140 Q 560,132 568,132 H 604" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="542" y="144" width="36" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="560" y="153" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">QUERY</text>
+
+      <!-- 6. Cue Matrix -> Ink Engine (Trigger visual elements entry) -->
+      <path d="M 712,168 V 320" fill="none" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="692" y="238" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="712" y="247" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.04em">BLOOM</text>
+
+      <!-- 7. Texture Cache -> Ink Engine (Compositing paper & fog layers) -->
+      <line x1="648" y1="280" x2="648" y2="320" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- 8. Commentary Modal -> Web Speech API (Independent explanation TTS) -->
+      <path d="M 240,356 H 288 Q 296,356 296,348 V 332 Q 296,324 304,324 H 324" fill="none" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+
+      <!-- NODES (Painted after connectors) -->
+      <!-- Node 1: Nav Controls -->
+      <rect x="56" y="96" width="184" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="56" y="96" width="184" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="64" y="102" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="78" y="111" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+      <text x="148" y="132" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">選詩與播放控制</text>
+      <text x="148" y="148" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">24 Poems / Speed / Controls</text>
+
+      <!-- Node 2: Vertical Poem View -->
+      <rect x="56" y="208" width="184" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="56" y="208" width="184" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="64" y="214" width="36" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="82" y="223" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">VIEW</text>
+      <text x="148" y="244" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">直排書法詩文視圖</text>
+      <text x="148" y="260" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">writing-mode: vertical-rl</text>
+
+      <!-- Node 3: Commentary Modal -->
+      <rect x="56" y="320" width="184" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="56" y="320" width="184" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="64" y="326" width="36" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="82" y="335" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">VIEW</text>
+      <text x="148" y="356" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">詩意白話解說面板</text>
+      <text x="148" y="372" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">白話說一說 / 小小字詞 / 意境</text>
+
+      <!-- Node 4: Dual-Track Sync Engine (Focal 1 - Coral) -->
+      <rect x="324" y="144" width="192" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="324" y="144" width="192" height="88" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="332" y="150" width="36" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="350" y="159" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="420" y="180" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">雙軌容錯時序機</text>
+      <text x="420" y="196" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">TTS Event + Timeout Watchdog</text>
+      <text x="420" y="212" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">iOS/In-App 靜默與斷觸自動補位</text>
+
+      <!-- Node 5: Web Speech API -->
+      <rect x="324" y="288" width="192" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="324" y="288" width="192" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="332" y="294" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="346" y="303" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="420" y="324" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">語音合成引擎</text>
+      <text x="420" y="340" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">SpeechSynthesis / zh-TW Voice</text>
+
+      <!-- Node 6: Cue Matrix -->
+      <rect x="604" y="96" width="216" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="604" y="96" width="216" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="612" y="102" width="36" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="630" y="111" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+      <text x="712" y="132" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">句景對照與時序映射表</text>
+      <text x="712" y="148" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">LN &amp; M Index / 24 Scenes</text>
+
+      <!-- Node 7: Texture Cache -->
+      <rect x="604" y="208" width="216" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="604" y="208" width="216" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="612" y="214" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="632" y="223" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CACHE</text>
+      <text x="712" y="244" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">宣紙纖維與雲霧緩存</text>
+      <text x="712" y="260" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PAP Canvas / VIG / FOG Offscreen</text>
+
+      <!-- Node 8: Procedural Ink Engine (Focal 2 - Coral) -->
+      <rect x="604" y="320" width="216" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="604" y="320" width="216" height="88" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="612" y="326" width="36" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="630" y="335" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="712" y="356" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">程序化水墨動態畫布</text>
+      <text x="712" y="372" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">HTML5 2D Canvas / 28+ Ink Primitives</text>
+      <text x="712" y="388" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">requestAnimationFrame / 筆墨漸開</text>
+
+      <!-- LEGEND (Horizontal bottom strip) -->
+      <line x1="32" y1="464" x2="848" y2="464" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <text x="32" y="488" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+
+      <rect x="120" y="480" width="16" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="144" y="488" fill="#2d3142" font-size="8" font-family="'Geist', sans-serif">核心引擎 (Focal)</text>
+
+      <rect x="264" y="480" width="16" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="288" y="488" fill="#2d3142" font-size="8" font-family="'Geist', sans-serif">內部模組 (Internal)</text>
+
+      <line x1="416" y1="485" x2="444" y2="485" stroke="#eb6c36" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="452" y="488" fill="#2d3142" font-size="8" font-family="'Geist', sans-serif">主資料推進 (Primary Flow)</text>
+
+      <line x1="600" y1="485" x2="628" y2="485" stroke="#7a8399" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+      <text x="636" y="488" fill="#2d3142" font-size="8" font-family="'Geist', sans-serif">非同步與備援反饋 (Async / Fallback)</text>
+
+      <line x1="772" y1="485" x2="796" y2="485" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="804" y="488" fill="#2d3142" font-size="8" font-family="'Geist', sans-serif">外部 API 調用</text>
+    </svg>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-dot coral"></span>
+        <h3>雙軌容錯時序機</h3>
+      </div>
+      <p>解決行動端與社群瀏覽器對 Web Speech API 事件吞噬、延遲觸發的硬體限制。採用雙軌並行機制：當原生朗讀事件正常回報時以精確事件推進；若事件未準時抵達，則由字元估算計時器即時接管，確保詩句高亮與水墨動畫永不中斷卡死。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-dot coral"></span>
+        <h3>程序化向量水墨庫</h3>
+      </div>
+      <p>完全摒棄外掛肥大圖片與 GIF 動畫，使用原生 Canvas 2D 貝茲曲線與動態梯度，純程式碼演算出二十八種水墨圖元。包含山巒暈染、江流波光、孤舟微動、雨絲風動與人物神態，實現零網路依賴的極速載入。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-dot link"></span>
+        <h3>單檔宣紙微結構緩存</h3>
+      </div>
+      <p>初次載入時於記憶體預先渲染七千顆宣紙雜點纖維、四周暗角暈染以及日夜雙色無縫循環雲霧層。每幀渲染僅需呼叫高效 drawImage 進行筆墨合成，確保低階行動設備也能穩定以六十幀流暢運行。</p>
+    </div>
+  </div>
+
+  <footer>
+    <span>POEM-INK ARCHITECTURE SPEC v2.3</span>
+    <span>SINGLE FILE ZERO DEPENDENCY</span>
+  </footer>
+</div>
+</body>
+</html>
