@@ -47,7 +47,7 @@ h1{display:none}
 <div id="dbg"></div>
 <script>
 const cv=document.getElementById('cv'),c=cv.getContext('2d');let T=0,Q=0,R=0,N=0,t0=null,cur=0,mix=0;
-const _er=new Set();let dbgM='';const dbgR=()=>{const d=document.getElementById('dbg');if(d)d.textContent='版本 v27'+dbgM+[..._er].map(m=>' ｜錯誤：'+m).join('')};
+const _er=new Set();let dbgM='';const dbgR=()=>{const d=document.getElementById('dbg');if(d)d.textContent='版本 v28'+dbgM+[..._er].map(m=>' ｜錯誤：'+m).join('')};
 function err(e){const m=String(e&&e.message||e);if(_er.has(m))return;_er.add(m);dbgR()}
 addEventListener('error',e=>err(e.message));dbgR();
 const rd=i=>{let x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)};
@@ -260,7 +260,7 @@ let act=[],off=[];
 const M=['0011110223','00221021110033','2201133','0022223333330011','00223311','001300211','001301323','0021031','010102233','00220211313','00002122 13'.replace(' ',''),'05045021523','311220','00122333','01011232','2201133'.slice(0,0)+'2201133'.slice(0,0)+'2201133'.slice(0,0)+'220113'+'3','031022','20013','3012013','0033011302','11021133','22001303','130233100','033001123'];
 const X={0:[],1:[['rg',0,140,440]],3:[['pt',0,25,'176,48,38',4,20,10]],4:[['sn',0,250,120,34,-10]],7:[['sn',0,820,110,36,0]],8:[['rg',0,500,300],['ri',0,720,590,640,340,120,'120,170,200']],9:[['rg',0,330,430],['bi',0,3,100,180,15,-2,1,0]],10:[['sa',0,180,480,2.5],['fg',0,652,490,.8,4]],11:[['th',0,540,440],['cl',0,500,160,1.3,3]],6:[['fg',0,700,362,1.2,0],['pt',0,30,'200,180,130',1.5,60,25]],13:[['fg',0,500,470,1.2,0]],14:[['rg',0,230,430]],15:[['pt',0,20,'176,48,38',5,20,10]],16:[['te',0,497,440]],17:[['sn',0,880,300,34,10]],18:[['rg',0,500,360],['cl',0,300,120,1.3,2,.12]],19:[],20:[['fg',0,120,520,1.4,1],['fg',0,245,520,1.4,1]],21:[['fg',0,810,500,1.5,0,'120,130,150']],22:[['gr',0,40,520,900,80]],23:[['fg',0,700,520,1.3,3]]};
 let LS=[],elems=[],nl=0;
-function setup(){const ps=[...poem.querySelectorAll('p')];nl=ps.length;LS=ps.map((_,k)=>1+k*4);elems=[...P[cur][4],...(X[cur]||[])].map((e,i)=>({e,l:Math.min(+M[cur][i]||0,nl-1)}));ps.forEach((e,k)=>{e.style.cursor='pointer';e.onclick=()=>{LS[k]=T;if(SS){SS.cancel();const u=new SpeechSynthesisUtterance(e.textContent);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=+document.getElementById('rt').value*.9;SS.speak(u)}}})}
+function setup(){const ps=[...poem.querySelectorAll('p')];nl=ps.length;LS=ps.map((_,k)=>1+k*4);elems=[...P[cur][4],...(X[cur]||[])].map((e,i)=>({e,l:Math.min(+M[cur][i]||0,nl-1)}));ps.forEach((e,k)=>{e.style.cursor='pointer';e.onclick=()=>{unlockAudio();stopSpeak();LS[k]=T;if(SS){try{const u=new SpeechSynthesisUtterance(e.textContent);window._curU=u;u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=+document.getElementById('rt').value*.9;u.onstart=()=>{ps.forEach(x=>x.style.background='');e.style.background='rgba(176,48,38,.18)'};u.onend=()=>{e.style.background=''};SS.speak(u)}catch(err){}}}})}
 const nav=document.getElementById('nav'),poem=document.getElementById('poem');
 P.forEach((p,i)=>{if(i%12==0){let b=document.createElement('b');b.textContent=i?'下學期':'上學期';nav.appendChild(b)}let b=document.createElement('button');b.textContent=(i%12+1)+'.'+p[0];b.onclick=()=>pick(i);nav.appendChild(b)});
 const btns=[...nav.querySelectorAll('button')];
@@ -293,27 +293,81 @@ c.globalAlpha=1;c.save();c.translate(958,558);c.rotate(-.05);c.fillStyle='#b0302
 const SS=window.speechSynthesis;let voice=null,sid=0;
 const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const INAPP=/Line\/|FBAN|FBAV|Instagram|MicroMessenger|Messenger/i.test(navigator.userAgent);
-let unlocked=false;
-function unlockSpeech(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
-['touchend','pointerup','click'].forEach(t=>addEventListener(t,unlockSpeech,{once:false,passive:true,capture:true}));
-function voiceHint(){const el=document.getElementById('vn');if(!el||!IOS&&!INAPP)return;const extra=INAPP?'（請用 Safari 開啟才有聲音）':'（沒聲音請檢查：側邊靜音撥桿、媒體音量）';if(!el.textContent.includes('Safari')&&!el.textContent.includes('靜音'))el.textContent+=extra}
-function findVoice(){if(!SS)return;const v=SS.getVoices();voice=v.find(x=>/zh[-_]TW/i.test(x.lang))||v.find(x=>/zh[-_]HK/i.test(x.lang))||v.find(x=>/^zh/i.test(x.lang))||null;document.getElementById('vn').textContent=voice?'語音：'+voice.name:'（此瀏覽器找不到中文語音）'}
-if(SS){findVoice();voiceHint();SS.onvoiceschanged=()=>{findVoice();voiceHint()}}else{document.getElementById('vn').textContent='（此瀏覽器不支援語音，請改用 Safari）'}
-function stopSpeak(){exStop();sid++;if(SS&&!window._exGo)SS.cancel();const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'})}
-function speak(){if(!SS)return;stopSpeak();const my0=sid;setTimeout(()=>{if(my0==sid)speakNow()},IOS?180:0)}
-function speakNow(){if(!SS)return;const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
-t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
-const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
-let broken=false;const done=[],wd=[],est=t=>t.length/(4*rate*.9)+.7;
-const arm=(k,ms)=>{if(k<lines.length)wd[k]=setTimeout(()=>{if(k){broken=true;dbgM=' ｜朗讀事件：備援計時';dbgR()}reveal(k)},ms)};
-// 第 k 句開始：由朗讀事件或計時備援觸發（先到者生效），並為下一句預約備援，不依賴手機是否回報事件
-const reveal=k=>{if(my!=sid||done[k])return;done[k]=true;clearTimeout(wd[k]);ps.forEach(x=>x.style.background='');if(k){const e=ps[k-1];if(LS[k-1]===Infinity)LS[k-1]=T;e.style.animation='f 1s forwards';e.style.opacity=1;e.style.background='rgba(176,48,38,.18)'}arm(k+1,est(lines[k])*(broken?900:1200)+(broken?0:500))};
-arm(0,600);
-window._U=[];lines.forEach((t,k)=>{const u=new SpeechSynthesisUtterance(t);window._U.push(u);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=k?rate*.9:rate;u.pitch=1.05;
-u.onstart=()=>{if(k&&!done[k]){broken=false;dbgM=' ｜朗讀事件：正常';dbgR()}reveal(k)};
-u.onend=()=>{if(k+1<lines.length)reveal(k+1);if(my==sid&&k==lines.length-1)ps.forEach(e=>e.style.background='')};SS.speak(u)})}
+let audioCtx=null;
+function unlockAudio(){
+  if(!audioCtx){try{const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}catch(e){}}
+  if(audioCtx&&audioCtx.state==='suspended'){try{audioCtx.resume()}catch(e){}}
+  if(SS&&SS.paused){try{SS.resume()}catch(e){}}
+}
+['touchstart','touchend','pointerup','click'].forEach(t=>addEventListener(t,unlockAudio,{passive:true,capture:true}));
+function voiceHint(){
+  const el=document.getElementById('vn');if(!el)return;
+  if(INAPP){el.textContent='（⚠️ 請用 Safari 開啟才有聲音）';el.style.color='#b03026'}
+  else if(IOS){el.textContent=(voice?'語音：'+voice.name:'（iOS 中文語音）')+' ｜ 側邊靜音撥桿需關閉'}
+  else{el.textContent=voice?'語音：'+voice.name:'（此瀏覽器找不到中文語音）'}
+}
+function findVoice(){
+  if(!SS)return;const v=SS.getVoices()||[];
+  voice=v.find(x=>/zh[-_]TW/i.test(x.lang))||v.find(x=>/zh[-_]HK/i.test(x.lang))||v.find(x=>/zh[-_]CN/i.test(x.lang))||v.find(x=>/^zh/i.test(x.lang))||null;
+  voiceHint();
+}
+if(SS){findVoice();if(SS.onvoiceschanged!==undefined)SS.onvoiceschanged=findVoice}else{const el=document.getElementById('vn');if(el)el.textContent='（此瀏覽器不支援語音，請改用 Safari）'}
+function stopSpeak(){
+  exStop();sid++;
+  if(SS){try{SS.cancel()}catch(e){}}
+  const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);
+  ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'});
+}
+function speak(){
+  if(!SS)return;unlockAudio();
+  const was=SS.speaking||SS.pending;stopSpeak();const my0=sid;
+  if(was&&IOS){setTimeout(()=>{if(my0==sid)speakNow()},60)}else{speakNow()}
+}
+function speakNow(){
+  if(!SS)return;
+  const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
+  t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
+  const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
+  let broken=false;const done=[],wd=[],est=t=>t.length/(4*rate*.9)+.7;
+  const arm=(k,ms)=>{
+    if(k<lines.length)wd[k]=setTimeout(()=>{
+      if(k){broken=true;dbgM=' ｜朗讀事件：備援計時';dbgR()}
+      reveal(k);
+      if(my==sid&&k<lines.length)speakStep(k);
+    },ms);
+  };
+  const reveal=k=>{
+    if(my!=sid||done[k])return;
+    done[k]=true;clearTimeout(wd[k]);
+    ps.forEach(x=>x.style.background='');
+    if(k){
+      const e=ps[k-1];if(LS[k-1]===Infinity)LS[k-1]=T;
+      e.style.animation='f 1s forwards';e.style.opacity=1;e.style.background='rgba(176,48,38,.18)';
+    }
+    arm(k+1,est(lines[k])*(broken?900:1200)+(broken?0:500));
+  };
+  const started=[];
+  function speakStep(k){
+    if(my!=sid||k>=lines.length||started[k])return;
+    started[k]=true;
+    try{
+      const u=new SpeechSynthesisUtterance(lines[k]);
+      window._curU=u;
+      u.lang=voice?voice.lang:'zh-TW';
+      if(voice)u.voice=voice;
+      u.rate=k?rate*.9:rate;
+      u.pitch=1.05;
+      u.onstart=()=>{if(my!=sid)return;if(k&&!done[k]){broken=false;dbgM=' ｜朗讀事件：正常';dbgR()}reveal(k)};
+      u.onend=()=>{if(my!=sid)return;reveal(k+1);if(k+1<lines.length)speakStep(k+1);else ps.forEach(e=>e.style.background='')};
+      u.onerror=()=>{if(my!=sid)return;reveal(k+1);if(k+1<lines.length)speakStep(k+1)};
+      SS.speak(u);
+    }catch(err){reveal(k+1);if(k+1<lines.length)speakStep(k+1)}
+  }
+  arm(0,500);
+  speakStep(0);
+}
 document.getElementById('sp').onclick=speak;document.getElementById('ss').onclick=stopSpeak;
-const _pick=pick;pick=function(i){stopSpeak();_pick(i);try{localStorage.setItem('poemLast',cur)}catch(e){}fit();renderEx();if(window._started&&document.getElementById('au').checked)setTimeout(speak,350)};
+const _pick=pick;pick=function(i){stopSpeak();_pick(i);try{localStorage.setItem('poemLast',cur)}catch(e){}fit();renderEx();if(window._started&&document.getElementById('au').checked)setTimeout(speak,200)};
 // 電腦版：依詩句欄數自動撐開右側詩框寬度，完整顯示、不出現捲軸（窄螢幕仍維持整行排列）
 {const K=(i,k,f)=>[...P[i][4],...(X[i]||[])].forEach(e=>{if(e[0]=='fg'&&(!f||f(e))){e[6]=undefined;e[7]=k}});K(0,'elder');K(6,'soldier');K(9,'soldier');K(16,'woman');K(11,'woman',e=>e[4]>=2);const f23=[...P[23][4],...(X[23]||[])].filter(e=>e[0]=='fg');if(f23.length>1){const e=f23[f23.length-1];e[6]=undefined;e[7]='elder'}
 P[17][4].splice(3,1);M[17]='2003';X[17][0]=['sn',0,880,430,34,-10];
@@ -322,9 +376,29 @@ const EX=[["賀知章年輕時就離開了家鄉，到很老才回來。他說�
 function renderEx(){const e=EX[cur],d=document.getElementById('ex');if(!e||!d)return;d.innerHTML='<p style="margin:0 0 8px"><button id="exs">🔊 聽解說</button></p><p class="s"><b>🗣 白話說一說</b><br>'+e[0]+'</p><p class="s"><b>🔤 小小字詞</b><br>'+e[1]+'</p><p class="s" style="margin:0"><b>⭐ 記住這句</b><br>'+e[2]+'</p>'}
 let exOn=false;
 function exStop(){exOn=false;const b=document.getElementById('exs');if(b)b.textContent='🔊 聽解說';document.querySelectorAll('#ex p.s').forEach(e=>e.style.background='')}
-function speakEx(){if(!SS)return;if(exOn){stopSpeak();return}stopSpeak();const my=sid;if(IOS&&!window._exGo){setTimeout(()=>{if(my==sid){window._exGo=1;speakEx();window._exGo=0}},180);return}const rate=+document.getElementById('rt').value,ps=[...document.querySelectorAll('#ex p.s')],e=EX[cur],tx=[e[0],'詩裡有幾個詞，我們先來認識一下。'+e[1].split('。').filter(Boolean).map(w=>{const[a,...r]=w.split('：');return '「'+a+'」的意思是'+r.join('：')+'。'}).join(''),'簡單來說，'+e[2]];exOn=true;document.getElementById('exs').textContent='⏹ 停止解說';window._U=[];
-tx.forEach((t,k)=>{const u=new SpeechSynthesisUtterance(t);window._U.push(u);u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=rate*.95;u.pitch=1.05;u.onstart=()=>{if(my==sid)ps.forEach((x,i)=>x.style.background=i==k?'rgba(176,48,38,.15)':'')};u.onend=u.onerror=()=>{if(my==sid&&k==tx.length-1)exStop()};SS.speak(u)});
-setTimeout(()=>{if(my==sid)exStop()},(tx.join('').length/(4*rate*.9)+3)*1300)}
+function speakEx(){
+  if(!SS)return;unlockAudio();
+  if(exOn){stopSpeak();return}
+  const was=SS.speaking||SS.pending;stopSpeak();const my=sid;
+  const rate=+document.getElementById('rt').value;const ps=[...document.querySelectorAll('#ex p.s')];const e=EX[cur];if(!e)return;
+  const tx=[e[0],'詩裡有幾個詞，我們先來認識一下。'+e[1].split('。').filter(Boolean).map(w=>{const[a,...r]=w.split('：');return '「'+a+'」的意思是'+r.join('：')+'。'}).join(''),'簡單來說，'+e[2]];
+  exOn=true;const b=document.getElementById('exs');if(b)b.textContent='⏹ 停止解說';
+  function stepEx(k){
+    if(my!=sid||!exOn||k>=tx.length){if(k>=tx.length)exStop();return}
+    try{
+      const u=new SpeechSynthesisUtterance(tx[k]);
+      window._curExU=u;
+      u.lang=voice?voice.lang:'zh-TW';
+      if(voice)u.voice=voice;
+      u.rate=rate*.95;u.pitch=1.05;
+      u.onstart=()=>{if(my==sid)ps.forEach((x,i)=>x.style.background=i==k?'rgba(176,48,38,.15)':'')};
+      u.onend=()=>{if(my==sid&&exOn)stepEx(k+1)};
+      u.onerror=()=>{if(my==sid&&exOn)stepEx(k+1)};
+      SS.speak(u);
+    }catch(err){if(my==sid&&exOn)stepEx(k+1)}
+  }
+  if(was&&IOS){setTimeout(()=>{if(my==sid&&exOn)stepEx(0)},60)}else{stepEx(0)}
+}
 document.getElementById('ex').addEventListener('click',ev=>{if(ev.target.id=='exs')speakEx()});
 document.getElementById('exb').onclick=()=>{const d=document.getElementById('ex'),on=d.classList.toggle('on');document.getElementById('exb').classList.toggle('on',on)};
 function fit(){const pm=document.getElementById('poem');pm.style.flex='';if(innerWidth<=820&&!matchMedia('(orientation:landscape) and (max-height:520px)').matches)return;let w=26;for(const e of pm.children)w+=e.offsetWidth+parseFloat(getComputedStyle(e).marginLeft||0);pm.style.flex='0 0 '+Math.ceil(w)+'px'}
