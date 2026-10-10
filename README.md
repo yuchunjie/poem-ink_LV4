@@ -2,7 +2,7 @@
 
 打開瀏覽器，點擊任一首詩，右側會直排浮現書法詩句，左側畫布則隨朗讀聲一筆筆化開山水與人物。
 
-這是一個單一檔案、零外部依賴的古典詩詞學習網頁。整套專案只有一個七十多 KB 的 `index.html`，不需要安裝 Node 套件，也不用架設後端伺服器，按兩下就能在電腦或手機瀏覽器跑起來。
+這是一個零後端依賴的古典詩詞學習網頁。主程式仍是單一 `index.html`，語音改為預生成的 48 個 mp3（`audio/`）＋句級時間軸（`timings.json`），部署到 GitHub Pages 後在 iPad Safari 也能穩定播放。本地直接雙擊 `index.html` 仍可開畫面，但播音請用 `python3 -m http.server` 或 Pages 網址（`file://` 下 fetch 不到時間軸時會自動 fallback 回即時語音）。
 
 ![系統架構圖](architecture.svg)
 
@@ -20,9 +20,17 @@
 
 一旦換到 iPhone 上的 Safari，或者 Line、Facebook 內建瀏覽器，情況就完全變了。系統常在靜音狀態下吞掉語音事件，或是句子念到一半回報逾時，後續的事件直接消失。如果單純仰賴原生事件，整個動畫就會卡在第一句，再也動彈不得。
 
-為了解決這個問題，程式裡做了一套雙軌容錯排程機制。
+為了解決這個問題，程式裡原本做了一套雙軌容錯排程機制。
 
 每一句發音送出前，系統會依據該句字數與當前語速，預先算好一個預期朗讀時長，並啟動備援計時器。如果瀏覽器如期傳回 `onstart` 事件，狀態機立刻推進，同時替下一句預約下一輪備援；若是原生事件遲遲沒有抵達，計時器會在容許邊界內直接接管，強制點亮詩句並把對應景物推入畫面。只要在畫面上點擊任何一行，語音佇列便會清空重新對齊，避免兩種訊號打架。
+
+## 預生成語音（目前做法）
+
+即時語音在 iPad 上仍不可靠，所以現在改為預生成：每首詩各 1 個朗讀 mp3＋1 個解說 mp3，共 48 檔（約 9.6MB，美佳 zh_TW 女聲、80kbps），只在點到該首時載入，下一首預取，載入快。每句的 start/end 記在 `timings.json`，前端用 `audio.currentTime` 對表點亮詩句、推進水墨，取代 `onstart/onend`。時間軸是「逐句獨立合成再 concat、秒數累加」算出來的（by-construction 對齊，誤差 <50ms），比事後跑 Whisper 更準。
+
+播放狀態機：連點同一個朗讀/解說/單句直接忽略，不重複 trigger；換內容先中斷舊音訊再播新的；語速下拉只用一套音檔，靠 `playbackRate`（所選語速 ÷ 0.8）等比縮放。取不到 `timings.json` 或 mp3 失敗時，自動 fallback 回 Web Speech API。
+
+重新生成：`python3 gen_audio.py`（需 macOS `say`＋`ffmpeg`；可用 `TTS_VOICE`／`TTS_RATE`／`MP3_BITRATE` 環境變數覆寫）。產物為 `audio/*.mp3`、`timings.json`、`needs_check.json`（待複聽清單）、`results.tsv`。GitHub Actions 上可用 edge-tts 同名聲音替代 `say`。
 
 ## 宣紙底紋與水墨圖元
 
@@ -54,9 +62,9 @@
 
 ## 本地使用與操作方式
 
-不需要編譯或安裝任何環境。
+不需要編譯或安裝任何環境。部署到 GitHub Pages 時，整包（含 `index.html`、`audio/`、`timings.json`）一起推即可，用相對路徑讀取。
 
-用現代瀏覽器直接開啟專案根目錄下的 `index.html` 即可。
+用現代瀏覽器直接開啟專案根目錄下的 `index.html` 即可（看畫面）；要完整試播音請跑 `python3 -m http.server` 再開 `http://localhost:8000/`。
 
 按鍵與介面支援鍵盤與觸控。
 

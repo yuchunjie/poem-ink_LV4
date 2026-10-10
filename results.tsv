@@ -1,0 +1,3 @@
+commit	val_bpb	memory_gb	status	description
+gen-Meijia-170	-	-	keep	48 mp3 + timings.json, total 10.0MB
+verify-localhost	-	-	keep	Gate3: JS syntax OK, 48 mp3 durations match, HTTP 200 for index/timings/mp3, debounce+interrupt patterns present
