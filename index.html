@@ -1,57 +1,544 @@
-<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>我愛讀詩・水墨動畫</title>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我愛讀詩 ‧ 水墨雅集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0 auto;max-width:1280px;background:#e9e2d0;color:#222;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-h1{margin:0;padding:14px 18px 4px;font-size:clamp(18px,4.5vw,24px);letter-spacing:.3em}
-#nav{padding:6px 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}#nav b{font-size:13px;color:#8a2a22;margin:0 2px 0 8px}
-button{font:inherit;font-size:14px;padding:6px 12px;min-height:36px;border:1px solid #6b5f4a;background:#f4eedd;border-radius:3px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button.on{background:#222;color:#f4eedd}button:active{opacity:.7}
-@media(hover:hover){button:not(.on):hover{background:#e8dfc6}}
-#stage{display:flex;gap:12px;padding:8px 14px;flex-wrap:wrap;align-items:flex-start}
-#cv{flex:1 1 520px;min-width:0;width:100%;max-width:100%;height:auto;aspect-ratio:5/3;object-fit:contain;border:2px solid #3a3226;display:block}
-#poem{writing-mode:vertical-rl;flex:0 0 clamp(180px,18vw,230px);align-self:stretch;min-height:260px;background:#f4eee0;border:2px solid #3a3226;padding:14px 12px;font-size:clamp(18px,2.2vw,22px);line-height:1.7;letter-spacing:.15em;overflow:visible}
-#poem h2{margin:0 0 0 14px;font-size:1.3em}#poem small{color:#a8352b;font-size:.7em;margin-left:16px}
-#poem p{margin:0 0 0 10px;opacity:0;animation:f 1.3s forwards}@keyframes f{to{opacity:1}}
-#ctl{padding:4px 14px 18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-#ctl select{font:inherit;font-size:16px}
-#vn{flex:1 1 100%}
-#ex{order:2;display:none;margin:0 14px 14px;padding:12px 16px;background:#fbf6e6;border:2px solid #3a3226;border-radius:4px;font-size:clamp(15px,1.9vw,18px);line-height:1.9}#ex.on{display:block}#ex p{margin:0 0 10px}#ex b{color:#8a2a22}
-#dbg{order:4;padding:0 14px 16px;font-size:11px;color:#8a7f66;word-break:break-all}
-/* 平板直式／窄視窗：畫面與詩句上下排列，詩句橫跨整行 */
-@media(max-width:820px){#poem{flex:1 1 100%;min-height:240px;align-self:auto}body{display:flex;flex-direction:column}#stage{order:1}#ctl{order:2}#nav{order:3}}
-/* 手機直式：畫面最優先，按鈕區可捲動，不再把畫面擠到下方 */
-@media(max-width:700px){
-body{display:flex;flex-direction:column}
-h1{padding:10px 14px 2px;letter-spacing:.2em}
-#stage{order:1;padding:6px 8px;gap:8px}
-#ctl{order:2;padding:4px 8px 10px;gap:6px}
-#ctl button{flex:1 1 calc(33.3% - 6px);min-height:42px}
-#ctl label{flex:1 1 auto;font-size:14px}
-#nav{order:3;padding:6px 8px 18px;max-height:36vh;max-height:36dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid #c9bfa6}
-#nav button{font-size:13px;padding:5px 9px}
+/* ===== 宋韻雅集・水墨美學設計系統 ===== */
+:root {
+  --bg-rice: #f4eee0;
+  --bg-page: #e9e2d0;
+  --bg-card: #fdfaf2;
+  --ink-900: #1c1816;
+  --ink-800: #2b2622;
+  --ink-700: #3a322b;
+  --ink-500: #6b5f52;
+  --ink-300: #9e9180;
+  --cinnabar: #b03026;
+  --cinnabar-light: rgba(176, 48, 38, 0.14);
+  --cinnabar-glow: rgba(176, 48, 38, 0.28);
+  --gold: #b38838;
+  --gold-light: rgba(179, 136, 56, 0.15);
+  --gold-glow: rgba(220, 180, 80, 0.4);
+  --border-ink: #42382c;
+  --shadow-warm: 0 4px 20px rgba(45, 35, 20, 0.12);
+  --font-serif: "Noto Serif TC", "Songti TC", "BiauKai", "PMingLiU", serif;
 }
-/* 手機橫式：左右並排，畫面不超出螢幕高度 */
-@media(orientation:landscape) and (max-height:520px){
-body{display:flex;flex-direction:column}#stage{order:1}#ctl{order:2}#nav{order:3}
-h1{display:none}
-#stage{flex-wrap:nowrap;padding:6px 10px}
-#cv{flex:1 1 0;width:auto;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
-#poem{flex:0 0 190px;min-height:0;font-size:17px;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
-#ctl,#nav{padding-left:10px;padding-right:10px}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 1440px;
+  background: var(--bg-page);
+  color: var(--ink-900);
+  font-family: var(--font-serif);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background-image: radial-gradient(circle at 50% 0%, #f6efe2 0%, var(--bg-page) 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-</style></head><body>
-<h1>我愛讀詩 ‧ 水墨動畫</h1><div id="nav"></div>
-<div id="stage"><canvas id="cv" width="1500" height="900"></canvas><div id="poem"></div></div>
-<div id="ctl"><button id="pr">← 上一首</button><button id="rp">↻ 重播</button><button id="nx">下一首 →</button><button id="sp">🔊 朗讀</button><button id="ss">⏹ 停止</button><label style="align-self:center;font-size:14px"><input type="checkbox" id="au" checked> 切換時自動朗讀</label><label style="align-self:center;font-size:14px">語速 <select id="rt"><option value=".6">慢</option><option value=".8" selected>適中</option><option value="1">快</option></select></label><button id="exb">📖 詩的解說</button><span id="vn" style="align-self:center;font-size:12px;color:#6b5f4a"></span></div>
-<div id="ex"></div>
+
+/* 頂部 Header & 雙模組膠囊 */
+#header {
+  padding: 12px 18px 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(66, 56, 44, 0.18);
+}
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.seal-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--cinnabar);
+  color: #fdfaf2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 2px 6px rgba(176,48,38,0.35);
+  transform: rotate(-3deg);
+}
+h1 {
+  margin: 0;
+  font-size: clamp(20px, 3.6vw, 26px);
+  font-weight: 900;
+  letter-spacing: .25em;
+  color: var(--ink-900);
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+}
+
+/* 雙模組切換膠囊 (詩詞 24 / 名言 30) */
+.module-tabs {
+  display: inline-flex;
+  background: rgba(66, 56, 44, 0.08);
+  padding: 3px;
+  border-radius: 30px;
+  border: 1px solid rgba(66, 56, 44, 0.2);
+}
+.module-btn {
+  padding: 6px 16px;
+  border-radius: 24px;
+  border: none;
+  background: transparent;
+  color: var(--ink-700);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+.module-btn.active {
+  background: var(--ink-900);
+  color: #fdfaf2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* 篩選過濾列 (學期、學月) */
+#filters {
+  padding: 6px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: rgba(244, 238, 224, 0.5);
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.filter-btn {
+  padding: 4px 10px;
+  border: 1px solid rgba(66, 56, 44, 0.25);
+  background: #fcf8ee;
+  border-radius: 14px;
+  font-size: 12px;
+  color: var(--ink-700);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.filter-btn.active {
+  background: var(--cinnabar);
+  color: #fff;
+  border-color: var(--cinnabar);
+  box-shadow: 0 2px 6px rgba(176,48,38,0.25);
+}
+
+/* 篇目橫向捲軸導覽 */
+#chapter-nav {
+  padding: 6px 16px 10px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border-bottom: 1px solid rgba(66, 56, 44, 0.12);
+}
+#chapter-nav::-webkit-scrollbar {
+  height: 4px;
+}
+#chapter-nav::-webkit-scrollbar-thumb {
+  background: rgba(66, 56, 44, 0.25);
+  border-radius: 2px;
+}
+.chap-btn {
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 12px;
+  min-height: 32px;
+  border: 1px solid rgba(66, 56, 44, 0.25);
+  background: #fbf6ea;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ink-800);
+  transition: all .2s;
+  white-space: nowrap;
+}
+.chap-btn.active {
+  background: var(--ink-900);
+  color: #fdfaf2;
+  border-color: var(--ink-900);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+.chap-btn:hover:not(.active) {
+  background: #eee4d0;
+}
+
+/* 舞台展示區 (左畫布 + 右書法宣紙卡片) */
+#stage {
+  display: flex;
+  gap: 16px;
+  padding: 10px 18px;
+  align-items: stretch;
+  flex: 1 0 auto;
+}
+#cv {
+  flex: 1 1 540px;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 3;
+  object-fit: contain;
+  border: 2px solid var(--border-ink);
+  border-radius: 4px;
+  box-shadow: var(--shadow-warm);
+  display: block;
+  background: var(--bg-rice);
+  align-self: flex-start;
+}
+/* 書法直排展示 (全詩完整容納，絕不截斷) */
+#poem {
+  writing-mode: vertical-rl;
+  flex: 0 0 clamp(280px, 29vw, 380px);
+  min-height: 280px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-ink);
+  border-radius: 4px;
+  box-shadow: var(--shadow-warm);
+  padding: 22px 18px;
+  font-size: clamp(18px, 1.9vw, 22px);
+  line-height: 1.85;
+  letter-spacing: .18em;
+  user-select: none;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-self: stretch;
+}
+#poem h2 {
+  margin: 0 0 0 16px;
+  font-size: 1.25em;
+  font-weight: 900;
+  letter-spacing: .24em;
+  color: var(--ink-900);
+}
+#poem small {
+  display: block;
+  color: var(--cinnabar);
+  font-size: .68em;
+  font-weight: 600;
+  margin-left: 16px;
+  letter-spacing: .14em;
+}
+#poem p {
+  margin: 0 0 0 12px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity .45s ease, transform .45s ease, background .25s ease, filter .45s ease, color .25s ease;
+  position: relative;
+}
+#poem p:hover {
+  background: rgba(176, 48, 38, 0.08);
+}
+
+/* ===== 跟讀動效 (Read-along / Follow-reading) ===== */
+/* 未跟讀或讀畢停止時：全詩完整、平滑顯現 */
+/* 朗讀進行中 (reading-mode)：未朗讀的句子隱藏，正在朗讀或已讀完的句子墨染顯現 */
+#poem.reading-mode p {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(3px);
+  pointer-events: none;
+}
+#poem.reading-mode p.read-revealed {
+  opacity: 0.88;
+  transform: translateY(0);
+  filter: blur(0);
+  pointer-events: auto;
+}
+#poem.reading-mode p.active,
+#poem p.active {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1.02);
+  filter: blur(0) !important;
+  background: var(--cinnabar-light) !important;
+  outline: 1px dashed rgba(176, 48, 38, 0.5);
+  color: var(--cinnabar);
+  font-weight: 600;
+}
+
+/* 底端懸浮磨砂控制台 */
+#ctl-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  margin: 8px 18px 14px;
+  padding: 10px 16px;
+  background: rgba(248, 243, 232, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(66, 56, 44, 0.35);
+  border-radius: 40px;
+  box-shadow: 0 8px 30px rgba(45, 30, 15, 0.16);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ctl-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ctl-btn {
+  padding: 7px 14px;
+  border: 1px solid rgba(66, 56, 44, 0.3);
+  background: #fdfaf2;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-800);
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ctl-btn:hover {
+  background: #f4ecda;
+  border-color: var(--ink-700);
+}
+.ctl-btn.primary {
+  background: var(--cinnabar);
+  color: #fff;
+  border-color: var(--cinnabar);
+  box-shadow: 0 2px 8px rgba(176, 48, 38, 0.3);
+}
+.ctl-btn.primary:hover {
+  background: #98281f;
+}
+.ctl-btn.active {
+  background: var(--ink-900);
+  color: #fff;
+  border-color: var(--ink-900);
+}
+.ctl-select {
+  padding: 5px 8px;
+  border: 1px solid rgba(66, 56, 44, 0.3);
+  border-radius: 12px;
+  background: #fdfaf2;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink-800);
+  cursor: pointer;
+}
+
+/* 賞析解說抽屜 (典藏卡片三欄展示) */
+#ex {
+  display: none;
+  margin: 0 18px 16px;
+  padding: 16px 20px;
+  background: rgba(253, 250, 242, 0.96);
+  border: 1px solid rgba(66, 56, 44, 0.25);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(45, 35, 20, 0.08);
+}
+#ex.on {
+  display: block;
+  animation: slideDown .3s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+#ex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(66, 56, 44, 0.15);
+}
+#ex-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+.ex-card {
+  background: #f9f4e6;
+  border: 1px solid rgba(66, 56, 44, 0.15);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-800);
+  transition: all .25s ease;
+}
+.ex-card b {
+  color: var(--cinnabar);
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.ex-card-title {
+  color: var(--cinnabar);
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: block;
+}
+.vocab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vocab-row {
+  line-height: 1.6;
+  font-size: 14px;
+}
+.vocab-word {
+  color: var(--cinnabar);
+  font-weight: 700;
+}
+.vocab-colon {
+  color: var(--ink-500);
+}
+.vocab-meaning {
+  color: var(--ink-800);
+}
+
+/* 除錯訊息條 */
+#dbg {
+  font-size: 10px;
+  color: var(--ink-300);
+  text-align: center;
+  padding: 4px;
+}
+
+/* 響應式佈局 */
+@media (max-width: 860px) {
+  #stage {
+    flex-direction: column;
+  }
+  #poem-wrap {
+    flex: 1 1 auto;
+    height: 220px;
+  }
+  #ctl-dock {
+    border-radius: 12px;
+    margin: 8px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="title-group">
+    <div class="seal-icon" id="seal-mark">詩</div>
+    <h1>我愛讀詩 ‧ 水墨雅集</h1>
+  </div>
+  <div class="module-tabs">
+    <button class="module-btn active" id="tab-poem" onclick="switchMode('poem')">🏮 經典詩詞 (24)</button>
+    <button class="module-btn" id="tab-quote" onclick="switchMode('quote')">📜 名言佳句 (30)</button>
+  </div>
+</header>
+
+<div id="filters">
+  <div class="filter-group" id="sem-filters">
+    <button class="filter-btn active" onclick="setSemesterFilter('all')">全部</button>
+    <button class="filter-btn" onclick="setSemesterFilter(0)">上學期</button>
+    <button class="filter-btn" onclick="setSemesterFilter(1)">下學期</button>
+  </div>
+  <div class="filter-group" id="month-filters" style="display:none">
+    <span style="font-size:12px;color:var(--ink-500);margin-left:6px">學月：</span>
+    <button class="filter-btn active" onclick="setMonthFilter('all')">全月</button>
+    <button class="filter-btn" onclick="setMonthFilter(1)">第一學月</button>
+    <button class="filter-btn" onclick="setMonthFilter(2)">第二學月</button>
+    <button class="filter-btn" onclick="setMonthFilter(3)">第三學月</button>
+  </div>
+</div>
+
+<div id="chapter-nav"></div>
+
+<main id="stage">
+  <canvas id="cv" width="1500" height="900"></canvas>
+  <div id="poem"></div>
+</main>
+
+<div id="ctl-dock">
+  <div class="ctl-btn-group">
+    <button class="ctl-btn" id="pr">← 上一首</button>
+    <button class="ctl-btn primary" id="sp">🔊 朗讀</button>
+    <button class="ctl-btn" id="ss">⏹ 停止</button>
+    <button class="ctl-btn" id="nx">下一首 →</button>
+    <button class="ctl-btn" id="rp">↻ 重播</button>
+  </div>
+  <div class="ctl-btn-group">
+    <label style="font-size:13px;display:inline-flex;align-items:center;gap:4px">
+      語速
+      <select id="rt" class="ctl-select">
+        <option value=".6">慢 .6</option>
+        <option value=".8" selected>適中 .8</option>
+        <option value="1">快 1.0</option>
+      </select>
+    </label>
+    <button class="ctl-btn" id="exb">📖 賞析解說</button>
+    <label style="font-size:13px;display:inline-flex;align-items:center;gap:4px">
+      <input type="checkbox" id="au" checked> 自動朗讀
+    </label>
+  </div>
+  <div id="vn" style="font-size:11px;color:var(--ink-500);flex:1 1 100%"></div>
+</div>
+
+<section id="ex">
+  <div id="ex-header">
+    <span style="font-weight:900;font-size:17px;color:var(--cinnabar)">📜 典藏賞析與釋義</span>
+    <button class="ctl-btn" id="exs" style="padding:4px 12px;min-height:30px">🔊 聽解說</button>
+  </div>
+  <div id="ex-body"></div>
+</section>
+
 <div id="dbg"></div>
+
 <script>
-const cv=document.getElementById('cv'),c=cv.getContext('2d');let T=0,Q=0,R=0,N=0,t0=null,cur=0,mix=0;
-const _er=new Set();let dbgM='';const dbgR=()=>{const d=document.getElementById('dbg');if(d)d.textContent='版本 v28'+dbgM+[..._er].map(m=>' ｜錯誤：'+m).join('')};
-function err(e){const m=String(e&&e.message||e);if(_er.has(m))return;_er.add(m);dbgR()}
-addEventListener('error',e=>err(e.message));dbgR();
-const rd=i=>{let x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)};
-const I=(a,col)=>`rgba(${col||(N?'225,225,215':'30,30,32')},${a})`;
+// ===== 畫布與狀態管理 =====
+const cv = document.getElementById('cv'), c = cv.getContext('2d');
+let T=0, Q=0, R=0, N=0, t0=null, cur=0, mix=0;
+let curMode = 'poem'; // 'poem' | 'quote'
+let curSem = 'all';  // 'all' | 0 | 1
+let curMonth = 'all';// 'all' | 1 | 2 | 3
+let isReadingMode = false; // 跟讀狀態開關
+
+const _er = new Set();
+let dbgM = '';
+const dbgR = () => {
+  const d = document.getElementById('dbg');
+  if (d) d.textContent = '宋韻水墨雅集 v31' + dbgM + [..._er].map(m=>' ｜錯誤：'+m).join('');
+};
+function err(e) {
+  const m = String(e && e.message || e);
+  if (_er.has(m)) return;
+  _er.add(m);
+  dbgR();
+}
+addEventListener('error', e => err(e.message));
+dbgR();
+
+const rd = i => {
+  let x = Math.sin(i * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+};
+const I = (a, col) => `rgba(${col || (N ? '225,225,215' : '30,30,32')},${a})`;
+
+// ===== 完整的唐詩 39 個水墨圖元庫 =====
 const E={
 mt:(x,y,w,h,a,col)=>{h*=R;let g=c.createLinearGradient(0,y-h,0,y);g.addColorStop(0,I(a*.9,col));g.addColorStop(1,I(0,col));c.fillStyle=g;c.beginPath();c.moveTo(x-w/2,y);c.bezierCurveTo(x-w*.28,y-h*.25,x-w*.1,y-h*.95,x,y-h);c.bezierCurveTo(x+w*.12,y-h*.85,x+w*.25,y-h*.3,x+w/2,y);c.fill();c.strokeStyle=I(a*.5,col);c.lineWidth=1.2;for(let i=0;i<5;i++){c.beginPath();c.moveTo(x+(i-2)*w*.06,y-h*(.9-i*.1));c.lineTo(x+(i-2)*w*.09,y-h*(.4-i*.05));c.stroke()}
 const hw=f=>w/2*Math.pow(1-f,.9);let sh=c.createLinearGradient(x,0,x+w/2,0);sh.addColorStop(0,I(0,col));sh.addColorStop(1,I(a*.35,col));c.fillStyle=sh;c.beginPath();c.moveTo(x,y-h);c.bezierCurveTo(x+w*.12,y-h*.85,x+w*.25,y-h*.3,x+w/2,y);c.lineTo(x+w*.04,y);c.closePath();c.fill();
@@ -223,8 +710,712 @@ te:(x,y)=>{for(let k=0;k<2;k++){let d=(T*40+k*30)%70;c.fillStyle=`rgba(150,190,2
 th:(x,y)=>{c.strokeStyle=I(.85,'176,48,38');c.lineWidth=2;c.beginPath();c.moveTo(x,y);let n=Math.floor(24*R);for(let k=1;k<=n;k++)c.lineTo(x+k*5,y+(k%2?-9:9));c.stroke();c.fillStyle=I(.9);c.beginPath();c.arc(x+n*5,y+(n%2?-9:9),3,0,7);c.fill()},
 mi:(y,h,a)=>{const P=N?'25,30,50':'244,238,224';for(let k=0;k<3;k++){let x=500+Math.sin(T*.3+k*2)*120+(k-1)*260,g=c.createRadialGradient(0,0,10,0,0,260);g.addColorStop(0,`rgba(${P},${a})`);g.addColorStop(1,`rgba(${P},0)`);c.save();c.translate(x,y);c.scale(1,h/260);c.fillStyle=g;c.beginPath();c.arc(0,0,260,0,7);c.fill();c.restore()}}
 };
-const Y='225,150,160',G='200,190,150';
-// [標題,詩人,全文,背景(0日/1夜/2黎明),場景]
+
+// ===== 擴充名言佳句專屬 24 個 1+2+3 精緻動態圖元 =====
+Object.assign(E, {
+// A. 書卷展閱 (ob: Open Book / Scrolls with fluttering pages & wisdom sparks)
+  ob: (x, y, s) => {
+    const ink = I(.88), paper = '#fdfbf2';
+    const fl = Math.sin(T * 3) * 3 * s;
+    c.save();
+    c.translate(x, y);
+    // 案几木桌
+    c.fillStyle = I(.85, '90,65,45');
+    c.fillRect(-45 * s, 10 * s, 90 * s, 8 * s);
+    c.fillRect(-40 * s, 18 * s, 8 * s, 24 * s);
+    c.fillRect(32 * s, 18 * s, 8 * s, 24 * s);
+    // 展開古書兩頁
+    c.fillStyle = paper;
+    c.strokeStyle = ink;
+    c.lineWidth = 1.2 * s;
+    // 左頁
+    c.beginPath();
+    c.moveTo(0, 10 * s);
+    c.bezierCurveTo(-20 * s, 10 * s, -38 * s, 4 * s, -42 * s, -8 * s);
+    c.lineTo(-42 * s, -30 * s);
+    c.bezierCurveTo(-38 * s, -18 * s, -20 * s, -12 * s, 0, -12 * s);
+    c.closePath();
+    c.fill();
+    c.stroke();
+    // 右頁 (含微動翻頁)
+    c.beginPath();
+    c.moveTo(0, 10 * s);
+    c.bezierCurveTo(20 * s, 10 * s, 38 * s, 4 * s + fl, 42 * s, -8 * s + fl);
+    c.lineTo(42 * s, -30 * s + fl);
+    c.bezierCurveTo(38 * s, -18 * s + fl, 20 * s, -12 * s, 0, -12 * s);
+    c.closePath();
+    c.fill();
+    c.stroke();
+    // 書中墨痕
+    c.strokeStyle = I(.4);
+    c.lineWidth = 1 * s;
+    for (let k = -2; k <= 2; k++) {
+      c.beginPath();
+      c.moveTo(-32 * s, -10 * s + k * 4 * s);
+      c.lineTo(-8 * s, -6 * s + k * 4 * s);
+      c.moveTo(8 * s, -6 * s + k * 4 * s);
+      c.lineTo(32 * s, -10 * s + k * 4 * s + fl * .5);
+      c.stroke();
+    }
+    // 升騰的智慧金光粒子
+    for (let q = 0; q < 5; q++) {
+      const ph = (T * 1.5 + q * .2) % 1;
+      const px = (q - 2) * 12 * s;
+      const py = -20 * s - ph * 40 * s;
+      c.fillStyle = `rgba(220,180,80,${1 - ph})`;
+      c.beginPath();
+      c.arc(px, py, (1.5 + q % 2) * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+  },
+
+  // B. 金幣與食鳥 (cn: Coins & bird bait)
+  cn: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 銅錢金幣疊放
+    for (let i = 0; i < 4; i++) {
+      const ox = (i - 1.5) * 18 * s, oy = Math.sin(T + i) * 2 * s;
+      c.fillStyle = 'rgba(212,175,55,0.92)';
+      c.beginPath();
+      c.arc(ox, oy, 12 * s, 0, 7);
+      c.fill();
+      c.strokeStyle = '#8a6518';
+      c.lineWidth = 1.2 * s;
+      c.stroke();
+      // 方孔
+      c.fillStyle = '#f4eee0';
+      c.fillRect(ox - 3 * s, oy - 3 * s, 6 * s, 6 * s);
+      c.strokeRect(ox - 3 * s, oy - 3 * s, 6 * s, 6 * s);
+    }
+    c.restore();
+  },
+
+  // C. 芳草野火與新芽 (wf: Wild grass, prairie flames & tender sprouts)
+  wf: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 燃燒墨焰粒子
+    for (let i = 0; i < 18; i++) {
+      const fx = (rd(i) - .5) * 160 * s;
+      const ph = (T * 2.5 + i * .15) % 1;
+      const fy = -ph * 60 * s;
+      const r = (8 - ph * 6) * s;
+      c.fillStyle = `rgba(${i%2 ? '220,80,40' : '240,160,50'},${(1 - ph) * .8})`;
+      c.beginPath();
+      c.arc(fx, fy, r, 0, 7);
+      c.fill();
+    }
+    // 春風吹撫之碧綠新芽
+    c.strokeStyle = 'rgba(100,160,80,0.88)';
+    c.lineWidth = 2 * s;
+    for (let j = 0; j < 12; j++) {
+      const gx = (j - 5.5) * 16 * s;
+      const sw = Math.sin(T * 3 + j) * 6 * s;
+      c.beginPath();
+      c.moveTo(gx, 0);
+      c.quadraticCurveTo(gx + sw, -15 * s, gx + sw * 1.5, -30 * s);
+      c.stroke();
+    }
+    c.restore();
+  },
+
+  // D. 駿馬奔騰 (gh: Galloping steed with physical 4-beat gait)
+  gh: (x, y, s) => {
+    const ph = T * 7;
+    const ink = I(.9);
+    c.save();
+    c.translate(x, y);
+    // 馬身與四蹄擺動
+    const l1 = Math.sin(ph) * 15 * s, l2 = Math.cos(ph) * 15 * s;
+    c.strokeStyle = ink;
+    c.lineWidth = 5 * s;
+    // 後腿
+    c.beginPath(); c.moveTo(-25 * s, -15 * s); c.lineTo(-35 * s + l1, 10 * s); c.stroke();
+    c.beginPath(); c.moveTo(-20 * s, -15 * s); c.lineTo(-28 * s - l1, 10 * s); c.stroke();
+    // 馬身
+    c.fillStyle = ink;
+    c.beginPath();
+    c.ellipse(0, -22 * s, 34 * s, 16 * s, 0, 0, 7);
+    c.fill();
+    // 前腿
+    c.beginPath(); c.moveTo(20 * s, -15 * s); c.lineTo(30 * s + l2, 10 * s); c.stroke();
+    c.beginPath(); c.moveTo(25 * s, -15 * s); c.lineTo(35 * s - l2, 10 * s); c.stroke();
+    // 頸與首
+    c.beginPath();
+    c.moveTo(18 * s, -28 * s);
+    c.lineTo(38 * s, -52 * s);
+    c.lineTo(48 * s, -45 * s);
+    c.lineTo(32 * s, -18 * s);
+    c.closePath();
+    c.fill();
+    // 飛揚鬃毛與馬尾
+    c.lineWidth = 2 * s;
+    c.beginPath();
+    c.moveTo(-32 * s, -22 * s);
+    c.quadraticCurveTo(-50 * s + Math.sin(ph) * 10 * s, -35 * s, -55 * s, -15 * s);
+    c.stroke();
+    // 奔蹄揚起的水墨塵土
+    for (let d = 0; d < 5; d++) {
+      const dph = (T * 4 + d * .2) % 1;
+      c.fillStyle = `rgba(140,120,90,${(1 - dph) * .4})`;
+      c.beginPath();
+      c.arc(-40 * s - dph * 30 * s, 8 * s - dph * 10 * s, (4 + dph * 8) * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+  },
+
+  // E. 端硯朱印 (is: Inkstone & cinnabar seal)
+  is: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 黑色端石硯台
+    c.fillStyle = '#1c1b1a';
+    c.beginPath();
+    c.roundRect ? c.roundRect(-40 * s, -25 * s, 80 * s, 50 * s, 10 * s) : c.rect(-40 * s, -25 * s, 80 * s, 50 * s);
+    c.fill();
+    // 硯池墨水微光
+    c.fillStyle = '#0a0908';
+    c.beginPath();
+    c.ellipse(-10 * s, 0, 22 * s, 14 * s, 0, 0, 7);
+    c.fill();
+    // 水墨反光
+    c.fillStyle = 'rgba(255,255,255,0.15)';
+    c.beginPath();
+    c.ellipse(-14 * s, -4 * s, 8 * s, 4 * s, -.3, 0, 7);
+    c.fill();
+    // 朱砂印泥印章 (鮮明紅色)
+    c.fillStyle = 'rgba(186,48,38,0.95)';
+    c.fillRect(15 * s, -18 * s, 20 * s, 36 * s);
+    c.strokeStyle = '#f4eee0';
+    c.lineWidth = 1.2 * s;
+    c.strokeRect(17 * s, -16 * s, 16 * s, 32 * s);
+    c.restore();
+  },
+
+  // F. 精誠金石 (gs: Stone opening with light burst)
+  gs: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 巨石輪廓
+    c.fillStyle = I(.85, '80,75,70');
+    c.beginPath();
+    c.moveTo(-45 * s, 25 * s);
+    c.lineTo(-55 * s, -20 * s);
+    c.lineTo(-15 * s, -45 * s);
+    c.lineTo(35 * s, -40 * s);
+    c.lineTo(55 * s, 25 * s);
+    c.closePath();
+    c.fill();
+    // 劈開之金光裂隙
+    const gl = Math.sin(T * 4) * .2 + .8;
+    c.strokeStyle = `rgba(255,220,100,${gl})`;
+    c.lineWidth = 4 * s;
+    c.beginPath();
+    c.moveTo(-10 * s, -44 * s);
+    c.lineTo(5 * s, -10 * s);
+    c.lineTo(-2 * s, 15 * s);
+    c.lineTo(8 * s, 25 * s);
+    c.stroke();
+    // 放射金芒
+    let g = c.createRadialGradient(0, 0, 2, 0, 0, 50 * s);
+    g.addColorStop(0, `rgba(255,215,80,${.8 * gl})`);
+    g.addColorStop(1, 'rgba(255,215,80,0)');
+    c.fillStyle = g;
+    c.beginPath();
+    c.arc(0, 0, 50 * s, 0, 7);
+    c.fill();
+    c.restore();
+  },
+
+  // G. 翠竹修長 (bg: Bamboo grove)
+  bg: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    const wn = Math.sin(T * 1.2) * 5 * s;
+    c.strokeStyle = I(.75, '70,110,65');
+    c.lineWidth = 5 * s;
+    // 兩根修竹
+    for (let b = -1; b <= 1; b += 2) {
+      const bx = b * 22 * s;
+      c.beginPath();
+      c.moveTo(bx, 0);
+      c.quadraticCurveTo(bx + wn * .4, -60 * s, bx + wn, -140 * s);
+      c.stroke();
+      // 竹節環
+      c.strokeStyle = I(.9, '45,75,40');
+      c.lineWidth = 7 * s;
+      for (let j = 1; j <= 4; j++) {
+        const jy = -j * 28 * s;
+        c.beginPath();
+        c.moveTo(bx - 4 * s + wn * (j / 5), jy);
+        c.lineTo(bx + 4 * s + wn * (j / 5), jy);
+        c.stroke();
+      }
+      // 竹葉
+      c.fillStyle = I(.7, '75,125,70');
+      for (let k = 0; k < 6; k++) {
+        const ly = -40 * s - k * 16 * s;
+        c.beginPath();
+        c.ellipse(bx + 12 * s + wn, ly, 14 * s, 3.5 * s, .5 + Math.sin(T + k) * .1, 0, 7);
+        c.fill();
+      }
+    }
+    c.restore();
+  },
+
+  // H. 清水與酒器 (cw: Stream & Bronze Zun vessel)
+  cw: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 古青銅酒尊
+    c.fillStyle = I(.9, '75,95,85');
+    c.beginPath();
+    c.moveTo(-16 * s, -30 * s);
+    c.lineTo(16 * s, -30 * s);
+    c.lineTo(10 * s, 0);
+    c.lineTo(18 * s, 10 * s);
+    c.lineTo(-18 * s, 10 * s);
+    c.lineTo(-10 * s, 0);
+    c.closePath();
+    c.fill();
+    // 尊身饕餮紋線
+    c.strokeStyle = I(.5, '200,225,210');
+    c.lineWidth = 1 * s;
+    c.stroke();
+    // 清澈泉水水流
+    c.strokeStyle = 'rgba(160,200,230,0.6)';
+    c.lineWidth = 2 * s;
+    for (let w = -2; w <= 2; w++) {
+      c.beginPath();
+      c.moveTo(-50 * s, 16 * s + w * 4 * s);
+      c.quadraticCurveTo(0, 14 * s + Math.sin(T * 2 + w) * 3 * s, 50 * s, 16 * s + w * 4 * s);
+      c.stroke();
+    }
+    c.restore();
+  },
+
+  // I. 錦箱與棉絮 (bx: Brocade box)
+  bx: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 華麗漆盒
+    c.fillStyle = '#8a241c';
+    c.fillRect(-30 * s, -15 * s, 60 * s, 30 * s);
+    // 金色鎖扣
+    c.fillStyle = '#d4af37';
+    c.fillRect(-6 * s, -6 * s, 12 * s, 12 * s);
+    // 掀開一角之破舊棉絮
+    c.fillStyle = 'rgba(215,210,200,0.85)';
+    for (let k = 0; k < 6; k++) {
+      c.beginPath();
+      c.arc((k - 2.5) * 8 * s + Math.sin(T + k) * 3 * s, -22 * s, (4 + k % 2) * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+  },
+
+  // J. 和諧三心 (hr: Three concentric ripples & floating lotus)
+  hr: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    for (let r = 0; r < 3; r++) {
+      const ph = (T * .6 + r / 3) % 1;
+      const rad = ph * 50 * s;
+      c.strokeStyle = `rgba(180,140,70,${1 - ph})`;
+      c.lineWidth = 1.6 * s;
+      c.beginPath();
+      c.ellipse(0, 0, rad, rad * .4, 0, 0, 7);
+      c.stroke();
+    }
+    // 水中粉蓮
+    c.fillStyle = 'rgba(225,120,140,0.9)';
+    c.beginPath();
+    c.arc(0, -4 * s, 6 * s, 0, 7);
+    c.fill();
+    c.restore();
+  },
+
+  // K. 稻穗與織機 (fl: Golden crops & silk loom)
+  fl: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 垂穗稻穀
+    const sw = Math.sin(T * 1.5) * 4 * s;
+    c.strokeStyle = '#c8a032';
+    c.lineWidth = 2.4 * s;
+    c.beginPath();
+    c.moveTo(-20 * s, 20 * s);
+    c.quadraticCurveTo(-10 * s, -20 * s, 25 * s + sw, -15 * s);
+    c.stroke();
+    // 穀粒
+    c.fillStyle = '#d8b242';
+    for (let g = 0; g < 8; g++) {
+      c.beginPath();
+      c.ellipse(10 * s + g * 3 * s + sw, -22 * s + g * 2 * s, 3.5 * s, 2 * s, .5, 0, 7);
+      c.fill();
+    }
+    // 織布梭子穿線
+    const shX = Math.sin(T * 3) * 25 * s;
+    c.fillStyle = '#8a5028';
+    c.beginPath();
+    c.ellipse(shX, 10 * s, 10 * s, 3 * s, 0, 0, 7);
+    c.fill();
+    c.strokeStyle = 'rgba(220,70,60,0.7)';
+    c.lineWidth = 1 * s;
+    c.beginPath();
+    c.moveTo(-30 * s, 10 * s);
+    c.lineTo(shX, 10 * s);
+    c.stroke();
+    c.restore();
+  },
+
+  // L. 懸崖斷壁 (cf: Cliff & mist)
+  cf: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    c.fillStyle = I(.85, '55,50,48');
+    c.beginPath();
+    c.moveTo(-60 * s, 50 * s);
+    c.lineTo(-20 * s, -50 * s);
+    c.lineTo(10 * s, -50 * s);
+    c.lineTo(-10 * s, 50 * s);
+    c.closePath();
+    c.fill();
+    // 崖邊雲霧迷濛
+    let g = c.createRadialGradient(15 * s, 0, 5 * s, 15 * s, 0, 45 * s);
+    g.addColorStop(0, 'rgba(240,235,220,.65)');
+    g.addColorStop(1, 'rgba(240,235,220,0)');
+    c.fillStyle = g;
+    c.beginPath();
+    c.arc(15 * s, 0, 45 * s, 0, 7);
+    c.fill();
+    c.restore();
+  },
+
+  // M. 匠人工坊 (tl: Artisan bench & keen tools)
+  tl: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 木工長凳
+    c.fillStyle = '#7a5230';
+    c.fillRect(-40 * s, 0, 80 * s, 8 * s);
+    c.fillRect(-35 * s, 8 * s, 6 * s, 20 * s);
+    c.fillRect(29 * s, 8 * s, 6 * s, 20 * s);
+    // 鋒利刨刀與刨花
+    c.fillStyle = '#3a3430';
+    c.fillRect(-15 * s, -8 * s, 30 * s, 8 * s);
+    c.strokeStyle = '#e8d4a2';
+    c.lineWidth = 1.5 * s;
+    // 捲曲刨花
+    c.beginPath();
+    c.arc(20 * s + Math.sin(T * 2) * 2 * s, -4 * s, 6 * s, 0, 5);
+    c.stroke();
+    c.restore();
+  },
+
+  // N. 魯國欹器 (qq: Qiqi vessel: empty tilts, half stands, full dumps!)
+  qq: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 支撐架
+    c.strokeStyle = I(.85, '70,55,40');
+    c.lineWidth = 4 * s;
+    c.beginPath();
+    c.moveTo(-32 * s, 30 * s);
+    c.lineTo(0, -25 * s);
+    c.lineTo(32 * s, 30 * s);
+    c.stroke();
+    // 物理力學循環：週期 6 秒 (0-2s 傾斜空器, 2-4s 中正半滿, 4-5.5s 水滿傾覆傾倒)
+    const cyc = (T % 6);
+    let rot = 0, waterLevel = 0;
+    if (cyc < 2) {
+      rot = -0.4 + Math.sin(cyc * 3) * .05; // 虛則欹
+      waterLevel = cyc / 2 * 0.4;
+    } else if (cyc < 4) {
+      rot = 0 + Math.sin(cyc * 2) * .02;   // 中則正
+      waterLevel = 0.4 + (cyc - 2) / 2 * 0.5;
+    } else {
+      rot = 1.35 * Math.sin((cyc - 4) * 2); // 滿則覆
+      waterLevel = Math.max(0, 0.9 - (cyc - 4) * 0.8);
+    }
+    // 旋轉欹器主體
+    c.save();
+    c.translate(0, -10 * s);
+    c.rotate(rot);
+    // 銅器輪廓
+    c.fillStyle = I(.9, '85,115,100');
+    c.beginPath();
+    c.moveTo(-16 * s, -18 * s);
+    c.lineTo(16 * s, -18 * s);
+    c.lineTo(20 * s, 8 * s);
+    c.lineTo(0, 24 * s);
+    c.lineTo(-20 * s, 8 * s);
+    c.closePath();
+    c.fill();
+    // 注入水花與溢流
+    if (waterLevel > 0.1) {
+      c.fillStyle = 'rgba(120,180,220,0.7)';
+      c.beginPath();
+      c.arc(0, 10 * s, 12 * s * waterLevel, 0, 7);
+      c.fill();
+    }
+    c.restore();
+    c.restore();
+  },
+
+  // O. 樹上鳥巢 (nt: Tree nest & eggs)
+  nt: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 樹杈鳥巢
+    c.fillStyle = '#6a4e32';
+    c.beginPath();
+    c.ellipse(0, 0, 18 * s, 10 * s, 0, 0, 7);
+    c.fill();
+    // 巢中白卵
+    c.fillStyle = '#f8f4ec';
+    c.beginPath();
+    c.ellipse(-5 * s, -4 * s, 4 * s, 3 * s, -.2, 0, 7);
+    c.ellipse(5 * s, -4 * s, 4 * s, 3 * s, .2, 0, 7);
+    c.fill();
+    c.restore();
+  },
+
+  // P. 青瓷茶盞 (tc: Celadon teacup with swirling steam)
+  tc: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 瓷盞
+    c.fillStyle = '#a8c6b4';
+    c.beginPath();
+    c.moveTo(-16 * s, -12 * s);
+    c.lineTo(16 * s, -12 * s);
+    c.bezierCurveTo(14 * s, 10 * s, -14 * s, 10 * s, -16 * s, -12 * s);
+    c.fill();
+    // 裊裊茶煙
+    c.strokeStyle = 'rgba(235,230,215,0.45)';
+    c.lineWidth = 1.5 * s;
+    for (let k = -1; k <= 1; k++) {
+      const ox = k * 6 * s;
+      c.beginPath();
+      c.moveTo(ox, -14 * s);
+      c.quadraticCurveTo(ox + Math.sin(T * 2 + k) * 8 * s, -30 * s, ox + Math.cos(T * 1.5 + k) * 6 * s, -45 * s);
+      c.stroke();
+    }
+    c.restore();
+  },
+
+  // Q. 書山萬卷 (bm: Towering mountain of books & scholar boat)
+  bm: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 書籍堆疊成峰
+    for (let l = 0; l < 5; l++) {
+      const bw = (70 - l * 12) * s;
+      const by = 20 * s - l * 16 * s;
+      c.fillStyle = l % 2 ? '#3a4b60' : '#8a3c2e';
+      c.fillRect(-bw / 2, by, bw, 12 * s);
+      c.strokeStyle = '#f4eee0';
+      c.lineWidth = 1 * s;
+      c.strokeRect(-bw / 2, by, bw, 12 * s);
+    }
+    c.restore();
+  },
+
+  // R. 枯木與長青松 (lt: Withered vs Pine tree)
+  lt: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 左：枯木蕭索
+    c.strokeStyle = I(.65, '70,60,55');
+    c.lineWidth = 4 * s;
+    c.beginPath();
+    c.moveTo(-25 * s, 30 * s);
+    c.lineTo(-30 * s, -20 * s);
+    c.lineTo(-45 * s, -50 * s);
+    c.moveTo(-30 * s, -20 * s);
+    c.lineTo(-18 * s, -40 * s);
+    c.stroke();
+    // 右：松柏長青
+    c.strokeStyle = I(.85, '55,45,40');
+    c.lineWidth = 4.5 * s;
+    c.beginPath();
+    c.moveTo(25 * s, 30 * s);
+    c.lineTo(25 * s, -20 * s);
+    c.stroke();
+    c.fillStyle = I(.8, '50,110,65');
+    for (let m = 0; m < 3; m++) {
+      c.beginPath();
+      c.arc(25 * s, -20 * s - m * 18 * s, (16 - m * 3) * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+  },
+
+  // S. 鐵犁春耕 (pl: Plow in fertile field)
+  pl: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 彎鐵犁
+    c.strokeStyle = '#322d28';
+    c.lineWidth = 3.5 * s;
+    c.beginPath();
+    c.moveTo(-20 * s, 10 * s);
+    c.quadraticCurveTo(0, -10 * s, 25 * s, -20 * s);
+    c.stroke();
+    // 翻出泥土黑土
+    c.fillStyle = '#4a3d32';
+    c.beginPath();
+    c.ellipse(-15 * s, 14 * s, 18 * s, 6 * s, -.2, 0, 7);
+    c.fill();
+    c.restore();
+  },
+
+  // T. 祥雲干戈 (pw: Peaceful cloud vs halberds)
+  pw: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 和善紫氣祥雲
+    c.fillStyle = 'rgba(165,130,175,0.6)';
+    c.beginPath();
+    c.arc(-24 * s, -10 * s, 18 * s, 0, 7);
+    c.arc(-10 * s, -18 * s, 14 * s, 0, 7);
+    c.fill();
+    // 凶險干戈兵器
+    c.strokeStyle = '#485055';
+    c.lineWidth = 3 * s;
+    c.beginPath();
+    c.moveTo(10 * s, 15 * s); c.lineTo(35 * s, -25 * s);
+    c.moveTo(35 * s, 15 * s); c.lineTo(10 * s, -25 * s);
+    c.stroke();
+    c.restore();
+  },
+
+  // U. 水瓶有聲 (wb: Water jars: full silent vs half sloshing)
+  wb: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 左瓶：滿水沉靜
+    c.fillStyle = '#688898';
+    c.beginPath();
+    c.roundRect ? c.roundRect(-42 * s, -15 * s, 24 * s, 36 * s, 6 * s) : c.rect(-42 * s, -15 * s, 24 * s, 36 * s);
+    c.fill();
+    // 右瓶：半瓶晃動有聲
+    const sl = Math.sin(T * 4) * 0.25;
+    c.save();
+    c.translate(25 * s, 4 * s);
+    c.rotate(sl);
+    c.fillStyle = '#7a9aa8';
+    c.beginPath();
+    c.roundRect ? c.roundRect(-12 * s, -18 * s, 24 * s, 36 * s, 6 * s) : c.rect(-12 * s, -18 * s, 24 * s, 36 * s);
+    c.fill();
+    // 飛濺水花
+    for (let w = 0; w < 3; w++) {
+      const ph = (T * 3 + w * .3) % 1;
+      c.fillStyle = `rgba(130,190,240,${1 - ph})`;
+      c.beginPath();
+      c.arc(Math.sin(T * 4) * 16 * s + w * 4 * s, -22 * s - ph * 12 * s, 2 * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+    c.restore();
+  },
+
+  // V. 鏡湖自省 (ms: Mirror lake self reflection)
+  ms: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 明淨湖面
+    c.strokeStyle = 'rgba(180,210,230,0.6)';
+    c.lineWidth = 1.5 * s;
+    c.beginPath();
+    c.ellipse(0, 0, 55 * s, 12 * s, 0, 0, 7);
+    c.stroke();
+    // 水中倒影
+    c.save();
+    c.scale(1, -0.6);
+    c.globalAlpha = 0.35;
+    E.fg(0, -10 * s, s, 0);
+    c.restore();
+    c.restore();
+  },
+
+  // W. 明鏡正衣冠 (bm2: Carved bronze mirror)
+  bm2: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 青銅鏡框
+    c.fillStyle = '#9c7b42';
+    c.beginPath();
+    c.arc(0, -10 * s, 28 * s, 0, 7);
+    c.fill();
+    c.strokeStyle = '#5c4520';
+    c.lineWidth = 2 * s;
+    c.stroke();
+    // 磨光鏡面
+    let g = c.createLinearGradient(-15 * s, -25 * s, 15 * s, 5 * s);
+    g.addColorStop(0, '#f2dfb6');
+    g.addColorStop(0.5, '#e8cd96');
+    g.addColorStop(1, '#caa96e');
+    c.fillStyle = g;
+    c.beginPath();
+    c.arc(0, -10 * s, 24 * s, 0, 7);
+    c.fill();
+    // 鏡面反光流動
+    const mx = Math.sin(T * 1.5) * 12 * s;
+    c.strokeStyle = 'rgba(255,255,255,0.45)';
+    c.lineWidth = 3 * s;
+    c.beginPath();
+    c.moveTo(mx - 8 * s, -26 * s);
+    c.lineTo(mx + 8 * s, 6 * s);
+    c.stroke();
+    c.restore();
+  },
+
+  // X. 日晷流光 (sd: Sundial of flowing time)
+  sd: (x, y, s) => {
+    c.save();
+    c.translate(x, y);
+    // 漢白玉晷盤
+    c.fillStyle = '#ece6d8';
+    c.beginPath();
+    c.ellipse(0, 10 * s, 36 * s, 16 * s, 0, 0, 7);
+    c.fill();
+    c.strokeStyle = '#6a5a48';
+    c.lineWidth = 1.2 * s;
+    c.stroke();
+    // 晷針與流動陰影
+    const ang = (T * .5) % Math.PI;
+    c.strokeStyle = '#222';
+    c.lineWidth = 2.5 * s;
+    c.beginPath();
+    c.moveTo(0, 10 * s);
+    c.lineTo(0, -22 * s);
+    c.stroke();
+    // 晷針投射日影
+    c.strokeStyle = 'rgba(60,50,40,0.55)';
+    c.lineWidth = 2 * s;
+    c.beginPath();
+    c.moveTo(0, 10 * s);
+    c.lineTo(Math.cos(ang) * 24 * s, 10 * s + Math.sin(ang) * 8 * s);
+    c.stroke();
+    // 流淌之金光歲月
+    for (let i = 0; i < 6; i++) {
+      const ph = (T * 1.5 + i * .2) % 1;
+      c.fillStyle = `rgba(240,200,60,${1 - ph})`;
+      c.beginPath();
+      c.arc((i - 2.5) * 10 * s, 20 * s + ph * 16 * s, 1.8 * s, 0, 7);
+      c.fill();
+    }
+    c.restore();
+  }
+});
+
+// ===== 唐詩資料庫與時間軸 =====
+const Y = '225,150,160', G = '200,190,150';
 const P=[
 ['回鄉偶書','唐・賀知章','少小離家老大回，鄉音無改鬢毛催。兒童相見不相識，笑問客從何處來。',0,[['mt',0,300,430,420,230,.3],['mt',.3,780,430,500,280,.4],['cl',.5,300,110,1,6],['pv',1,180,445,1.4,2],['tr',1,760,440,1.4,1],['gr',1.2,60,470,880,60],['fg',2,420,450,1.2,2],['kd',2.6,520,452,.95],['kd',2.8,562,452,.88]]],
 ['楓橋夜泊','唐・張繼','月落烏啼霜滿天，江楓漁火對愁眠。姑蘇城外寒山寺，夜半鐘聲到客船。',1,[['st',0,60],['mo',.3,760,150,34,10],['mt',.8,260,470,520,150,.5],['pv',1,140,450,1.1,1],['wa',1,470,130,.5],['mr',1.2,760,470,130,34],['br',1.5,330,455,170],['tr',1.8,780,470,1.5,2],['tr',2,650,475,1.1,2],['bo',2.6,520,505,1.4,0,1],['bi',3,5,850,200,-12,0,.9,1],['pt',3.5,70,'230,235,245',2,22,4]]],
@@ -251,22 +1442,171 @@ const P=[
 ['金陵圖','唐・韋莊','江雨霏霏江草齊，六朝如夢鳥空啼。無情最是臺城柳，依舊煙籠十里堤。',0,[['mt',0,500,400,900,120,.2],['mi',.5,350,70,.55],['wa',.8,460,140,.35],['tr',1.2,300,480,2,1],['tr',1.5,600,490,1.8,1],['tr',1.8,860,500,1.6,1],['bi',2.4,4,200,160,18,-2,1,1],['ra',2,120,16,6]]],
 ['勸學','唐・顏真卿','三更燈火五更雞，正是男兒讀書時；黑髮不知勤學早，白首方悔讀書遲。',2,[['st',0,50],['sn',.5,500,520,50,8],['mt',.4,400,470,900,120,.4],['pv',.8,820,470,1.8,2],['ca',1.2,330,510,2,0],['fg',1.8,400,510,1.6,1],['bk',1.5,470,510,1.5]]]
 ];
+
+
 E.rg=(x,y,f=.3)=>{for(let k=0;k<3;k++){const ph=(T*.5+k/3)%1,r=ph*80;c.strokeStyle=I(.55*(1-ph));c.lineWidth=2;c.beginPath();c.ellipse(x,y,r,r*f,0,0,7);c.stroke()}};
 P[1][4].push(['rg',0,150,400,1]);P[4][4].push(['sn',0,820,140,36,5]);P[8][4].push(['rg',0,500,440]);P[16][4].push(['pt',0,12,'170,200,240',2,60,4]);P[17][4].push(['sn',0,860,560,36,6]);P[18][4].push(['cl',0,500,150,1.4,10]);P[19][4].push(['cp',0,320,525,1,1]);P[20][4].push(['rg',0,420,500]);P[23][4].push(['bi',0,3,100,180,12,-2,1,1]);
 // 每個場景元素所屬的「句」編號（0起算，順序同上方元素）：該句開始念／出現時，才畫出屬於它的動畫
+
 const LN=[[0,0,0,0,1,1,0,2,3],[0,0,2,2,1,1,1,1,1,0,0,3],[2,2,0,1,1,3,3],[1,2,2,2,2,2,3,0,1],[0,1,2,0,3,3,1],[0,2,2,3,0,0,2,1,1],[0,0,1,3,0,2],[0,1,2,1,0,3],[0,1,0,1,0,2,3],[3,0,2,2,0,2,1],[0,3,0,0,1,1,2,2],[3,5,0,4,5,0,1,2],[3,1,1,2,2,0],[0,1,1,2,2,3,3],[0,1,0,1,1,2,3],[2,3,0,1,1,0],[3,3,1,0,2],[2,0,1,3],[3,2,0,0,1],[0,0,3,3,0,1,1,3,0,2],[1,1,0,2,1,3],[2,2,0,0,1,3,0],[1,3,0,2,2,3,1,0],[0,1,2,0,0,1,1,3]];
 let act=[],off=[];
 // 每個元素屬於第幾句（依場景元素順序，後面接額外元素）
 const M=['0011110223','00221021110033','2201133','0022223333330011','00223311','001300211','001301323','0021031','010102233','00220211313','00002122 13'.replace(' ',''),'05045021523','311220','00122333','01011232','2201133'.slice(0,0)+'2201133'.slice(0,0)+'2201133'.slice(0,0)+'220113'+'3','031022','20013','3012013','0033011302','11021133','22001303','130233100','033001123'];
 const X={0:[],1:[['rg',0,140,440]],3:[['pt',0,25,'176,48,38',4,20,10]],4:[['sn',0,250,120,34,-10]],7:[['sn',0,820,110,36,0]],8:[['rg',0,500,300],['ri',0,720,590,640,340,120,'120,170,200']],9:[['rg',0,330,430],['bi',0,3,100,180,15,-2,1,0]],10:[['sa',0,180,480,2.5],['fg',0,652,490,.8,4]],11:[['th',0,540,440],['cl',0,500,160,1.3,3]],6:[['fg',0,700,362,1.2,0],['pt',0,30,'200,180,130',1.5,60,25]],13:[['fg',0,500,470,1.2,0]],14:[['rg',0,230,430]],15:[['pt',0,20,'176,48,38',5,20,10]],16:[['te',0,497,440]],17:[['sn',0,880,300,34,10]],18:[['rg',0,500,360],['cl',0,300,120,1.3,2,.12]],19:[],20:[['fg',0,120,520,1.4,1],['fg',0,245,520,1.4,1]],21:[['fg',0,810,500,1.5,0,'120,130,150']],22:[['gr',0,40,520,900,80]],23:[['fg',0,700,520,1.3,3]]};
-let LS=[],elems=[],nl=0;
-function setup(){const ps=[...poem.querySelectorAll('p')];nl=ps.length;LS=ps.map((_,k)=>1+k*4);elems=[...P[cur][4],...(X[cur]||[])].map((e,i)=>({e,l:Math.min(+M[cur][i]||0,nl-1)}));ps.forEach((e,k)=>{e.style.cursor='pointer';e.onclick=()=>{unlockAudio();playSentence(k)}})}
-const nav=document.getElementById('nav'),poem=document.getElementById('poem');
-P.forEach((p,i)=>{if(i%12==0){let b=document.createElement('b');b.textContent=i?'下學期':'上學期';nav.appendChild(b)}let b=document.createElement('button');b.textContent=(i%12+1)+'.'+p[0];b.onclick=()=>pick(i);nav.appendChild(b)});
-const btns=[...nav.querySelectorAll('button')];
-function pick(i){cur=(i+P.length)%P.length;t0=null;btns.forEach((b,k)=>b.classList.toggle('on',k==cur));let p=P[cur];poem.innerHTML=`<h2>${p[0]}</h2><small>${p[1]}</small>`+(p[2].match(/[^，。；？]+[，。；？]/g)||[]).map((s,k)=>`<p style="animation-delay:${1+k*4}s">${s}</p>`).join('');setup()}
-document.getElementById('rp').onclick=()=>pick(cur);document.getElementById('pr').onclick=()=>pick(cur-1);document.getElementById('nx').onclick=()=>pick(cur+1);
-addEventListener('keydown',e=>{if(e.key=='ArrowLeft')pick(cur-1);if(e.key=='ArrowRight')pick(cur+1)});
+
+const EX=[["賀知章年輕時就離開了家鄉，到很老才回來。他說話還是老家的口音，耳邊的頭髮卻變得稀疏了。村裡的小孩看到他，都不認識，還笑著問：「客人，您從哪裡來呀？」", "鄉音：家鄉的口音。鬢毛：耳朵旁邊的頭髮。", "回到家鄉，家鄉的人卻把他當成客人，心裡又高興又心酸。"], ["月亮落下去了，烏鴉在樹上啼叫，天空好像飄著霜。江邊的楓樹和漁船的燈火，陪著睡不著的我。蘇州城外的寒山寺，半夜的鐘聲傳到了我的船上。", "夜泊：晚上把船停在岸邊。江楓：江邊的楓樹。", "旅途中的夜晚好安靜，鐘聲讓心裡的愁更深了。"], ["秋天的夜裡，銀白的蠟燭照著畫屏，光看起來冷冷的。宮女拿著小扇子，撲打飛來飛去的螢火蟲。夜色涼得像水，她躺在石階上，望著天上的牽牛星和織女星。", "銀燭：銀白色的蠟燭。輕羅小扇：用薄絲做的小圓扇。", "宮女好寂寞，只能看著星星想心事。"], ["我一個人住在別的地方，每到節日就更想念家人。我知道哥哥弟弟們正在爬高山，大家頭上都插著茱萸，卻少了我一個人。", "倍：更加。茱萸：一種有香氣的植物，重陽節那天，人們會帶著它登高。", "家人團聚時少了自己，思念就更深了。"], ["少年很容易變老，學問卻很難學成，所以連一寸的時間都不能隨便浪費。池塘邊的春草夢還沒醒，台階前的梧桐葉已經沙沙作響，秋天又到了。", "輕：看輕。春草夢：春天的美夢。", "時間過得很快，要趁年輕好好讀書。"], ["老朋友在黃鶴樓向我告別，在花開得像煙霧的三月，坐船往揚州去。那一片孤單的帆影越走越遠，消失在藍天的盡頭，只剩長江的水一直流向天邊。", "故人：老朋友。煙花：形容春天的花開得像一片煙霧。惟：只。", "李白一直望著船走遠，捨不得朋友離開。"], ["月亮和關口還是秦漢時代的樣子，可是去很遠的地方打仗的人，還沒有回來。要是名將李廣還在，就不會讓胡人的兵馬越過陰山。", "塞：邊境上重要的地方。還：回來。不教：不讓。度：越過。", "作者想念出征的士兵，也希望有好將軍保護國家。"], ["我勸你不要太愛惜華麗的衣服，要好好珍惜年輕的時光。花開得正美，就該摘下來，不要等到花謝了，才空著手去折枯枝。", "金縷衣：繡著金線的漂亮衣服。直須：儘管，不要猶豫。莫待：不要等到。", "時間不會等人，要趁現在把握好時光。"], ["半畝大的方形池塘，像一面打開的鏡子，天光和雲的影子在水裡來回移動。為什麼池水這麼清澈？因為源頭有活水不停流進來。", "方塘：一方水池。鑑：鏡子。", "常常學新東西，心裡才會像池水一樣清清亮亮。"], ["用葡萄釀的好酒，倒進夜光杯裡。正想喝的時候，琵琶聲響起，催大家出發了。就算醉倒在沙場上，請你別笑我。從古到今，打仗的人有幾個能平安回家呢？", "夜光杯：用白玉做的酒杯。催：催促。沙場：戰場。", "士兵一邊喝酒，一邊想著打仗的辛苦，有點無奈，也有點豪氣。"], ["遠遠看到一座高橋，被山野間的煙霧遮住了。我在河邊的石堆旁，向漁船上的人問路。桃花整天跟著流水漂走，桃花源的洞口，到底在清澈溪水的哪一邊呢？", "飛橋：很高的橋。石磯：河裡露出水面的石堆。", "作者想找到像仙境一樣的桃花源。"], ["慈祥的媽媽拿著針線，為要遠行的孩子縫衣服。她縫得又密又緊，是怕孩子很晚才回家。誰說小小的草心，報答得了春天陽光般的恩情呢？", "遊子：離開家鄉的人。三春暉：春天溫暖的陽光，比喻媽媽的愛。", "媽媽的愛藏在一針一線裡，我們一輩子也報答不完。"], ["天上的鳥兒都飛遠了，孤單的白雲也慢慢飄走。我望著山，山也望著我，我們誰都不嫌棄誰。這時陪著我的，只有敬亭山。", "盡：消失。閒：安靜。厭：厭倦。", "李白很孤單，所以把山當成了好朋友。"], ["從正面看，廬山是一排山嶺，從側面看，就變成高高的山峰。從遠、近、高、低不同的地方看，樣子都不一樣。我們看不清廬山的真面目，因為自己就在山裡面。", "題壁：把字寫在牆上。緣：因為。峰：山的尖頂。", "換個角度看事情，才能看得更清楚。"], ["黃河好像從遠方一直通到白雲裡，一座孤零零的城蓋在高山上。羌笛不用吹出哀怨的〈楊柳〉曲子，因為春風根本吹不到玉門關外。", "孤城：指玉門關。羌笛：羌族人的短笛。何須：何必。", "邊境的士兵離家很遠，春天好像也到不了那裡。"], ["我偶然走到松樹下，就枕著石頭睡著了。山裡沒有日曆，冬天過去了，我也不知道現在是哪一年。", "偶：偶然。高枕：安心地睡覺。曆日：記載日子和節氣的書。", "在山裡過著自由安靜的日子，連時間都忘了。"], ["美麗的女子捲起了珠簾，久久坐著，皺著眉頭。只看見她臉上的淚痕濕了一大片，不知道她心裡在怨誰。", "蹙蛾眉：皺起眉頭。深坐：久久呆坐。", "她很傷心，卻不說出口，讓人心疼。"], ["心裡很有感情，看起來卻好像沒有感情，因為太難過，連笑都笑不出來。桌上的蠟燭好像也捨不得分別，一滴一滴流下蠟油，替我們流淚到天亮。", "唯覺：只覺得。笑不成：想笑卻笑不出來。還惜別：也捨不得分開。", "太捨不得朋友，難過得說不出話。"], ["李白和杜甫的詩傳了很久，現在讀起來已經不覺得新鮮。每個朝代都會出現有才華的人，各自領導風潮好幾百年。", "李杜：李白和杜甫。江山：國家。", "寫作要有自己的新想法，不要只照著前人做。"], ["清明節的時候，細雨一直下，路上的行人心情很煩悶。我向牧童請問哪裡有酒店可以休息，牧童用手指著遠處的杏花村。", "紛紛：很多。欲斷魂：難過得好像靈魂要離開身體。借問：請問。", "淋著雨的旅人，因為牧童的指路，心裡有了方向。"], ["你問我什麼時候回去，我還不知道。巴山的夜晚正下著雨，雨水漲滿了秋天的池塘。什麼時候才能和你坐在西窗下一起剪燭花，說說今晚巴山夜雨的情景呢？", "何當：什麼時候才能。剪燭：把燒焦的燭芯剪掉，燭光才會亮。卻話：回頭再說。", "作者很想念親人，盼望能早點團聚。"], ["我在花叢中拿著一壺酒，一個人喝，沒有人陪。我舉起杯子邀請明月，再加上月光照出來的影子，就像三個人一起喝酒。", "獨酌：一個人喝酒。無相親：沒有親近的人。", "李白很孤單，所以想像月亮和影子是他的朋友。"], ["江上飄著細細的雨，岸邊的草長得很整齊。六朝的繁華像夢一樣過去了，只剩鳥兒空空地叫。最無情的是臺城的柳樹，還是像煙霧一樣罩著十里長堤。", "霏霏：細雨飄飛的樣子。六朝：金陵過去的六個朝代。臺城：六朝時的皇宮。", "人間的繁華會消失，大自然卻一直都在。"], ["半夜三更就點燈讀書，到天快亮、公雞啼叫的時候，正是男孩子讀書最好的時間。年輕時不知道要早點用功，等頭髮白了，才後悔沒有多讀書，已經太晚了。", "三更：半夜。五更：天快亮的時候。黑髮：年輕人。白首：老人。", "讀書要趁早，不要等老了才後悔。"]];
+
+// ===== 名言佳句資料庫 =====
+const QUOTES_P = [["因書而貴", "名言・格言", "貧者因書而富，富者因書而貴。", 0, [["mt", 0, 300, 420, 500, 200, 0.25], ["cl", 0.3, 500, 100, 1.2, 5], ["pv", 0.6, 780, 440, 1.5, 0], ["ob", 1.0, 420, 450, 1.4], ["fg", 1.5, 300, 460, 1.3, 1], ["pt", 2.0, 30, "220,180,90", 3, 20, 8]]], ["利令智昏", "名言・格言", "人為財死，鳥為食亡。", 0, [["mt", 0, 500, 430, 800, 220, 0.3], ["tr", 0.4, 260, 480, 1.6, 0], ["cn", 1.0, 520, 460, 1.2], ["bi", 1.5, 5, 520, 240, 25, 4, 1.1, 1], ["fg", 2.0, 720, 470, 1.3, 0]]], ["庸人自擾", "名言・新唐書", "天下本無事，庸人自擾之。", 0, [["mt", 0, 300, 430, 520, 240, 0.3], ["cl", 0.4, 400, 120, 1.5, 6], ["wa", 0.8, 440, 140, 0.35], ["tr", 1.2, 780, 470, 1.8, 1], ["fg", 1.8, 480, 460, 1.4, 1], ["mi", 2.0, 400, 70, 0.4]]], ["生生不息", "名言・白居易", "野火燒不盡，春風吹又生。", 2, [["mt", 0, 400, 440, 700, 200, 0.35], ["wf", 0.5, 500, 510, 1.3], ["sn", 1.0, 760, 200, 40, 4], ["gr", 1.5, 100, 520, 800, 80], ["pt", 2.0, 40, "120,200,100", 3, 25, 10]]], ["歲久知心", "名言・元稹", "路遙知馬力，日久見人心。", 0, [["mt", 0, 200, 420, 450, 220, 0.3], ["mt", 0.4, 750, 420, 550, 260, 0.4], ["wl", 0.8, 480, 0, 1000], ["gh", 1.4, 450, 500, 1.4], ["cl", 1.8, 300, 110, 1.3, 8], ["fg", 2.2, 680, 480, 1.3, 0]]], ["潛移默化", "名言・傅玄", "近朱者赤，近墨者黑。", 0, [["mt", 0, 500, 430, 800, 200, 0.28], ["is", 0.6, 500, 460, 1.5], ["pt", 1.2, 30, "190,40,30", 4, 18, 6], ["pt", 1.6, 30, "30,30,35", 4, 18, 6], ["fg", 2.0, 320, 460, 1.3, 0], ["fg", 2.3, 680, 460, 1.3, 0]]], ["精誠至誠", "名言・莊子", "精誠所至，金石為開。", 0, [["mt", 0, 500, 420, 600, 280, 0.45], ["gs", 0.8, 500, 470, 1.4], ["sn", 1.2, 500, 260, 50, 0], ["fg", 1.8, 300, 480, 1.4, 4]]], ["精進不懈", "名言・景德傳燈錄", "百尺竿頭，更進一步。", 0, [["bg", 0, 450, 520, 1.4], ["cl", 0.8, 450, 140, 1.5, 6], ["bi", 1.4, 4, 400, 100, 20, -2, 1, 1], ["fg", 1.8, 250, 490, 1.3, 0]]], ["內省無怨", "名言・荀子", "自知者不怨人，知命者不怨天。", 0, [["mt", 0, 250, 420, 500, 220, 0.3], ["mt", 0.3, 750, 420, 500, 240, 0.35], ["cl", 0.6, 500, 120, 1.4, 8], ["fg", 1.2, 500, 460, 1.5, 1], ["mi", 1.6, 420, 60, 0.5]]], ["君子之交", "名言・莊子", "君子之交淡如水，小人之交甘如醴。", 0, [["mt", 0, 500, 420, 750, 220, 0.3], ["wa", 0.5, 450, 130, 0.4], ["cw", 1.0, 500, 480, 1.3], ["fg", 1.6, 360, 460, 1.4, 0], ["fg", 1.8, 640, 460, 1.4, 0]]], ["內外兼備", "名言・劉基", "金玉其外，敗絮其中。", 0, [["mt", 0, 500, 420, 700, 200, 0.25], ["bx", 0.6, 500, 480, 1.4], ["pt", 1.2, 25, "230,200,100", 3, 20, 6], ["fg", 1.8, 300, 470, 1.3, 0]]], ["處世三心", "名言・處世格言", "待人要誠心，做事要用心，勝負平常心。", 0, [["mt", 0, 500, 410, 800, 200, 0.3], ["wa", 0.5, 430, 150, 0.35], ["hr", 1.0, 500, 470, 1.4], ["fg", 1.5, 420, 470, 1.3, 0], ["fg", 1.8, 580, 470, 1.3, 0]]], ["物力維艱", "名言・朱柏廬", "一粥一飯當思來處不易，半絲半縷恆念物力維艱。", 0, [["mt", 0, 300, 420, 500, 200, 0.25], ["fl", 0.6, 500, 490, 1.4], ["fg", 1.2, 340, 470, 1.4, 2], ["pv", 1.6, 750, 440, 1.4, 2], ["pt", 2.0, 30, "210,180,80", 3, 20, 8]]], ["熟讀深思", "名言・蘇軾", "舊書不厭百回讀，熟讀深思子自知。", 0, [["mt", 0, 500, 420, 750, 220, 0.3], ["tr", 0.5, 780, 460, 1.7, 0], ["ob", 1.0, 420, 460, 1.5], ["fg", 1.5, 300, 460, 1.4, 1], ["pt", 2.0, 25, "180,160,100", 3, 16, 5]]], ["謹言慎行", "名言・明心寶鑑", "一失足成千古恨，再回頭已是百年身。", 1, [["st", 0, 50], ["mt", 0.3, 500, 480, 850, 260, 0.4], ["cf", 0.8, 480, 500, 1.4], ["mo", 1.2, 750, 140, 36, 0], ["fg", 1.6, 360, 460, 1.4, 0]]], ["善事利器", "名言・論語", "工欲善其事，必先利其器。", 0, [["mt", 0, 500, 420, 700, 200, 0.25], ["tl", 0.6, 500, 470, 1.4], ["fg", 1.2, 340, 470, 1.4, 0], ["pt", 1.8, 30, "200,160,80", 3, 20, 10]]], ["滿損謙益", "名言・尚書", "滿招損，謙受益。", 0, [["mt", 0, 500, 420, 750, 200, 0.3], ["qq", 0.6, 500, 460, 1.5], ["wa", 1.2, 440, 140, 0.3], ["fg", 1.8, 300, 460, 1.3, 1]]], ["覆巢完卵", "名言・後漢書", "覆巢之下無完卵。", 0, [["mt", 0, 500, 420, 700, 200, 0.28], ["tr", 0.4, 520, 480, 2.0, 0], ["nt", 0.9, 520, 240, 1.4], ["cl", 1.4, 300, 120, 1.3, 5], ["bi", 1.8, 2, 480, 180, 15, -4, 1, 0]]], ["言簡意賅", "名言・增廣賢文", "話多不如話少，話少不如話好。", 0, [["mt", 0, 500, 420, 700, 200, 0.25], ["tc", 0.6, 500, 470, 1.4], ["fg", 1.2, 380, 470, 1.3, 0], ["fg", 1.5, 620, 470, 1.3, 0]]], ["勤舟苦徑", "名言・韓愈", "書山有路勤為徑，學海無涯苦作舟。", 0, [["bm", 0, 500, 400, 1.4], ["wa", 0.6, 440, 160, 0.45], ["bo", 1.2, 480, 520, 1.5, 12, 0, 0.05], ["pt", 1.8, 35, "220,180,90", 4, 25, 10]]], ["悲喜心境", "名言・西塞羅", "悲觀的人雖生猶死，樂觀的人永生不老。", 0, [["mt", 0, 500, 420, 750, 220, 0.3], ["lt", 0.6, 500, 470, 1.4], ["sn", 1.0, 750, 160, 45, 0], ["fg", 1.5, 320, 460, 1.3, 1], ["fg", 1.8, 680, 460, 1.3, 0]]], ["仰俯無愧", "名言・孟子", "仰不愧於天，俯不怍於地。", 0, [["mt", 0, 250, 430, 480, 240, 0.3], ["mt", 0.3, 750, 430, 520, 280, 0.35], ["cl", 0.6, 500, 100, 1.5, 8], ["fg", 1.2, 500, 450, 1.5, 0], ["sn", 1.6, 500, 160, 46, 0]]], ["勤勞免匱", "名言・西方格言", "不費勞力而得者，唯貧困而已。", 0, [["mt", 0, 500, 420, 750, 200, 0.25], ["pl", 0.6, 500, 490, 1.4], ["fg", 1.2, 380, 470, 1.4, 2], ["gr", 1.6, 120, 520, 780, 60]]], ["博學下筆", "名言・杜甫", "讀書破萬卷，下筆如有神。", 0, [["mt", 0, 500, 420, 800, 220, 0.3], ["ob", 0.5, 400, 460, 1.5], ["fg", 1.0, 580, 460, 1.4, 4], ["pt", 1.5, 40, "190,140,70", 4, 30, 12]]], ["善氣和人", "名言・管子", "以善氣迎人，親如兄弟；用惡氣迎人，害於干戈。", 0, [["mt", 0, 500, 420, 750, 200, 0.28], ["pw", 0.6, 500, 470, 1.3], ["fg", 1.2, 340, 470, 1.3, 0], ["fg", 1.5, 660, 470, 1.3, 0]]], ["實者無聲", "名言・民間格言", "整瓶水不響，半瓶水有聲。", 0, [["mt", 0, 500, 420, 700, 200, 0.25], ["wb", 0.6, 500, 470, 1.5], ["wa", 1.2, 450, 140, 0.35], ["fg", 1.6, 300, 460, 1.3, 1]]], ["克己制勝", "名言・格言", "一個人最大的敵人常是自己。", 0, [["mt", 0, 500, 420, 750, 220, 0.3], ["ms", 0.6, 500, 470, 1.4], ["fg", 1.2, 430, 460, 1.4, 0], ["mi", 1.8, 420, 60, 0.45]]], ["推己及人", "名言・論語", "己所不欲，勿施於人。", 0, [["mt", 0, 500, 420, 700, 200, 0.25], ["sc", 0.6, 500, 460, 1.4], ["fg", 1.2, 350, 460, 1.3, 0], ["fg", 1.5, 650, 460, 1.3, 0], ["pt", 1.8, 20, "200,180,120", 3, 16, 5]]], ["明鏡得失", "名言・貞觀政要", "以銅為鏡，可以正衣冠；以人為鏡，可以明得失。", 0, [["mt", 0, 500, 420, 750, 200, 0.28], ["bm2", 0.6, 500, 460, 1.4], ["fg", 1.2, 340, 460, 1.4, 0], ["fg", 1.6, 660, 460, 1.4, 0]]], ["惜時如金", "名言・增廣賢文", "一寸光陰一寸金，寸金難買寸光陰。", 0, [["mt", 0, 500, 420, 800, 220, 0.3], ["sd", 0.6, 500, 460, 1.5], ["sn", 1.0, 750, 150, 48, 0], ["fg", 1.5, 320, 460, 1.4, 0], ["pt", 1.8, 45, "240,210,90", 4, 30, 15]]]];
+const QUOTES_EX = [["貧窮的人因為努力讀書而獲得財富，富有的人因為博學明理而受到眾人的敬重。", "因：憑藉、因為。富：充足、富有。貴：受人敬重、品格尊貴。", "讀書不僅能改善生活，更能提升一個人的涵養與心靈境界。"], ["人常為了爭奪金錢財富而招來禍患，鳥雀常為了貪吃誘餌而落入羅網喪命。", "為：因為。財：金錢財貨。食：食物。亡：死亡、滅亡。", "告誡我們切莫因一時的貪念而迷失理智，知足才能常樂、保全自身。"], ["世間本來平靜安和、沒有那麼多紛擾，往往是心胸狹隘或不明事理的人自己在心裡添煩惱。", "庸人：平庸愚昧的人。自擾：自己擾亂自己、自尋煩惱。", "心放平了，事情就簡單了；別為無謂的瑣事焦慮不安。"], ["冬天的野火縱然燒得再猛烈，也無法將草根燒盡；等到和煦的春風一吹，芳草又破土萌芽、生氣蓬勃。", "野火：荒野之火。盡：完全完畢。春風：春天的風。吹又生：又重新萌芽生長。", "象徵堅韌強大的生命力，只要希望的火種在，任何困境都打不倒我們。"], ["路途遙遠漫長，才能考驗出馬匹的耐力與腳力；相處的日子久了，才能真正看清一個人的品格與真心。", "遙：遠。馬力：馬匹的體力與奔馳耐力。見：看清、顯現。", "真正的好朋友和純潔的情誼，是禁得起時間與距離嚴苛考驗的。"], ["靠朱砂近的容易被染紅，靠墨硯近的容易被染黑。", "朱：朱砂，紅色顏料。赤：紅色。墨：墨汁。黑：黑色。", "環境對人的影響極為深遠，交朋友要謹慎，多與品格高尚的人為伍。"], ["只要人的心意無比真誠、專注而堅定，就算是如金石般堅硬的物體，也能被感化貫穿打通。", "精誠：真誠的心意與極致的專注。金石：金屬與巨石，比喻最堅固之物。開：劈開、打通。", "堅持到底、全神貫注，世上就沒有克服不了的難關。"], ["學問成就已經登上百尺竹竿的頂點，還要繼續向前努力邁進、永不止步。", "竿頭：竹竿的頂端。更：更加。進一步：邁向更高境界。", "即使取得了極大的成績，也要保持謙虛，勇於突破自我、精益求精。"], ["有自知之明的人，遇到挫折不會怨恨他人；通曉天理規律的人，不會埋怨上天命運。", "自知：了解自己的能力與不足。知命：懂得事物發展的規律與自然之道。怨：怪罪、抱怨。", "遇事向內探尋原因並提升自己，而不是盲目責怪他人與環境。"], ["品德高尚的君子相處，平淡清徹宛如泉水，長久而真誠；為圖私利的小人交往，甜膩如蜜酒，卻往往難以長久。", "君子：有道德涵養的人。淡：清淡自然。小人：自私圖利之人。醴：甜美甘醇的甜酒。", "真摯純淨的友誼重在靈魂相知，而非利益交換。"], ["外表像金子美玉般華麗奪目，裡面卻只是一堆破爛腐朽的舊棉絮。", "金玉：珍寶美玉。其外：外表。敗絮：破舊腐爛的棉絮。其中：內在。", "告誡我們不要只圖外表光鮮亮麗，充實內在的真才實學與美德才最珍貴。"], ["對待他人要拿出真誠坦白的心，處理事情要專注投入全力以赴，看待競爭的成功或失敗要保持平和淡然的平常心。", "誠心：不欺瞞、真摯。用心：專注細緻。平常心：不被得失榮辱擾亂心情。", "掌握這三顆心，能讓你在人際、學業與生活中行穩致遠、從容自在。"], ["哪怕只是一碗稀粥、一口米飯，都應當想到它們得來絕非容易；哪怕只是半根絲線、半截衣縷，也應當常記物資背後辛勤勞作的艱難。", "當思：應當思索。不易：不簡單。恆念：常常記掛。物力維艱：物品凝聚的辛勞非常艱難。", "懂得珍惜食物、敬畏勞動，是立身處世最重要的美德。"], ["經典好書讀上一百遍也不會令人厭倦，只要反覆精讀並深入思考，其中的微言大義你自然而然就能領悟通曉。", "舊書：經過歲月沉澱的好書、經典。厭：厭倦。深思：深入思考。子：你。自知：自然明白悟懂。", "讀書貴在精讀與思考，而非走馬看花。"], ["一旦走錯了關鍵的一步，就會造成難以挽回的終生遺憾；等想要回頭重新來過時，一生早已虛度過去了。", "失足：腳步踩空跌倒，比喻犯下重大過錯。千古恨：永遠的悔恨。百年身：人的一生。", "提醒我們處事必須審慎清醒，每一步都要走得踏實正直。"], ["工匠想要把手頭的工作做好，必須先磨礪、整備精良鋒利的工具。", "工：工匠。欲：想要。善：完善、做好。利：磨礪鋒利。器：工具器具。", "無論做任何事，事前做好充分的準備與工具學習，才能事半功倍。"], ["自滿自大往往招致損害與挫敗，虛心謙遜才能獲得長足的進益與福祉。", "滿：驕傲自滿。損：虧損傷害。謙：謙虛不居。益：好處與收穫。", "山因卑而增其高，海因下而聚眾流；時刻保持謙遜，才能持續進步。"], ["鳥巢被傾覆打翻了，巢裡面怎麼可能還有完整不碎的鳥蛋呢？", "覆：翻轉傾倒。巢：鳥窩。完：完好無缺。卵：蛋。", "個體與群體命運休戚與共；國家家庭若遭逢大難，個人也難以獨善其身。"], ["說話滔滔不絕不如話語簡練切題，說得少又不如把話說得得體、溫暖而動聽。", "話少：言語簡潔。話好：言語得體、真誠而富有智慧。", "說話要講究分寸與智慧，多說無益之詞，不如一句切中要害、溫暖人心的良言。"], ["如果說書籍堆疊如高聳入雲的大山，勤奮努力就是唯一能登頂的路徑；如果說學問浩瀚無涯宛如汪洋大海，刻苦求知就是能渡向彼岸的扁舟。", "徑：小路捷徑。無涯：沒有邊際。苦：刻苦用功。舟：渡水之船。", "在漫長求學之路上沒有捷徑可走，唯有勤奮刻苦才能通向真知。"], ["心境悲觀消極的人，縱然活著心靈也像枯槁死去一般；積極樂觀豁達的人，其精神始終蓬勃年輕、永不衰老。", "雖生猶死：雖然活著卻如死去般無光彩。永生不老：精神常青、充滿朝氣。", "心態決定人生的色彩，用樂觀的心情面對歲月，心靈永遠繁花盛開。"], ["抬頭仰望蒼天時沒有絲毫慚愧，低頭面向大地時沒有半分羞慚。", "仰：抬頭向上看。愧：慚愧。俯：低下頭。怍：內疚羞恥。", "只要為人處世行得正、坐得端，內心就坦坦蕩蕩、無所畏懼。"], ["如果不願意付出心血與汗水就能得到的東西，世上恐怕只有貧困與匱乏罷了。", "費：花費消耗。勞力：勞動努力。唯：只有。貧困：貧乏窘困。", "一切美好的果實都需要靠自己的雙手去耕耘創造，天下沒有不勞而獲的事。"], ["只要博覽群書、融會貫通達到上萬卷，在動筆寫作時就能文思泉湧、神采飛揚。", "破：讀透讀通。萬卷：極言藏書之多。下筆：動筆行文。有神：如同神助、絕妙流暢。", "厚積才能薄發，日積月累的閱讀積累是卓越文采的堅實基石。"], ["用善良和悅的態度對待他人，彼此就能像親兄弟般和睦融洽；用凶惡暴戾的態度對待他人，其危害將比刀槍相向的戰爭還要深重。", "善氣：和善誠懇的神色。迎人：接待對待他人。惡氣：凶狠暴躁的神態。干戈：古代兵器，比喻衝突與戰事。", "待人接物常懷善意與微笑，是化解一切矛盾的最好良藥。"], ["裝得滿滿的瓶子搖晃時沉穩安靜、毫無聲響，只裝了半瓶的水搖晃起來反而叮咚作響。", "整瓶水：比喻學識淵博、修養深厚之人。半瓶水：比喻一知半解卻四處炫耀之人。響：吵鬧發出聲音。", "真正有真才實學的人總是謙虛沉穩，淺薄虛妄的人反而四處張揚喧嘩。"], ["人在一生中面臨最嚴峻的對手與阻礙，往往不是外在的他人，而是自己內心的懶惰、恐懼與驕傲。", "敵人：競爭對手、障礙。自己：指自身的弱點、惰性與私心。", "戰勝自己的軟弱與怠惰，你就能戰勝世間的一切困難。"], ["如果是自己不願意承受或不喜歡的事情，就千萬不要強加在別人身上。", "己：自己。不欲：不願意、不喜悅。勿：不要。施：加諸、給予。", "設身處地為他人著想，是同理心與仁德大智慧的根本起點。"], ["拿銅鏡當鏡子，可以整理整飭衣帽冠裳；拿他人當鏡子對照自己，可以清楚看見自己的優缺點與成敗得失。", "銅為鏡：古代青銅打磨的鏡子。正：整理端正。衣冠：衣服帽子。以人為鏡：以別人的言行為借鑑。明：看清看懂。", "善於聆聽他人的建言並以此反躬自省，是成就不凡事業的關鍵。"], ["一寸短暫的光陰就像一寸黃金那樣珍貴無比，而就算擁有無盡的黃金，也難以買回逝去的一剎那光陰。", "光陰：時光、時間。寸金：極言黃金之貴重。難買：無法購回。", "時間如流水一去不復返，必須牢牢把握每一個當下，勤奮向上、不負韶華。"]];
+const QUOTES_M = ["001122", "00112", "001122", "00112", "001122", "001122", "0011", "0011", "00112", "00112", "0011", "00112", "00112", "00112", "00112", "0011", "0011", "00111", "0011", "0011", "00112", "00112", "0011", "0011", "00112", "0011", "0011", "00112", "00112", "00112"];
+
+let LS = [], elems = [], nl = 0;
+const poemEl = document.getElementById('poem');
+const chapterNav = document.getElementById('chapter-nav');
+
+// 切換 詩詞 / 名言 模組
+function switchMode(mode) {
+  stopSpeak();
+  curMode = mode;
+  document.getElementById('tab-poem').classList.toggle('active', mode === 'poem');
+  document.getElementById('tab-quote').classList.toggle('active', mode === 'quote');
+  document.getElementById('seal-mark').textContent = mode === 'poem' ? '詩' : '言';
+  document.getElementById('month-filters').style.display = mode === 'quote' ? 'inline-flex' : 'none';
+  setSemesterFilter('all');
+  pick(0);
+}
+
+// 學期過濾
+function setSemesterFilter(sem) {
+  curSem = sem;
+  document.querySelectorAll('#sem-filters .filter-btn').forEach((b, i) => {
+    b.classList.toggle('active', sem === 'all' ? i === 0 : (sem === 0 ? i === 1 : i === 2));
+  });
+  renderNav();
+}
+
+// 學月過濾 (名言專屬)
+function setMonthFilter(month) {
+  curMonth = month;
+  document.querySelectorAll('#month-filters .filter-btn').forEach((b, i) => {
+    b.classList.toggle('active', month === 'all' ? i === 0 : (+month === i));
+  });
+  renderNav();
+}
+
+function quoteInfo(idx) {
+  const sem = idx < 15 ? 0 : 1;
+  const local = idx % 15;
+  const month = Math.floor(local / 5) + 1;
+  const num = (local % 5) + 1;
+  return { sem, month, num };
+}
+
+// 生成導覽目錄
+function renderNav() {
+  chapterNav.innerHTML = '';
+  const list = curMode === 'poem' ? P : QUOTES_P;
+  list.forEach((item, idx) => {
+    if (curMode === 'poem') {
+      const sem = idx < 12 ? 0 : 1;
+      if (curSem !== 'all' && curSem !== sem) return;
+    } else {
+      const q = quoteInfo(idx);
+      if (curSem !== 'all' && curSem !== q.sem) return;
+      if (curMonth !== 'all' && curMonth !== q.month) return;
+    }
+    const btn = document.createElement('button');
+    btn.className = 'chap-btn' + (idx === cur ? ' active' : '');
+    const num = curMode === 'poem' ? (idx % 12 + 1) : `${quoteInfo(idx).month}月(${quoteInfo(idx).num})`;
+    btn.textContent = `${num}. ${item[0]}`;
+    btn.onclick = () => pick(idx);
+    chapterNav.appendChild(btn);
+  });
+}
+
+// 挑選並載入某首 (詩/名句)
+function pick(idx) {
+  stopSpeak();
+  const list = curMode === 'poem' ? P : QUOTES_P;
+  cur = (idx + list.length) % list.length;
+  t0 = null;
+  
+  // 更新導覽高亮
+  document.querySelectorAll('.chap-btn').forEach((b, k) => {
+    b.classList.toggle('active', b.textContent.includes(list[cur][0]));
+  });
+
+  // 渲染右側直排書法文字 (徹底純淨，無注音，保證全詩完整呈現)
+  const item = list[cur];
+  let poemHtml = `<h2>${item[0]}</h2><small>${item[1]}</small>`;
+  
+  if (curMode === 'poem') {
+    const sents = item[2].match(/[^，。；？！]+[，。；？！]/g) || [item[2]];
+    poemHtml += sents.map((s, k) => `<p data-idx="${k}">${s}</p>`).join('');
+  } else {
+    // 名言佳句
+    poemHtml += `<p data-idx="0">${item[2]}</p>`;
+  }
+
+  poemEl.innerHTML = poemHtml;
+
+  // 場景組件準備
+  setup();
+  renderEx();
+  
+  if (window._started && document.getElementById('au').checked) {
+    setTimeout(speak, 250);
+  }
+}
+
+function setup() {
+  const ps = [...poemEl.querySelectorAll('p')];
+  nl = ps.length;
+  LS = ps.map((_, k) => 1 + k * 3.5);
+  const list = curMode === 'poem' ? P : QUOTES_P;
+  const mList = curMode === 'poem' ? M : QUOTES_M;
+  const xList = curMode === 'poem' ? (X[cur] || []) : [];
+  
+  elems = [...list[cur][4], ...xList].map((e, i) => ({
+    e,
+    l: Math.min(+(mList[cur] && mList[cur][i]) || 0, nl - 1)
+  }));
+
+  ps.forEach((e, k) => {
+    e.onclick = () => {
+      unlockAudio();
+      playSentence(k);
+    };
+  });
+}
+
+// 格式化小小字詞：每個字詞獨立分行
+function formatVocab(str) {
+  if (!str) return '';
+  const parts = str.split(/。/).map(s => s.trim()).filter(Boolean);
+  return parts.map(p => {
+    const m = p.match(/^([^：:]+)[：:](.+)$/);
+    if (m) {
+      return `<div class="vocab-row"><span class="vocab-word">${m[1]}</span><span class="vocab-colon">：</span><span class="vocab-meaning">${m[2]}。</span></div>`;
+    }
+    return `<div class="vocab-row">${p}。</div>`;
+  }).join('');
+}
+
+// 渲染賞析解說
+function renderEx() {
+  const ex = curMode === 'poem' ? EX[cur] : QUOTES_EX[cur];
+  const b = document.getElementById('ex-body');
+  if (!ex || !b) return;
+  b.innerHTML = `
+    <div class="ex-card"><div class="ex-card-title">🗣 白話說一說</div>${ex[0]}</div>
+    <div class="ex-card"><div class="ex-card-title">🔤 小小字詞／典故出處</div><div class="vocab-list">${formatVocab(ex[1])}</div></div>
+    <div class="ex-card"><div class="ex-card-title">⭐ 生活領悟／記住這句</div>${ex[2]}</div>
+  `;
+}
+
+// ===== 宣紙底紋與畫布主循環 =====
 const L=(a,b,t)=>Math.round(a+(b-a)*t);
 const mk=(w,h,f)=>{const o=document.createElement('canvas');o.width=w;o.height=h;f(o.getContext('2d'));return o};
 // 宣紙纖維與紙面顆粒（只畫一次）
@@ -279,200 +1619,3090 @@ const FOG=[fogT('250,245,232'),fogT('150,168,205')];
 const fogL=(y,sp,off,al)=>{const F=FOG[N?1:0],fx=-((T*sp+off)%1400);c.globalAlpha=al*Math.min(1,T/3);c.drawImage(F,fx,y,1400,220);c.drawImage(F,fx+1400,y,1400,220)};
 // 墨暈：這些元素邊緣加柔和暈開
 const SH=new Set(['hs','kd','pp','pv','fg','bo','wl','br','cp','sa','wv','bk']);
-function frame(ts){requestAnimationFrame(frame);try{frame_(ts)}catch(e){err(e)}}
-function frame_(ts){if(t0===null)t0=ts;T=(ts-t0)/1000;const p=P[cur];mix=p[3]==2?Math.min(Math.max((T-(LS[3]??1e9))/8,0),1):0;N=p[3]==1||(p[3]==2&&mix<.55)?1:0;
-const z=1+Math.min(T,30)*.0012;c.setTransform(1.5*z,0,0,1.5*z,-(z-1)*750,-(z-1)*450);c.lineCap='round';c.globalAlpha=1;let g=c.createLinearGradient(0,0,0,600);
-if(p[3]==2){g.addColorStop(0,`rgb(${L(15,238,mix)},${L(20,205,mix)},${L(36,165,mix)})`);g.addColorStop(1,`rgb(${L(42,245,mix)},${L(53,225,mix)},${L(80,190,mix)})`)}
-else if(N){g.addColorStop(0,'#0f1424');g.addColorStop(1,'#2b3654')}else{g.addColorStop(0,'#f3ede0');g.addColorStop(1,'#ddd3bb')}
-c.fillStyle=g;c.fillRect(0,0,1000,600);
-for(const {e,l} of elems){const [n,d,...a]=e;Q=T-(LS[l]+d*.25);if(!(Q>0))continue;R=Math.min(1,Q/1.6);R=R*R*(3-2*R);c.save();try{c.globalAlpha=Math.min(1,R*2);if(SH.has(n)){c.shadowColor=I(.4);c.shadowBlur=7}E[n](...a)}catch(e){err(e)}c.restore()}
-c.setTransform(1.5,0,0,1.5,0,0);fogL(330,5,0,.55);fogL(410,9,500,.4);
-c.globalAlpha=N?.9:1;c.drawImage(VIG,0,0,1000,600);c.globalAlpha=N?.5:1;c.drawImage(PAP,0,0,1000,600);
-c.globalAlpha=1;c.save();c.translate(958,558);c.rotate(-.05);c.fillStyle='#b03026';c.fillRect(-18,-18,36,36);c.strokeStyle='rgba(244,238,224,.6)';c.lineWidth=1.2;c.strokeRect(-15,-15,30,30);c.fillStyle='#f4eee0';c.font='bold 22px "Noto Serif TC",serif';c.textAlign='center';c.fillText('詩',0,8);c.restore()}
-// ===== 語音 =====
-const SS=window.speechSynthesis;let voice=null,sid=0;
-const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-const INAPP=/Line\/|FBAN|FBAV|Instagram|MicroMessenger|Messenger/i.test(navigator.userAgent);
-let audioCtx=null;
-function unlockAudio(){
-  if(!audioCtx){try{const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}catch(e){}}
-  if(audioCtx&&audioCtx.state==='suspended'){try{audioCtx.resume()}catch(e){}}
-  if(SS&&SS.paused){try{SS.resume()}catch(e){}}
+
+
+function frame(ts) {
+  requestAnimationFrame(frame);
+  try { frame_(ts); } catch (e) { err(e); }
 }
-['touchstart','touchend','pointerup','click'].forEach(t=>addEventListener(t,unlockAudio,{passive:true,capture:true}));
-// ===== 預生成語音引擎（mp3 + timings.json，iPad Safari 可用）=====
-const AU_READ=new Audio(),AU_EX=new Audio();AU_READ.preload='auto';AU_EX.preload='auto';
-let TIM=null,playKey=null,playMode=null,playEndAt=Infinity,playTimer=0;
-const GEN_RATE=.8;
-function curRate(){return +document.getElementById('rt').value}
-function applyRate(){const r=curRate()/GEN_RATE;try{AU_READ.playbackRate=r;AU_EX.playbackRate=r}catch(e){}}
-try{document.getElementById('rt').addEventListener('change',applyRate)}catch(e){}
-fetch('timings.json').then(r=>r.json()).then(j=>{TIM=j;voiceHint();preloadPoem(cur)}).catch(e=>{dbgM=' ｜語音：timings.json 載入失敗，改用即時語音';dbgR()});
-function timPoem(i){if(!TIM)return null;return TIM[i]||null}
-function activeIdx(entries,t){for(let k=0;k<entries.length;k++){if(t>=entries[k].start&&t<entries[k].end)return k}return -1}
-function paintRead(sentIdx){const ps=[...poem.querySelectorAll('p')];ps.forEach((x,i)=>{if(i===sentIdx){x.style.animation='f 1s forwards';x.style.opacity=1;x.style.background='rgba(176,48,38,.18)';if(LS[i]===Infinity||T-LS[i]>30)LS[i]=T}else if(playMode!=='single'||true){if(i!==sentIdx)x.style.background=''}})}
-function paintEx(pIdx){document.querySelectorAll('#ex p.s').forEach((x,i)=>x.style.background=i===pIdx?'rgba(176,48,38,.15)':'')}
-function stopAudioOnly(){try{AU_READ.pause()}catch(e){}try{AU_EX.pause()}catch(e){}playKey=null;playMode=null;playEndAt=Infinity;clearTimeout(playTimer)}
-function preloadPoem(i){if(!TIM)return;const t=timPoem(i);if(!t)return;applyRate();try{if(!AU_READ.src||!AU_READ.src.includes(t.files.read)){const a=document.createElement('link');a.rel='preload';a.as='audio';a.href=t.files.read;document.head.appendChild(a)}}catch(e){}const nx=timPoem((i+1)%P.length);try{if(nx){const l=document.createElement('link');l.rel='prefetch';l.as='audio';l.href=nx.files.read;document.head.appendChild(l)}}catch(e){}}
-setInterval(()=>{if(!playMode)return;const au=playMode.startsWith('ex')?AU_EX:AU_READ;if(au.paused)return;const t=au.currentTime;if(t>=playEndAt){stopAudioOnly();stopSpeakPaint();return}const tp=timPoem(cur);if(!tp)return;if(playMode==='readFull'||playMode==='single'){const en=tp.read;const k=activeIdx(en,t);if(k>=1)paintRead(k-1);if(playMode==='single'&&k>=0&&t>=en[k].end){stopAudioOnly();setTimeout(()=>stopSpeakPaint(),150)}}else if(playMode==='exFull'){const en=tp.explain;const k=activeIdx(en,t);if(k>=0)paintEx(k)}},120);
-function stopSpeakPaint(){const ps=[...poem.querySelectorAll('p')];LS=LS.map(v=>isFinite(v)?v:T);ps.forEach(e=>{e.style.background='';if(e.style.opacity==='0')e.style.animation='f .5s forwards'});exStop();const b=document.getElementById('exs');if(b)b.textContent='🔊 聽解說'}
-function voiceHint(){
-  const el=document.getElementById('vn');if(!el)return;
-  if(INAPP){el.textContent='（⚠️ 請用 Safari 開啟才有聲音）';el.style.color='#b03026'}
-  else if(TIM){el.textContent='預生成語音（48 mp3・美佳）｜ iPad 可播 ｜ 側邊靜音撥桿需關閉'}
-  else if(IOS){el.textContent=(voice?'語音：'+voice.name:'（iOS 中文語音）')+' ｜ 側邊靜音撥桿需關閉'}
-  else{el.textContent=voice?'語音：'+voice.name:'（此瀏覽器找不到中文語音）'}
+
+function frame_(ts) {
+  if (t0 === null) t0 = ts;
+  T = (ts - t0) / 1000;
+  const list = curMode === 'poem' ? P : QUOTES_P;
+  const p = list[cur];
+  mix = p[3] == 2 ? Math.min(Math.max((T - (LS[3] ?? 1e9)) / 8, 0), 1) : 0;
+  N = p[3] == 1 || (p[3] == 2 && mix < .55) ? 1 : 0;
+
+  const z = 1 + Math.min(T, 30) * .0012;
+  c.setTransform(1.5 * z, 0, 0, 1.5 * z, -(z - 1) * 750, -(z - 1) * 450);
+  c.lineCap = 'round';
+  c.globalAlpha = 1;
+
+  let g = c.createLinearGradient(0, 0, 0, 600);
+  if (p[3] == 2) {
+    g.addColorStop(0, `rgb(${L(15,238,mix)},${L(20,205,mix)},${L(36,165,mix)})`);
+    g.addColorStop(1, `rgb(${L(42,245,mix)},${L(53,225,mix)},${L(80,190,mix)})`);
+  } else if (N) {
+    g.addColorStop(0, '#0f1424');
+    g.addColorStop(1, '#2b3654');
+  } else {
+    g.addColorStop(0, '#f4eee0');
+    g.addColorStop(1, '#ddd3bb');
+  }
+  c.fillStyle = g;
+  c.fillRect(0, 0, 1000, 600);
+
+  // 繪製各層水墨元素
+  for (const { e, l } of elems) {
+    const [n, d, ...a] = e;
+    Q = T - (LS[l] + d * .25);
+    if (!(Q > 0)) continue;
+    R = Math.min(1, Q / 1.6);
+    R = R * R * (3 - 2 * R);
+    c.save();
+    try {
+      c.globalAlpha = Math.min(1, R * 2);
+      if (SH.has(n)) {
+        c.shadowColor = I(.4);
+        c.shadowBlur = 7;
+      }
+      if (E[n]) E[n](...a);
+    } catch (e) { err(e); }
+    c.restore();
+  }
+
+  // 宣紙纖維、雲煙霧氣與四角墨暈貼合
+  c.setTransform(1.5, 0, 0, 1.5, 0, 0);
+  fogL(330, 5, 0, .55);
+  fogL(410, 9, 500, .4);
+  c.globalAlpha = N ? .9 : 1;
+  c.drawImage(VIG, 0, 0, 1000, 600);
+  c.globalAlpha = N ? .5 : 1;
+  c.drawImage(PAP, 0, 0, 1000, 600);
+
+  // 右下鈐印 (詩 / 言)
+  c.globalAlpha = 1;
+  c.save();
+  c.translate(958, 558);
+  c.rotate(-.05);
+  c.fillStyle = '#b03026';
+  c.fillRect(-18, -18, 36, 36);
+  c.strokeStyle = 'rgba(244,238,224,.6)';
+  c.lineWidth = 1.2;
+  c.strokeRect(-15, -15, 30, 30);
+  c.fillStyle = '#f4eee0';
+  c.font = 'bold 22px "Noto Serif TC", serif';
+  c.textAlign = 'center';
+  c.fillText(curMode === 'poem' ? '詩' : '言', 0, 8);
+  c.restore();
 }
-function findVoice(){
-  if(!SS)return;const v=SS.getVoices()||[];
-  voice=v.find(x=>/zh[-_]TW/i.test(x.lang))||v.find(x=>/zh[-_]HK/i.test(x.lang))||v.find(x=>/zh[-_]CN/i.test(x.lang))||v.find(x=>/^zh/i.test(x.lang))||null;
+
+// ===== 雙軌語音播放引擎 =====
+const SS = window.speechSynthesis;
+let voice = null, sid = 0;
+let audioCtx = null;
+
+function unlockAudio() {
+  if (!audioCtx) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch (e) {}
+  }
+  if (SS && SS.paused) {
+    try { SS.resume(); } catch (e) {}
+  }
+}
+['touchstart','touchend','pointerup','click'].forEach(t => addEventListener(t, unlockAudio, { passive: true, capture: true }));
+
+const AU_READ = new Audio(), AU_EX = new Audio();
+let TIM = {
+ "poems": [
+  {
+   "id": 0,
+   "prefix": "00",
+   "title": "回鄉偶書",
+   "read": [
+    {
+     "text": "回鄉偶書，唐，賀知章",
+     "start": 0.0,
+     "end": 3.05
+    },
+    {
+     "text": "少小離家老大回，",
+     "start": 3.4,
+     "end": 5.58
+    },
+    {
+     "text": "鄉音無改鬢毛催。",
+     "start": 5.93,
+     "end": 8.19
+    },
+    {
+     "text": "兒童相見不相識，",
+     "start": 8.54,
+     "end": 10.79
+    },
+    {
+     "text": "笑問客從何處來。",
+     "start": 11.14,
+     "end": 13.38
+    }
+   ],
+   "read_total": 13.38,
+   "explain": [
+    {
+     "text": "賀知章年輕時就離開了家鄉，到很老才回來。他說話還是老家的口音，耳邊的頭髮卻變得稀疏了。村裡的小孩看到他，都不認識，還笑著問：「客人，您從哪裡來呀？」",
+     "start": 0.0,
+     "end": 15.67
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「鄉音」的意思是家鄉的口音。「鬢毛」的意思是耳朵旁邊的頭髮。",
+     "start": 16.12,
+     "end": 25.6
+    },
+    {
+     "text": "簡單來說，回到家鄉，家鄉的人卻把他當成客人，心裡又高興又心酸。",
+     "start": 26.05,
+     "end": 32.96
+    }
+   ],
+   "explain_total": 32.96,
+   "files": {
+    "read": "audio/00_read.mp3",
+    "explain": "audio/00_explain.mp3"
+   }
+  },
+  {
+   "id": 1,
+   "prefix": "01",
+   "title": "楓橋夜泊",
+   "read": [
+    {
+     "text": "楓橋夜泊，唐，張繼",
+     "start": 0.0,
+     "end": 2.93
+    },
+    {
+     "text": "月落烏啼霜滿天，",
+     "start": 3.28,
+     "end": 5.46
+    },
+    {
+     "text": "江楓漁火對愁眠。",
+     "start": 5.81,
+     "end": 8.04
+    },
+    {
+     "text": "姑蘇城外寒山寺，",
+     "start": 8.39,
+     "end": 10.6
+    },
+    {
+     "text": "夜半鐘聲到客船。",
+     "start": 10.95,
+     "end": 13.23
+    }
+   ],
+   "read_total": 13.23,
+   "explain": [
+    {
+     "text": "月亮落下去了，烏鴉在樹上啼叫，天空好像飄著霜。江邊的楓樹和漁船的燈火，陪著睡不著的我。蘇州城外的寒山寺，半夜的鐘聲傳到了我的船上。",
+     "start": 0.0,
+     "end": 14.59
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「夜泊」的意思是晚上把船停在岸邊。「江楓」的意思是江邊的楓樹。",
+     "start": 15.04,
+     "end": 24.69
+    },
+    {
+     "text": "簡單來說，旅途中的夜晚好安靜，鐘聲讓心裡的愁更深了。",
+     "start": 25.14,
+     "end": 30.85
+    }
+   ],
+   "explain_total": 30.85,
+   "files": {
+    "read": "audio/01_read.mp3",
+    "explain": "audio/01_explain.mp3"
+   }
+  },
+  {
+   "id": 2,
+   "prefix": "02",
+   "title": "秋夕",
+   "read": [
+    {
+     "text": "秋夕，唐，杜牧",
+     "start": 0.0,
+     "end": 2.4
+    },
+    {
+     "text": "銀燭秋光冷畫屏，",
+     "start": 2.75,
+     "end": 5.05
+    },
+    {
+     "text": "輕羅小扇撲流螢。",
+     "start": 5.4,
+     "end": 7.71
+    },
+    {
+     "text": "天階夜色涼如水，",
+     "start": 8.06,
+     "end": 10.36
+    },
+    {
+     "text": "臥看牽牛織女星。",
+     "start": 10.71,
+     "end": 12.9
+    }
+   ],
+   "read_total": 12.9,
+   "explain": [
+    {
+     "text": "秋天的夜裡，銀白的蠟燭照著畫屏，光看起來冷冷的。宮女拿著小扇子，撲打飛來飛去的螢火蟲。夜色涼得像水，她躺在石階上，望著天上的牽牛星和織女星。",
+     "start": 0.0,
+     "end": 15.58
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「銀燭」的意思是銀白色的蠟燭。「輕羅小扇」的意思是用薄絲做的小圓扇。",
+     "start": 16.03,
+     "end": 26.32
+    },
+    {
+     "text": "簡單來說，宮女好寂寞，只能看著星星想心事。",
+     "start": 26.77,
+     "end": 31.5
+    }
+   ],
+   "explain_total": 31.5,
+   "files": {
+    "read": "audio/02_read.mp3",
+    "explain": "audio/02_explain.mp3"
+   }
+  },
+  {
+   "id": 3,
+   "prefix": "03",
+   "title": "九月九日憶山東兄弟",
+   "read": [
+    {
+     "text": "九月九日憶山東兄弟，唐，王維",
+     "start": 0.0,
+     "end": 3.91
+    },
+    {
+     "text": "獨在異鄉為異客，",
+     "start": 4.26,
+     "end": 6.33
+    },
+    {
+     "text": "每逢佳節倍思親。",
+     "start": 6.68,
+     "end": 8.96
+    },
+    {
+     "text": "遙知兄弟登高處，",
+     "start": 9.31,
+     "end": 11.49
+    },
+    {
+     "text": "遍插茱萸少一人。",
+     "start": 11.84,
+     "end": 14.05
+    }
+   ],
+   "read_total": 14.05,
+   "explain": [
+    {
+     "text": "我一個人住在別的地方，每到節日就更想念家人。我知道哥哥弟弟們正在爬高山，大家頭上都插著茱萸，卻少了我一個人。",
+     "start": 0.0,
+     "end": 11.18
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「倍」的意思是更加。「茱萸」的意思是一種有香氣的植物，重陽節那天，人們會帶著它登高。",
+     "start": 11.63,
+     "end": 23.49
+    },
+    {
+     "text": "簡單來說，家人團聚時少了自己，思念就更深了。",
+     "start": 23.94,
+     "end": 29.0
+    }
+   ],
+   "explain_total": 29.0,
+   "files": {
+    "read": "audio/03_read.mp3",
+    "explain": "audio/03_explain.mp3"
+   }
+  },
+  {
+   "id": 4,
+   "prefix": "04",
+   "title": "偶成",
+   "read": [
+    {
+     "text": "偶成，宋，朱熹",
+     "start": 0.0,
+     "end": 2.5
+    },
+    {
+     "text": "少年易老學難成，",
+     "start": 2.85,
+     "end": 5.1
+    },
+    {
+     "text": "一寸光陰不可輕。",
+     "start": 5.45,
+     "end": 7.64
+    },
+    {
+     "text": "未覺池塘春草夢，",
+     "start": 7.99,
+     "end": 10.29
+    },
+    {
+     "text": "階前梧葉已秋聲。",
+     "start": 10.64,
+     "end": 12.85
+    }
+   ],
+   "read_total": 12.85,
+   "explain": [
+    {
+     "text": "少年很容易變老，學問卻很難學成，所以連一寸的時間都不能隨便浪費。池塘邊的春草夢還沒醒，台階前的梧桐葉已經沙沙作響，秋天又到了。",
+     "start": 0.0,
+     "end": 13.94
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「輕」的意思是看輕。「春草夢」的意思是春天的美夢。",
+     "start": 14.39,
+     "end": 22.96
+    },
+    {
+     "text": "簡單來說，時間過得很快，要趁年輕好好讀書。",
+     "start": 23.41,
+     "end": 28.24
+    }
+   ],
+   "explain_total": 28.24,
+   "files": {
+    "read": "audio/04_read.mp3",
+    "explain": "audio/04_explain.mp3"
+   }
+  },
+  {
+   "id": 5,
+   "prefix": "05",
+   "title": "送孟浩然之廣陵",
+   "read": [
+    {
+     "text": "送孟浩然之廣陵，唐，李白",
+     "start": 0.0,
+     "end": 3.41
+    },
+    {
+     "text": "故人西辭黃鶴樓，",
+     "start": 3.76,
+     "end": 5.87
+    },
+    {
+     "text": "煙花三月下揚州。",
+     "start": 6.22,
+     "end": 8.48
+    },
+    {
+     "text": "孤帆遠影碧山盡，",
+     "start": 8.83,
+     "end": 11.03
+    },
+    {
+     "text": "惟見長江天際流。",
+     "start": 11.38,
+     "end": 13.69
+    }
+   ],
+   "read_total": 13.69,
+   "explain": [
+    {
+     "text": "老朋友在黃鶴樓向我告別，在花開得像煙霧的三月，坐船往揚州去。那一片孤單的帆影越走越遠，消失在藍天的盡頭，只剩長江的水一直流向天邊。",
+     "start": 0.0,
+     "end": 14.26
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「故人」的意思是老朋友。「煙花」的意思是形容春天的花開得像一片煙霧。「惟」的意思是只。",
+     "start": 14.71,
+     "end": 26.49
+    },
+    {
+     "text": "簡單來說，李白一直望著船走遠，捨不得朋友離開。",
+     "start": 26.94,
+     "end": 32.08
+    }
+   ],
+   "explain_total": 32.08,
+   "files": {
+    "read": "audio/05_read.mp3",
+    "explain": "audio/05_explain.mp3"
+   }
+  },
+  {
+   "id": 6,
+   "prefix": "06",
+   "title": "出塞",
+   "read": [
+    {
+     "text": "出塞，唐，王昌齡",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "秦時明月漢時關，",
+     "start": 3.04,
+     "end": 5.27
+    },
+    {
+     "text": "萬里長征人未還。",
+     "start": 5.62,
+     "end": 7.8
+    },
+    {
+     "text": "但使龍城飛將在，",
+     "start": 8.15,
+     "end": 10.34
+    },
+    {
+     "text": "不教胡馬度陰山。",
+     "start": 10.69,
+     "end": 12.8
+    }
+   ],
+   "read_total": 12.8,
+   "explain": [
+    {
+     "text": "月亮和關口還是秦漢時代的樣子，可是去很遠的地方打仗的人，還沒有回來。要是名將李廣還在，就不會讓胡人的兵馬越過陰山。",
+     "start": 0.0,
+     "end": 11.88
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「塞」的意思是邊境上重要的地方。「還」的意思是回來。「不教」的意思是不讓。「度」的意思是越過。",
+     "start": 12.33,
+     "end": 24.88
+    },
+    {
+     "text": "簡單來說，作者想念出征的士兵，也希望有好將軍保護國家。",
+     "start": 25.33,
+     "end": 31.26
+    }
+   ],
+   "explain_total": 31.26,
+   "files": {
+    "read": "audio/06_read.mp3",
+    "explain": "audio/06_explain.mp3"
+   }
+  },
+  {
+   "id": 7,
+   "prefix": "07",
+   "title": "金縷衣",
+   "read": [
+    {
+     "text": "金縷衣，唐，杜秋娘",
+     "start": 0.0,
+     "end": 2.81
+    },
+    {
+     "text": "勸君莫惜金縷衣，",
+     "start": 3.16,
+     "end": 5.44
+    },
+    {
+     "text": "勸君惜取少年時。",
+     "start": 5.79,
+     "end": 8.16
+    },
+    {
+     "text": "花開堪折直須折，",
+     "start": 8.51,
+     "end": 10.79
+    },
+    {
+     "text": "莫待無花空折枝。",
+     "start": 11.14,
+     "end": 13.33
+    }
+   ],
+   "read_total": 13.33,
+   "explain": [
+    {
+     "text": "我勸你不要太愛惜華麗的衣服，要好好珍惜年輕的時光。花開得正美，就該摘下來，不要等到花謝了，才空著手去折枯枝。",
+     "start": 0.0,
+     "end": 11.69
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「金縷衣」的意思是繡著金線的漂亮衣服。「直須」的意思是儘管，不要猶豫。「莫待」的意思是不要等到。",
+     "start": 12.14,
+     "end": 24.91
+    },
+    {
+     "text": "簡單來說，時間不會等人，要趁現在把握好時光。",
+     "start": 25.36,
+     "end": 30.25
+    }
+   ],
+   "explain_total": 30.25,
+   "files": {
+    "read": "audio/07_read.mp3",
+    "explain": "audio/07_explain.mp3"
+   }
+  },
+  {
+   "id": 8,
+   "prefix": "08",
+   "title": "觀書有感",
+   "read": [
+    {
+     "text": "觀書有感，宋，朱熹",
+     "start": 0.0,
+     "end": 2.78
+    },
+    {
+     "text": "半畝方塘一鑑開，",
+     "start": 3.13,
+     "end": 5.22
+    },
+    {
+     "text": "天光雲影共徘徊。",
+     "start": 5.57,
+     "end": 7.83
+    },
+    {
+     "text": "問渠哪得清如許？",
+     "start": 8.18,
+     "end": 10.36
+    },
+    {
+     "text": "為有源頭活水來。",
+     "start": 10.71,
+     "end": 12.82
+    }
+   ],
+   "read_total": 12.82,
+   "explain": [
+    {
+     "text": "半畝大的方形池塘，像一面打開的鏡子，天光和雲的影子在水裡來回移動。為什麼池水這麼清澈？因為源頭有活水不停流進來。",
+     "start": 0.0,
+     "end": 12.89
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「方塘」的意思是一方水池。「鑑」的意思是鏡子。",
+     "start": 13.34,
+     "end": 21.38
+    },
+    {
+     "text": "簡單來說，常常學新東西，心裡才會像池水一樣清清亮亮。",
+     "start": 21.83,
+     "end": 27.88
+    }
+   ],
+   "explain_total": 27.88,
+   "files": {
+    "read": "audio/08_read.mp3",
+    "explain": "audio/08_explain.mp3"
+   }
+  },
+  {
+   "id": 9,
+   "prefix": "09",
+   "title": "涼州詞",
+   "read": [
+    {
+     "text": "涼州詞，唐，王翰",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "葡萄美酒夜光杯，",
+     "start": 3.04,
+     "end": 5.17
+    },
+    {
+     "text": "欲飲琵琶馬上催。",
+     "start": 5.52,
+     "end": 7.71
+    },
+    {
+     "text": "醉臥沙場君莫笑，",
+     "start": 8.06,
+     "end": 10.29
+    },
+    {
+     "text": "古來征戰幾人回？",
+     "start": 10.64,
+     "end": 12.8
+    }
+   ],
+   "read_total": 12.8,
+   "explain": [
+    {
+     "text": "用葡萄釀的好酒，倒進夜光杯裡。正想喝的時候，琵琶聲響起，催大家出發了。就算醉倒在沙場上，請你別笑我。從古到今，打仗的人有幾個能平安回家呢？",
+     "start": 0.0,
+     "end": 15.77
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「夜光杯」的意思是用白玉做的酒杯。「催」的意思是催促。「沙場」的意思是戰場。",
+     "start": 16.22,
+     "end": 27.4
+    },
+    {
+     "text": "簡單來說，士兵一邊喝酒，一邊想著打仗的辛苦，有點無奈，也有點豪氣。",
+     "start": 27.85,
+     "end": 35.0
+    }
+   ],
+   "explain_total": 35.0,
+   "files": {
+    "read": "audio/09_read.mp3",
+    "explain": "audio/09_explain.mp3"
+   }
+  },
+  {
+   "id": 10,
+   "prefix": "10",
+   "title": "桃花谿",
+   "read": [
+    {
+     "text": "桃花谿，唐，張旭",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "隱隱飛橋隔野煙，",
+     "start": 2.99,
+     "end": 5.25
+    },
+    {
+     "text": "石磯西畔問漁船。",
+     "start": 5.6,
+     "end": 7.85
+    },
+    {
+     "text": "桃花盡日隨流水，",
+     "start": 8.2,
+     "end": 10.43
+    },
+    {
+     "text": "洞在清谿何處邊？",
+     "start": 10.78,
+     "end": 13.02
+    }
+   ],
+   "read_total": 13.02,
+   "explain": [
+    {
+     "text": "遠遠看到一座高橋，被山野間的煙霧遮住了。我在河邊的石堆旁，向漁船上的人問路。桃花整天跟著流水漂走，桃花源的洞口，到底在清澈溪水的哪一邊呢？",
+     "start": 0.0,
+     "end": 14.59
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「飛橋」的意思是很高的橋。「石磯」的意思是河裡露出水面的石堆。",
+     "start": 15.04,
+     "end": 24.81
+    },
+    {
+     "text": "簡單來說，作者想找到像仙境一樣的桃花源。",
+     "start": 25.26,
+     "end": 29.75
+    }
+   ],
+   "explain_total": 29.75,
+   "files": {
+    "read": "audio/10_read.mp3",
+    "explain": "audio/10_explain.mp3"
+   }
+  },
+  {
+   "id": 11,
+   "prefix": "11",
+   "title": "遊子吟",
+   "read": [
+    {
+     "text": "遊子吟，唐，孟郊",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "慈母手中線，",
+     "start": 2.99,
+     "end": 4.89
+    },
+    {
+     "text": "遊子身上衣；",
+     "start": 5.24,
+     "end": 7.11
+    },
+    {
+     "text": "臨行密密縫，",
+     "start": 7.46,
+     "end": 9.33
+    },
+    {
+     "text": "意恐遲遲歸。",
+     "start": 9.68,
+     "end": 11.55
+    },
+    {
+     "text": "誰言寸草心，",
+     "start": 11.9,
+     "end": 13.8
+    },
+    {
+     "text": "報得三春暉？",
+     "start": 14.15,
+     "end": 16.02
+    }
+   ],
+   "read_total": 16.02,
+   "explain": [
+    {
+     "text": "慈祥的媽媽拿著針線，為要遠行的孩子縫衣服。她縫得又密又緊，是怕孩子很晚才回家。誰說小小的草心，報答得了春天陽光般的恩情呢？",
+     "start": 0.0,
+     "end": 13.15
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「遊子」的意思是離開家鄉的人。「三春暉」的意思是春天溫暖的陽光，比喻媽媽的愛。",
+     "start": 13.6,
+     "end": 24.83
+    },
+    {
+     "text": "簡單來說，媽媽的愛藏在一針一線裡，我們一輩子也報答不完。",
+     "start": 25.28,
+     "end": 31.24
+    }
+   ],
+   "explain_total": 31.24,
+   "files": {
+    "read": "audio/11_read.mp3",
+    "explain": "audio/11_explain.mp3"
+   }
+  },
+  {
+   "id": 12,
+   "prefix": "12",
+   "title": "獨坐敬亭山",
+   "read": [
+    {
+     "text": "獨坐敬亭山，唐，李白",
+     "start": 0.0,
+     "end": 3.02
+    },
+    {
+     "text": "眾鳥高飛盡，",
+     "start": 3.37,
+     "end": 5.25
+    },
+    {
+     "text": "孤雲獨去閒。",
+     "start": 5.6,
+     "end": 7.47
+    },
+    {
+     "text": "相看兩不厭，",
+     "start": 7.82,
+     "end": 9.69
+    },
+    {
+     "text": "只有敬亭山。",
+     "start": 10.04,
+     "end": 11.91
+    }
+   ],
+   "read_total": 11.91,
+   "explain": [
+    {
+     "text": "天上的鳥兒都飛遠了，孤單的白雲也慢慢飄走。我望著山，山也望著我，我們誰都不嫌棄誰。這時陪著我的，只有敬亭山。",
+     "start": 0.0,
+     "end": 11.95
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「盡」的意思是消失。「閒」的意思是安靜。「厭」的意思是厭倦。",
+     "start": 12.4,
+     "end": 21.71
+    },
+    {
+     "text": "簡單來說，李白很孤單，所以把山當成了好朋友。",
+     "start": 22.16,
+     "end": 27.01
+    }
+   ],
+   "explain_total": 27.01,
+   "files": {
+    "read": "audio/12_read.mp3",
+    "explain": "audio/12_explain.mp3"
+   }
+  },
+  {
+   "id": 13,
+   "prefix": "13",
+   "title": "題西林壁",
+   "read": [
+    {
+     "text": "題西林壁，宋，蘇軾",
+     "start": 0.0,
+     "end": 2.9
+    },
+    {
+     "text": "橫看成嶺側成峰，",
+     "start": 3.25,
+     "end": 5.46
+    },
+    {
+     "text": "遠近高低各不同。",
+     "start": 5.81,
+     "end": 7.88
+    },
+    {
+     "text": "不識廬山真面目，",
+     "start": 8.23,
+     "end": 10.39
+    },
+    {
+     "text": "只緣身在此山中。",
+     "start": 10.74,
+     "end": 12.94
+    }
+   ],
+   "read_total": 12.94,
+   "explain": [
+    {
+     "text": "從正面看，廬山是一排山嶺，從側面看，就變成高高的山峰。從遠、近、高、低不同的地方看，樣子都不一樣。我們看不清廬山的真面目，因為自己就在山裡面。",
+     "start": 0.0,
+     "end": 15.55
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「題壁」的意思是把字寫在牆上。「緣」的意思是因為。「峰」的意思是山的尖頂。",
+     "start": 16.0,
+     "end": 26.78
+    },
+    {
+     "text": "簡單來說，換個角度看事情，才能看得更清楚。",
+     "start": 27.23,
+     "end": 31.84
+    }
+   ],
+   "explain_total": 31.84,
+   "files": {
+    "read": "audio/13_read.mp3",
+    "explain": "audio/13_explain.mp3"
+   }
+  },
+  {
+   "id": 14,
+   "prefix": "14",
+   "title": "涼州詞",
+   "read": [
+    {
+     "text": "涼州詞，唐，王之渙",
+     "start": 0.0,
+     "end": 2.9
+    },
+    {
+     "text": "黃河遠上白雲間，",
+     "start": 3.25,
+     "end": 5.49
+    },
+    {
+     "text": "一片孤城萬仞山。",
+     "start": 5.84,
+     "end": 8.04
+    },
+    {
+     "text": "羌笛何須怨楊柳，",
+     "start": 8.39,
+     "end": 10.67
+    },
+    {
+     "text": "春風不度玉門關。",
+     "start": 11.02,
+     "end": 13.14
+    }
+   ],
+   "read_total": 13.14,
+   "explain": [
+    {
+     "text": "黃河好像從遠方一直通到白雲裡，一座孤零零的城蓋在高山上。羌笛不用吹出哀怨的〈楊柳〉曲子，因為春風根本吹不到玉門關外。",
+     "start": 0.0,
+     "end": 12.41
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「孤城」的意思是指玉門關。「羌笛」的意思是羌族人的短笛。「何須」的意思是何必。",
+     "start": 12.86,
+     "end": 24.19
+    },
+    {
+     "text": "簡單來說，邊境的士兵離家很遠，春天好像也到不了那裡。",
+     "start": 24.64,
+     "end": 30.3
+    }
+   ],
+   "explain_total": 30.3,
+   "files": {
+    "read": "audio/14_read.mp3",
+    "explain": "audio/14_explain.mp3"
+   }
+  },
+  {
+   "id": 15,
+   "prefix": "15",
+   "title": "答人",
+   "read": [
+    {
+     "text": "答人，唐，太上隱者",
+     "start": 0.0,
+     "end": 2.78
+    },
+    {
+     "text": "偶來松樹下，",
+     "start": 3.13,
+     "end": 5.01
+    },
+    {
+     "text": "高枕石頭眠。",
+     "start": 5.36,
+     "end": 7.28
+    },
+    {
+     "text": "山中無曆日，",
+     "start": 7.63,
+     "end": 9.5
+    },
+    {
+     "text": "寒盡不知年。",
+     "start": 9.85,
+     "end": 11.72
+    }
+   ],
+   "read_total": 11.72,
+   "explain": [
+    {
+     "text": "我偶然走到松樹下，就枕著石頭睡著了。山裡沒有日曆，冬天過去了，我也不知道現在是哪一年。",
+     "start": 0.0,
+     "end": 9.14
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「偶」的意思是偶然。「高枕」的意思是安心地睡覺。「曆日」的意思是記載日子和節氣的書。",
+     "start": 9.59,
+     "end": 21.19
+    },
+    {
+     "text": "簡單來說，在山裡過著自由安靜的日子，連時間都忘了。",
+     "start": 21.64,
+     "end": 27.37
+    }
+   ],
+   "explain_total": 27.37,
+   "files": {
+    "read": "audio/15_read.mp3",
+    "explain": "audio/15_explain.mp3"
+   }
+  },
+  {
+   "id": 16,
+   "prefix": "16",
+   "title": "怨情",
+   "read": [
+    {
+     "text": "怨情，唐，李白",
+     "start": 0.0,
+     "end": 2.42
+    },
+    {
+     "text": "美人捲珠簾，",
+     "start": 2.77,
+     "end": 4.65
+    },
+    {
+     "text": "深坐蹙蛾眉。",
+     "start": 5.0,
+     "end": 6.87
+    },
+    {
+     "text": "但見淚痕濕，",
+     "start": 7.22,
+     "end": 9.09
+    },
+    {
+     "text": "不知心恨誰？",
+     "start": 9.44,
+     "end": 11.31
+    }
+   ],
+   "read_total": 11.31,
+   "explain": [
+    {
+     "text": "美麗的女子捲起了珠簾，久久坐著，皺著眉頭。只看見她臉上的淚痕濕了一大片，不知道她心裡在怨誰。",
+     "start": 0.0,
+     "end": 10.15
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「蹙蛾眉」的意思是皺起眉頭。「深坐」的意思是久久呆坐。",
+     "start": 10.6,
+     "end": 19.65
+    },
+    {
+     "text": "簡單來說，她很傷心，卻不說出口，讓人心疼。",
+     "start": 20.1,
+     "end": 24.97
+    }
+   ],
+   "explain_total": 24.97,
+   "files": {
+    "read": "audio/16_read.mp3",
+    "explain": "audio/16_explain.mp3"
+   }
+  },
+  {
+   "id": 17,
+   "prefix": "17",
+   "title": "贈別",
+   "read": [
+    {
+     "text": "贈別，唐，杜牧",
+     "start": 0.0,
+     "end": 2.45
+    },
+    {
+     "text": "多情卻似總無情，",
+     "start": 2.8,
+     "end": 4.98
+    },
+    {
+     "text": "唯覺樽前笑不成。",
+     "start": 5.33,
+     "end": 7.56
+    },
+    {
+     "text": "蠟燭有心還惜別，",
+     "start": 7.91,
+     "end": 10.07
+    },
+    {
+     "text": "替人垂淚到天明。",
+     "start": 10.42,
+     "end": 12.63
+    }
+   ],
+   "read_total": 12.63,
+   "explain": [
+    {
+     "text": "心裡很有感情，看起來卻好像沒有感情，因為太難過，連笑都笑不出來。桌上的蠟燭好像也捨不得分別，一滴一滴流下蠟油，替我們流淚到天亮。",
+     "start": 0.0,
+     "end": 13.58
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「唯覺」的意思是只覺得。「笑不成」的意思是想笑卻笑不出來。「還惜別」的意思是也捨不得分開。",
+     "start": 14.03,
+     "end": 26.54
+    },
+    {
+     "text": "簡單來說，太捨不得朋友，難過得說不出話。",
+     "start": 26.99,
+     "end": 31.48
+    }
+   ],
+   "explain_total": 31.48,
+   "files": {
+    "read": "audio/17_read.mp3",
+    "explain": "audio/17_explain.mp3"
+   }
+  },
+  {
+   "id": 18,
+   "prefix": "18",
+   "title": "論詩",
+   "read": [
+    {
+     "text": "論詩，清，趙翼",
+     "start": 0.0,
+     "end": 2.52
+    },
+    {
+     "text": "李杜詩篇萬口傳，",
+     "start": 2.87,
+     "end": 5.1
+    },
+    {
+     "text": "至今已覺不新鮮。",
+     "start": 5.45,
+     "end": 7.64
+    },
+    {
+     "text": "江山代有才人出，",
+     "start": 7.99,
+     "end": 10.12
+    },
+    {
+     "text": "各領風騷數百年。",
+     "start": 10.47,
+     "end": 12.68
+    }
+   ],
+   "read_total": 12.68,
+   "explain": [
+    {
+     "text": "李白和杜甫的詩傳了很久，現在讀起來已經不覺得新鮮。每個朝代都會出現有才華的人，各自領導風潮好幾百年。",
+     "start": 0.0,
+     "end": 10.75
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「李杜」的意思是李白和杜甫。「江山」的意思是國家。",
+     "start": 11.2,
+     "end": 19.82
+    },
+    {
+     "text": "簡單來說，寫作要有自己的新想法，不要只照著前人做。",
+     "start": 20.27,
+     "end": 25.72
+    }
+   ],
+   "explain_total": 25.72,
+   "files": {
+    "read": "audio/18_read.mp3",
+    "explain": "audio/18_explain.mp3"
+   }
+  },
+  {
+   "id": 19,
+   "prefix": "19",
+   "title": "清明",
+   "read": [
+    {
+     "text": "清明，唐，杜牧",
+     "start": 0.0,
+     "end": 2.38
+    },
+    {
+     "text": "清明時節雨紛紛，",
+     "start": 2.73,
+     "end": 4.91
+    },
+    {
+     "text": "路上行人欲斷魂。",
+     "start": 5.26,
+     "end": 7.37
+    },
+    {
+     "text": "借問酒家何處有，",
+     "start": 7.72,
+     "end": 9.91
+    },
+    {
+     "text": "牧童遙指杏花村。",
+     "start": 10.26,
+     "end": 12.46
+    }
+   ],
+   "read_total": 12.46,
+   "explain": [
+    {
+     "text": "清明節的時候，細雨一直下，路上的行人心情很煩悶。我向牧童請問哪裡有酒店可以休息，牧童用手指著遠處的杏花村。",
+     "start": 0.0,
+     "end": 11.52
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「紛紛」的意思是很多。「欲斷魂」的意思是難過得好像靈魂要離開身體。「借問」的意思是請問。",
+     "start": 11.97,
+     "end": 23.71
+    },
+    {
+     "text": "簡單來說，淋著雨的旅人，因為牧童的指路，心裡有了方向。",
+     "start": 24.16,
+     "end": 29.82
+    }
+   ],
+   "explain_total": 29.82,
+   "files": {
+    "read": "audio/19_read.mp3",
+    "explain": "audio/19_explain.mp3"
+   }
+  },
+  {
+   "id": 20,
+   "prefix": "20",
+   "title": "夜雨寄北",
+   "read": [
+    {
+     "text": "夜雨寄北，唐，李商隱",
+     "start": 0.0,
+     "end": 2.98
+    },
+    {
+     "text": "君問歸期未有期，",
+     "start": 3.33,
+     "end": 5.56
+    },
+    {
+     "text": "巴山夜雨漲秋池。",
+     "start": 5.91,
+     "end": 8.21
+    },
+    {
+     "text": "何當共剪西窗燭，",
+     "start": 8.56,
+     "end": 10.84
+    },
+    {
+     "text": "卻話巴山夜雨時？",
+     "start": 11.19,
+     "end": 13.45
+    }
+   ],
+   "read_total": 13.45,
+   "explain": [
+    {
+     "text": "你問我什麼時候回去，我還不知道。巴山的夜晚正下著雨，雨水漲滿了秋天的池塘。什麼時候才能和你坐在西窗下一起剪燭花，說說今晚巴山夜雨的情景呢？",
+     "start": 0.0,
+     "end": 14.59
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「何當」的意思是什麼時候才能。「剪燭」的意思是把燒焦的燭芯剪掉，燭光才會亮。「卻話」的意思是回頭再說。",
+     "start": 15.04,
+     "end": 28.72
+    },
+    {
+     "text": "簡單來說，作者很想念親人，盼望能早點團聚。",
+     "start": 29.17,
+     "end": 34.07
+    }
+   ],
+   "explain_total": 34.07,
+   "files": {
+    "read": "audio/20_read.mp3",
+    "explain": "audio/20_explain.mp3"
+   }
+  },
+  {
+   "id": 21,
+   "prefix": "21",
+   "title": "月下獨酌",
+   "read": [
+    {
+     "text": "月下獨酌，唐，李白",
+     "start": 0.0,
+     "end": 2.81
+    },
+    {
+     "text": "花間一壺酒，",
+     "start": 3.16,
+     "end": 5.03
+    },
+    {
+     "text": "獨酌無相親。",
+     "start": 5.38,
+     "end": 7.25
+    },
+    {
+     "text": "舉杯邀明月，",
+     "start": 7.6,
+     "end": 9.47
+    },
+    {
+     "text": "對影成三人。",
+     "start": 9.82,
+     "end": 11.7
+    }
+   ],
+   "read_total": 11.7,
+   "explain": [
+    {
+     "text": "我在花叢中拿著一壺酒，一個人喝，沒有人陪。我舉起杯子邀請明月，再加上月光照出來的影子，就像三個人一起喝酒。",
+     "start": 0.0,
+     "end": 11.28
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「獨酌」的意思是一個人喝酒。「無相親」的意思是沒有親近的人。",
+     "start": 11.73,
+     "end": 21.02
+    },
+    {
+     "text": "簡單來說，李白很孤單，所以想像月亮和影子是他的朋友。",
+     "start": 21.47,
+     "end": 27.25
+    }
+   ],
+   "explain_total": 27.25,
+   "files": {
+    "read": "audio/21_read.mp3",
+    "explain": "audio/21_explain.mp3"
+   }
+  },
+  {
+   "id": 22,
+   "prefix": "22",
+   "title": "金陵圖",
+   "read": [
+    {
+     "text": "金陵圖，唐，韋莊",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "江雨霏霏江草齊，",
+     "start": 3.01,
+     "end": 5.29
+    },
+    {
+     "text": "六朝如夢鳥空啼。",
+     "start": 5.64,
+     "end": 7.97
+    },
+    {
+     "text": "無情最是臺城柳，",
+     "start": 8.32,
+     "end": 10.53
+    },
+    {
+     "text": "依舊煙籠十里堤。",
+     "start": 10.88,
+     "end": 13.09
+    }
+   ],
+   "read_total": 13.09,
+   "explain": [
+    {
+     "text": "江上飄著細細的雨，岸邊的草長得很整齊。六朝的繁華像夢一樣過去了，只剩鳥兒空空地叫。最無情的是臺城的柳樹，還是像煙霧一樣罩著十里長堤。",
+     "start": 0.0,
+     "end": 14.59
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「霏霏」的意思是細雨飄飛的樣子。「六朝」的意思是金陵過去的六個朝代。「臺城」的意思是六朝時的皇宮。",
+     "start": 15.04,
+     "end": 28.12
+    },
+    {
+     "text": "簡單來說，人間的繁華會消失，大自然卻一直都在。",
+     "start": 28.57,
+     "end": 33.88
+    }
+   ],
+   "explain_total": 33.88,
+   "files": {
+    "read": "audio/22_read.mp3",
+    "explain": "audio/22_explain.mp3"
+   }
+  },
+  {
+   "id": 23,
+   "prefix": "23",
+   "title": "勸學",
+   "read": [
+    {
+     "text": "勸學，唐，顏真卿",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "三更燈火五更雞，",
+     "start": 3.09,
+     "end": 5.29
+    },
+    {
+     "text": "正是男兒讀書時；",
+     "start": 5.64,
+     "end": 7.88
+    },
+    {
+     "text": "黑髮不知勤學早，",
+     "start": 8.23,
+     "end": 10.43
+    },
+    {
+     "text": "白首方悔讀書遲。",
+     "start": 10.78,
+     "end": 13.09
+    }
+   ],
+   "read_total": 13.09,
+   "explain": [
+    {
+     "text": "半夜三更就點燈讀書，到天快亮、公雞啼叫的時候，正是男孩子讀書最好的時間。年輕時不知道要早點用功，等頭髮白了，才後悔沒有多讀書，已經太晚了。",
+     "start": 0.0,
+     "end": 14.4
+    },
+    {
+     "text": "詩裡有幾個詞，我們先來認識一下。「三更」的意思是半夜。「五更」的意思是天快亮的時候。「黑髮」的意思是年輕人。「白首」的意思是老人。",
+     "start": 14.85,
+     "end": 27.86
+    },
+    {
+     "text": "簡單來說，讀書要趁早，不要等老了才後悔。",
+     "start": 28.31,
+     "end": 32.84
+    }
+   ],
+   "explain_total": 32.84,
+   "files": {
+    "read": "audio/23_read.mp3",
+    "explain": "audio/23_explain.mp3"
+   }
+  }
+ ],
+ "quotes": [
+  {
+   "id": 0,
+   "prefix": "q00",
+   "title": "因書而貴",
+   "read": [
+    {
+     "text": "名言佳句，因書而貴",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "貧者因書而富，",
+     "start": 2.99,
+     "end": 5.08
+    },
+    {
+     "text": "富者因書而貴。",
+     "start": 5.43,
+     "end": 7.44
+    }
+   ],
+   "read_total": 7.44,
+   "explain": [
+    {
+     "text": "貧窮的人因為努力讀書而獲得財富，富有的人因為博學明理而受到眾人的敬重。",
+     "start": 0.0,
+     "end": 7.94
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。因：憑藉、因為。富：充足、富有。貴：受人敬重、品格尊貴。",
+     "start": 8.39,
+     "end": 20.01
+    },
+    {
+     "text": "這句話給我們的生活啟發是：讀書不僅能改善生活，更能提升一個人的涵養與心靈境界。",
+     "start": 20.46,
+     "end": 28.67
+    }
+   ],
+   "explain_total": 28.67,
+   "files": {
+    "read": "audio/q00_read.mp3",
+    "explain": "audio/q00_explain.mp3"
+   }
+  },
+  {
+   "id": 1,
+   "prefix": "q01",
+   "title": "利令智昏",
+   "read": [
+    {
+     "text": "名言佳句，利令智昏",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "人為財死，",
+     "start": 3.06,
+     "end": 4.93
+    },
+    {
+     "text": "鳥為食亡。",
+     "start": 5.28,
+     "end": 7.16
+    }
+   ],
+   "read_total": 7.16,
+   "explain": [
+    {
+     "text": "人常為了爭奪金錢財富而招來禍患，鳥雀常為了貪吃誘餌而落入羅網喪命。",
+     "start": 0.0,
+     "end": 7.56
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。為：因為。財：金錢財貨。食：食物。亡：死亡、滅亡。",
+     "start": 8.01,
+     "end": 19.6
+    },
+    {
+     "text": "這句話給我們的生活啟發是：告誡我們切莫因一時的貪念而迷失理智，知足才能常樂、保全自身。",
+     "start": 20.05,
+     "end": 29.82
+    }
+   ],
+   "explain_total": 29.82,
+   "files": {
+    "read": "audio/q01_read.mp3",
+    "explain": "audio/q01_explain.mp3"
+   }
+  },
+  {
+   "id": 2,
+   "prefix": "q02",
+   "title": "庸人自擾",
+   "read": [
+    {
+     "text": "名言佳句，庸人自擾",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "天下本無事，",
+     "start": 2.99,
+     "end": 4.86
+    },
+    {
+     "text": "庸人自擾之。",
+     "start": 5.21,
+     "end": 7.08
+    }
+   ],
+   "read_total": 7.08,
+   "explain": [
+    {
+     "text": "世間本來平靜安和、沒有那麼多紛擾，往往是心胸狹隘或不明事理的人自己在心裡添煩惱。",
+     "start": 0.0,
+     "end": 8.52
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。庸人：平庸愚昧的人。自擾：自己擾亂自己、自尋煩惱。",
+     "start": 8.97,
+     "end": 18.83
+    },
+    {
+     "text": "這句話給我們的生活啟發是：心放平了，事情就簡單了；別為無謂的瑣事焦慮不安。",
+     "start": 19.28,
+     "end": 27.4
+    }
+   ],
+   "explain_total": 27.4,
+   "files": {
+    "read": "audio/q02_read.mp3",
+    "explain": "audio/q02_explain.mp3"
+   }
+  },
+  {
+   "id": 3,
+   "prefix": "q03",
+   "title": "生生不息",
+   "read": [
+    {
+     "text": "名言佳句，生生不息",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "野火燒不盡，",
+     "start": 3.04,
+     "end": 4.91
+    },
+    {
+     "text": "春風吹又生。",
+     "start": 5.26,
+     "end": 7.18
+    }
+   ],
+   "read_total": 7.18,
+   "explain": [
+    {
+     "text": "冬天的野火縱然燒得再猛烈，也無法將草根燒盡；等到和煦的春風一吹，芳草又破土萌芽、生氣蓬勃。",
+     "start": 0.0,
+     "end": 10.15
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。野火：荒野之火。盡：完全完畢。春風：春天的風。吹又生：又重新萌芽生長。",
+     "start": 10.6,
+     "end": 23.73
+    },
+    {
+     "text": "這句話給我們的生活啟發是：象徵堅韌強大的生命力，只要希望的火種在，任何困境都打不倒我們。",
+     "start": 24.18,
+     "end": 33.28
+    }
+   ],
+   "explain_total": 33.28,
+   "files": {
+    "read": "audio/q03_read.mp3",
+    "explain": "audio/q03_explain.mp3"
+   }
+  },
+  {
+   "id": 4,
+   "prefix": "q04",
+   "title": "歲久知心",
+   "read": [
+    {
+     "text": "名言佳句，歲久知心",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "路遙知馬力，",
+     "start": 3.01,
+     "end": 4.89
+    },
+    {
+     "text": "日久見人心。",
+     "start": 5.24,
+     "end": 7.11
+    }
+   ],
+   "read_total": 7.11,
+   "explain": [
+    {
+     "text": "路途遙遠漫長，才能考驗出馬匹的耐力與腳力；相處的日子久了，才能真正看清一個人的品格與真心。",
+     "start": 0.0,
+     "end": 9.24
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。遙：遠。馬力：馬匹的體力與奔馳耐力。見：看清、顯現。",
+     "start": 9.69,
+     "end": 20.78
+    },
+    {
+     "text": "這句話給我們的生活啟發是：真正的好朋友和純潔的情誼，是禁得起時間與距離嚴苛考驗的。",
+     "start": 21.23,
+     "end": 30.18
+    }
+   ],
+   "explain_total": 30.18,
+   "files": {
+    "read": "audio/q04_read.mp3",
+    "explain": "audio/q04_explain.mp3"
+   }
+  },
+  {
+   "id": 5,
+   "prefix": "q05",
+   "title": "潛移默化",
+   "read": [
+    {
+     "text": "名言佳句，潛移默化",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "近朱者赤，",
+     "start": 2.99,
+     "end": 4.86
+    },
+    {
+     "text": "近墨者黑。",
+     "start": 5.21,
+     "end": 7.08
+    }
+   ],
+   "read_total": 7.08,
+   "explain": [
+    {
+     "text": "靠朱砂近的容易被染紅，靠墨硯近的容易被染黑。",
+     "start": 0.0,
+     "end": 5.23
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。朱：朱砂，紅色顏料。赤：紅色。墨：墨汁。黑：黑色。",
+     "start": 5.68,
+     "end": 17.27
+    },
+    {
+     "text": "這句話給我們的生活啟發是：環境對人的影響極為深遠，交朋友要謹慎，多與品格高尚的人為伍。",
+     "start": 17.72,
+     "end": 26.92
+    }
+   ],
+   "explain_total": 26.92,
+   "files": {
+    "read": "audio/q05_read.mp3",
+    "explain": "audio/q05_explain.mp3"
+   }
+  },
+  {
+   "id": 6,
+   "prefix": "q06",
+   "title": "精誠至誠",
+   "read": [
+    {
+     "text": "名言佳句，精誠至誠",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "精誠所至，",
+     "start": 3.09,
+     "end": 4.96
+    },
+    {
+     "text": "金石為開。",
+     "start": 5.31,
+     "end": 7.18
+    }
+   ],
+   "read_total": 7.18,
+   "explain": [
+    {
+     "text": "只要人的心意無比真誠、專注而堅定，就算是如金石般堅硬的物體，也能被感化貫穿打通。",
+     "start": 0.0,
+     "end": 8.45
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。精誠：真誠的心意與極致的專注。金石：金屬與巨石，比喻最堅固之物。開：劈開、打通。",
+     "start": 8.9,
+     "end": 22.82
+    },
+    {
+     "text": "這句話給我們的生活啟發是：堅持到底、全神貫注，世上就沒有克服不了的難關。",
+     "start": 23.27,
+     "end": 31.12
+    }
+   ],
+   "explain_total": 31.12,
+   "files": {
+    "read": "audio/q06_read.mp3",
+    "explain": "audio/q06_explain.mp3"
+   }
+  },
+  {
+   "id": 7,
+   "prefix": "q07",
+   "title": "精進不懈",
+   "read": [
+    {
+     "text": "名言佳句，精進不懈",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "百尺竿頭，",
+     "start": 2.99,
+     "end": 4.86
+    },
+    {
+     "text": "更進一步。",
+     "start": 5.21,
+     "end": 7.08
+    }
+   ],
+   "read_total": 7.08,
+   "explain": [
+    {
+     "text": "學問成就已經登上百尺竹竿的頂點，還要繼續向前努力邁進、永不止步。",
+     "start": 0.0,
+     "end": 7.1
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。竿頭：竹竿的頂端。更：更加。進一步：邁向更高境界。",
+     "start": 7.55,
+     "end": 17.95
+    },
+    {
+     "text": "這句話給我們的生活啟發是：即使取得了極大的成績，也要保持謙虛，勇於突破自我、精益求精。",
+     "start": 18.4,
+     "end": 27.59
+    }
+   ],
+   "explain_total": 27.59,
+   "files": {
+    "read": "audio/q07_read.mp3",
+    "explain": "audio/q07_explain.mp3"
+   }
+  },
+  {
+   "id": 8,
+   "prefix": "q08",
+   "title": "內省無怨",
+   "read": [
+    {
+     "text": "名言佳句，內省無怨",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "自知者不怨人，",
+     "start": 3.01,
+     "end": 5.03
+    },
+    {
+     "text": "知命者不怨天。",
+     "start": 5.38,
+     "end": 7.37
+    }
+   ],
+   "read_total": 7.37,
+   "explain": [
+    {
+     "text": "有自知之明的人，遇到挫折不會怨恨他人；通曉天理規律的人，不會埋怨上天命運。",
+     "start": 0.0,
+     "end": 8.16
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。自知：了解自己的能力與不足。知命：懂得事物發展的規律與自然之道。怨：怪罪、抱怨。",
+     "start": 8.61,
+     "end": 22.1
+    },
+    {
+     "text": "這句話給我們的生活啟發是：遇事向內探尋原因並提升自己，而不是盲目責怪他人與環境。",
+     "start": 22.55,
+     "end": 31.07
+    }
+   ],
+   "explain_total": 31.07,
+   "files": {
+    "read": "audio/q08_read.mp3",
+    "explain": "audio/q08_explain.mp3"
+   }
+  },
+  {
+   "id": 9,
+   "prefix": "q09",
+   "title": "君子之交",
+   "read": [
+    {
+     "text": "名言佳句，君子之交",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "君子之交淡如水，",
+     "start": 3.09,
+     "end": 5.41
+    },
+    {
+     "text": "小人之交甘如醴。",
+     "start": 5.76,
+     "end": 8.0
+    }
+   ],
+   "read_total": 8.0,
+   "explain": [
+    {
+     "text": "品德高尚的君子相處，平淡清徹宛如泉水，長久而真誠；為圖私利的小人交往，甜膩如蜜酒，卻往往難以長久。",
+     "start": 0.0,
+     "end": 10.87
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。君子：有道德涵養的人。淡：清淡自然。小人：自私圖利之人。醴：甜美甘醇的甜酒。",
+     "start": 11.32,
+     "end": 24.95
+    },
+    {
+     "text": "這句話給我們的生活啟發是：真摯純淨的友誼重在靈魂相知，而非利益交換。",
+     "start": 25.4,
+     "end": 32.8
+    }
+   ],
+   "explain_total": 32.8,
+   "files": {
+    "read": "audio/q09_read.mp3",
+    "explain": "audio/q09_explain.mp3"
+   }
+  },
+  {
+   "id": 10,
+   "prefix": "q10",
+   "title": "內外兼備",
+   "read": [
+    {
+     "text": "名言佳句，內外兼備",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "金玉其外，",
+     "start": 3.01,
+     "end": 4.89
+    },
+    {
+     "text": "敗絮其中。",
+     "start": 5.24,
+     "end": 7.11
+    }
+   ],
+   "read_total": 7.11,
+   "explain": [
+    {
+     "text": "外表像金子美玉般華麗奪目，裡面卻只是一堆破爛腐朽的舊棉絮。",
+     "start": 0.0,
+     "end": 6.26
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。金玉：珍寶美玉。其外：外表。敗絮：破舊腐爛的棉絮。其中：內在。",
+     "start": 6.71,
+     "end": 19.1
+    },
+    {
+     "text": "這句話給我們的生活啟發是：告誡我們不要只圖外表光鮮亮麗，充實內在的真才實學與美德才最珍貴。",
+     "start": 19.55,
+     "end": 29.56
+    }
+   ],
+   "explain_total": 29.56,
+   "files": {
+    "read": "audio/q10_read.mp3",
+    "explain": "audio/q10_explain.mp3"
+   }
+  },
+  {
+   "id": 11,
+   "prefix": "q11",
+   "title": "處世三心",
+   "read": [
+    {
+     "text": "名言佳句，處世三心",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "待人要誠心，",
+     "start": 3.01,
+     "end": 4.89
+    },
+    {
+     "text": "做事要用心，",
+     "start": 5.24,
+     "end": 7.11
+    },
+    {
+     "text": "勝負平常心。",
+     "start": 7.46,
+     "end": 9.38
+    }
+   ],
+   "read_total": 9.38,
+   "explain": [
+    {
+     "text": "對待他人要拿出真誠坦白的心，處理事情要專注投入全力以赴，看待競爭的成功或失敗要保持平和淡然的平常心。",
+     "start": 0.0,
+     "end": 10.78
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。誠心：不欺瞞、真摯。用心：專注細緻。平常心：不被得失榮辱擾亂心情。",
+     "start": 11.23,
+     "end": 23.73
+    },
+    {
+     "text": "這句話給我們的生活啟發是：掌握這三顆心，能讓你在人際、學業與生活中行穩致遠、從容自在。",
+     "start": 24.18,
+     "end": 33.56
+    }
+   ],
+   "explain_total": 33.56,
+   "files": {
+    "read": "audio/q11_read.mp3",
+    "explain": "audio/q11_explain.mp3"
+   }
+  },
+  {
+   "id": 12,
+   "prefix": "q12",
+   "title": "物力維艱",
+   "read": [
+    {
+     "text": "名言佳句，物力維艱",
+     "start": 0.0,
+     "end": 2.62
+    },
+    {
+     "text": "一粥一飯當思來處不易，",
+     "start": 2.97,
+     "end": 5.75
+    },
+    {
+     "text": "半絲半縷恆念物力維艱。",
+     "start": 6.1,
+     "end": 8.84
+    }
+   ],
+   "read_total": 8.84,
+   "explain": [
+    {
+     "text": "哪怕只是一碗稀粥、一口米飯，都應當想到它們得來絕非容易；哪怕只是半根絲線、半截衣縷，也應當常記物資背後辛勤勞作的艱難。",
+     "start": 0.0,
+     "end": 12.53
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。當思：應當思索。不易：不簡單。恆念：常常記掛。物力維艱：物品凝聚的辛勞非常艱難。",
+     "start": 12.98,
+     "end": 27.23
+    },
+    {
+     "text": "這句話給我們的生活啟發是：懂得珍惜食物、敬畏勞動，是立身處世最重要的美德。",
+     "start": 27.68,
+     "end": 35.68
+    }
+   ],
+   "explain_total": 35.68,
+   "files": {
+    "read": "audio/q12_read.mp3",
+    "explain": "audio/q12_explain.mp3"
+   }
+  },
+  {
+   "id": 13,
+   "prefix": "q13",
+   "title": "熟讀深思",
+   "read": [
+    {
+     "text": "名言佳句，熟讀深思",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "舊書不厭百回讀，",
+     "start": 3.06,
+     "end": 5.29
+    },
+    {
+     "text": "熟讀深思子自知。",
+     "start": 5.64,
+     "end": 8.02
+    }
+   ],
+   "read_total": 8.02,
+   "explain": [
+    {
+     "text": "經典好書讀上一百遍也不會令人厭倦，只要反覆精讀並深入思考，其中的微言大義你自然而然就能領悟通曉。",
+     "start": 0.0,
+     "end": 10.18
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。舊書：經過歲月沉澱的好書、經典。厭：厭倦。深思：深入思考。子：你。自知：自然明白悟懂。",
+     "start": 10.63,
+     "end": 26.25
+    },
+    {
+     "text": "這句話給我們的生活啟發是：讀書貴在精讀與思考，而非走馬看花。",
+     "start": 26.7,
+     "end": 33.59
+    }
+   ],
+   "explain_total": 33.59,
+   "files": {
+    "read": "audio/q13_read.mp3",
+    "explain": "audio/q13_explain.mp3"
+   }
+  },
+  {
+   "id": 14,
+   "prefix": "q14",
+   "title": "謹言慎行",
+   "read": [
+    {
+     "text": "名言佳句，謹言慎行",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "一失足成千古恨，",
+     "start": 3.09,
+     "end": 5.34
+    },
+    {
+     "text": "再回頭已是百年身。",
+     "start": 5.69,
+     "end": 8.24
+    }
+   ],
+   "read_total": 8.24,
+   "explain": [
+    {
+     "text": "一旦走錯了關鍵的一步，就會造成難以挽回的終生遺憾；等想要回頭重新來過時，一生早已虛度過去了。",
+     "start": 0.0,
+     "end": 9.41
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。失足：腳步踩空跌倒，比喻犯下重大過錯。千古恨：永遠的悔恨。百年身：人的一生。",
+     "start": 9.86,
+     "end": 22.99
+    },
+    {
+     "text": "這句話給我們的生活啟發是：提醒我們處事必須審慎清醒，每一步都要走得踏實正直。",
+     "start": 23.44,
+     "end": 31.69
+    }
+   ],
+   "explain_total": 31.69,
+   "files": {
+    "read": "audio/q14_read.mp3",
+    "explain": "audio/q14_explain.mp3"
+   }
+  },
+  {
+   "id": 15,
+   "prefix": "q15",
+   "title": "善事利器",
+   "read": [
+    {
+     "text": "名言佳句，善事利器",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "工欲善其事，",
+     "start": 3.06,
+     "end": 4.96
+    },
+    {
+     "text": "必先利其器。",
+     "start": 5.31,
+     "end": 7.23
+    }
+   ],
+   "read_total": 7.23,
+   "explain": [
+    {
+     "text": "工匠想要把手頭的工作做好，必須先磨礪、整備精良鋒利的工具。",
+     "start": 0.0,
+     "end": 6.12
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。工：工匠。欲：想要。善：完善、做好。利：磨礪鋒利。器：工具器具。",
+     "start": 6.57,
+     "end": 20.18
+    },
+    {
+     "text": "這句話給我們的生活啟發是：無論做任何事，事前做好充分的準備與工具學習，才能事半功倍。",
+     "start": 20.63,
+     "end": 29.89
+    }
+   ],
+   "explain_total": 29.89,
+   "files": {
+    "read": "audio/q15_read.mp3",
+    "explain": "audio/q15_explain.mp3"
+   }
+  },
+  {
+   "id": 16,
+   "prefix": "q16",
+   "title": "滿損謙益",
+   "read": [
+    {
+     "text": "名言佳句，滿損謙益",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "滿招損，",
+     "start": 3.09,
+     "end": 4.96
+    },
+    {
+     "text": "謙受益。",
+     "start": 5.31,
+     "end": 7.18
+    }
+   ],
+   "read_total": 7.18,
+   "explain": [
+    {
+     "text": "自滿自大往往招致損害與挫敗，虛心謙遜才能獲得長足的進益與福祉。",
+     "start": 0.0,
+     "end": 7.01
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。滿：驕傲自滿。損：虧損傷害。謙：謙虛不居。益：好處與收穫。",
+     "start": 7.46,
+     "end": 19.48
+    },
+    {
+     "text": "這句話給我們的生活啟發是：山因卑而增其高，海因下而聚眾流；時刻保持謙遜，才能持續進步。",
+     "start": 19.93,
+     "end": 29.58
+    }
+   ],
+   "explain_total": 29.58,
+   "files": {
+    "read": "audio/q16_read.mp3",
+    "explain": "audio/q16_explain.mp3"
+   }
+  },
+  {
+   "id": 17,
+   "prefix": "q17",
+   "title": "覆巢完卵",
+   "read": [
+    {
+     "text": "名言佳句，覆巢完卵",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "覆巢之下無完卵。",
+     "start": 3.06,
+     "end": 5.29
+    }
+   ],
+   "read_total": 5.29,
+   "explain": [
+    {
+     "text": "鳥巢被傾覆打翻了，巢裡面怎麼可能還有完整不碎的鳥蛋呢？",
+     "start": 0.0,
+     "end": 5.71
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。覆：翻轉傾倒。巢：鳥窩。完：完好無缺。卵：蛋。",
+     "start": 6.16,
+     "end": 17.11
+    },
+    {
+     "text": "這句話給我們的生活啟發是：個體與群體命運休戚與共；國家家庭若遭逢大難，個人也難以獨善其身。",
+     "start": 17.56,
+     "end": 27.78
+    }
+   ],
+   "explain_total": 27.78,
+   "files": {
+    "read": "audio/q17_read.mp3",
+    "explain": "audio/q17_explain.mp3"
+   }
+  },
+  {
+   "id": 18,
+   "prefix": "q18",
+   "title": "言簡意賅",
+   "read": [
+    {
+     "text": "名言佳句，言簡意賅",
+     "start": 0.0,
+     "end": 2.62
+    },
+    {
+     "text": "話多不如話少，",
+     "start": 2.97,
+     "end": 4.89
+    },
+    {
+     "text": "話少不如話好。",
+     "start": 5.24,
+     "end": 7.18
+    }
+   ],
+   "read_total": 7.18,
+   "explain": [
+    {
+     "text": "說話滔滔不絕不如話語簡練切題，說得少又不如把話說得得體、溫暖而動聽。",
+     "start": 0.0,
+     "end": 7.51
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。話少：言語簡潔。話好：言語得體、真誠而富有智慧。",
+     "start": 7.96,
+     "end": 17.95
+    },
+    {
+     "text": "這句話給我們的生活啟發是：說話要講究分寸與智慧，多說無益之詞，不如一句切中要害、溫暖人心的良言。",
+     "start": 18.4,
+     "end": 28.79
+    }
+   ],
+   "explain_total": 28.79,
+   "files": {
+    "read": "audio/q18_read.mp3",
+    "explain": "audio/q18_explain.mp3"
+   }
+  },
+  {
+   "id": 19,
+   "prefix": "q19",
+   "title": "勤舟苦徑",
+   "read": [
+    {
+     "text": "名言佳句，勤舟苦徑",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "書山有路勤為徑，",
+     "start": 3.09,
+     "end": 5.34
+    },
+    {
+     "text": "學海無涯苦作舟。",
+     "start": 5.69,
+     "end": 7.97
+    }
+   ],
+   "read_total": 7.97,
+   "explain": [
+    {
+     "text": "如果說書籍堆疊如高聳入雲的大山，勤奮努力就是唯一能登頂的路徑；如果說學問浩瀚無涯宛如汪洋大海，刻苦求知就是能渡向彼岸的扁舟。",
+     "start": 0.0,
+     "end": 13.46
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。徑：小路捷徑。無涯：沒有邊際。苦：刻苦用功。舟：渡水之船。",
+     "start": 13.91,
+     "end": 25.89
+    },
+    {
+     "text": "這句話給我們的生活啟發是：在漫長求學之路上沒有捷徑可走，唯有勤奮刻苦才能通向真知。",
+     "start": 26.34,
+     "end": 35.34
+    }
+   ],
+   "explain_total": 35.34,
+   "files": {
+    "read": "audio/q19_read.mp3",
+    "explain": "audio/q19_explain.mp3"
+   }
+  },
+  {
+   "id": 20,
+   "prefix": "q20",
+   "title": "悲喜心境",
+   "read": [
+    {
+     "text": "名言佳句，悲喜心境",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "悲觀的人雖生猶死，",
+     "start": 3.01,
+     "end": 5.37
+    },
+    {
+     "text": "樂觀的人永生不老。",
+     "start": 5.72,
+     "end": 7.9
+    }
+   ],
+   "read_total": 7.9,
+   "explain": [
+    {
+     "text": "心境悲觀消極的人，縱然活著心靈也像枯槁死去一般；積極樂觀豁達的人，其精神始終蓬勃年輕、永不衰老。",
+     "start": 0.0,
+     "end": 10.82
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。雖生猶死：雖然活著卻如死去般無光彩。永生不老：精神常青、充滿朝氣。",
+     "start": 11.27,
+     "end": 23.03
+    },
+    {
+     "text": "這句話給我們的生活啟發是：心態決定人生的色彩，用樂觀的心情面對歲月，心靈永遠繁花盛開。",
+     "start": 23.48,
+     "end": 32.65
+    }
+   ],
+   "explain_total": 32.65,
+   "files": {
+    "read": "audio/q20_read.mp3",
+    "explain": "audio/q20_explain.mp3"
+   }
+  },
+  {
+   "id": 21,
+   "prefix": "q21",
+   "title": "仰俯無愧",
+   "read": [
+    {
+     "text": "名言佳句，仰俯無愧",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "仰不愧於天，",
+     "start": 3.04,
+     "end": 4.91
+    },
+    {
+     "text": "俯不怍於地。",
+     "start": 5.26,
+     "end": 7.13
+    }
+   ],
+   "read_total": 7.13,
+   "explain": [
+    {
+     "text": "抬頭仰望蒼天時沒有絲毫慚愧，低頭面向大地時沒有半分羞慚。",
+     "start": 0.0,
+     "end": 6.55
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。仰：抬頭向上看。愧：慚愧。俯：低下頭。怍：內疚羞恥。",
+     "start": 7.0,
+     "end": 18.71
+    },
+    {
+     "text": "這句話給我們的生活啟發是：只要為人處世行得正、坐得端，內心就坦坦蕩蕩、無所畏懼。",
+     "start": 19.16,
+     "end": 27.8
+    }
+   ],
+   "explain_total": 27.8,
+   "files": {
+    "read": "audio/q21_read.mp3",
+    "explain": "audio/q21_explain.mp3"
+   }
+  },
+  {
+   "id": 22,
+   "prefix": "q22",
+   "title": "勤勞免匱",
+   "read": [
+    {
+     "text": "名言佳句，勤勞免匱",
+     "start": 0.0,
+     "end": 2.74
+    },
+    {
+     "text": "不費勞力而得者，",
+     "start": 3.09,
+     "end": 5.27
+    },
+    {
+     "text": "唯貧困而已。",
+     "start": 5.62,
+     "end": 7.49
+    }
+   ],
+   "read_total": 7.49,
+   "explain": [
+    {
+     "text": "如果不願意付出心血與汗水就能得到的東西，世上恐怕只有貧困與匱乏罷了。",
+     "start": 0.0,
+     "end": 7.3
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。費：花費消耗。勞力：勞動努力。唯：只有。貧困：貧乏窘困。",
+     "start": 7.75,
+     "end": 19.6
+    },
+    {
+     "text": "這句話給我們的生活啟發是：一切美好的果實都需要靠自己的雙手去耕耘創造，天下沒有不勞而獲的事。",
+     "start": 20.05,
+     "end": 29.56
+    }
+   ],
+   "explain_total": 29.56,
+   "files": {
+    "read": "audio/q22_read.mp3",
+    "explain": "audio/q22_explain.mp3"
+   }
+  },
+  {
+   "id": 23,
+   "prefix": "q23",
+   "title": "博學下筆",
+   "read": [
+    {
+     "text": "名言佳句，博學下筆",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "讀書破萬卷，",
+     "start": 2.99,
+     "end": 4.86
+    },
+    {
+     "text": "下筆如有神。",
+     "start": 5.21,
+     "end": 7.08
+    }
+   ],
+   "read_total": 7.08,
+   "explain": [
+    {
+     "text": "只要博覽群書、融會貫通達到上萬卷，在動筆寫作時就能文思泉湧、神采飛揚。",
+     "start": 0.0,
+     "end": 8.11
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。破：讀透讀通。萬卷：極言藏書之多。下筆：動筆行文。有神：如同神助、絕妙流暢。",
+     "start": 8.56,
+     "end": 22.63
+    },
+    {
+     "text": "這句話給我們的生活啟發是：厚積才能薄發，日積月累的閱讀積累是卓越文采的堅實基石。",
+     "start": 23.08,
+     "end": 31.69
+    }
+   ],
+   "explain_total": 31.69,
+   "files": {
+    "read": "audio/q23_read.mp3",
+    "explain": "audio/q23_explain.mp3"
+   }
+  },
+  {
+   "id": 24,
+   "prefix": "q24",
+   "title": "善氣和人",
+   "read": [
+    {
+     "text": "名言佳句，善氣和人",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "以善氣迎人，",
+     "start": 3.06,
+     "end": 4.93
+    },
+    {
+     "text": "親如兄弟；",
+     "start": 5.28,
+     "end": 7.16
+    },
+    {
+     "text": "用惡氣迎人，",
+     "start": 7.51,
+     "end": 9.38
+    },
+    {
+     "text": "害於干戈。",
+     "start": 9.73,
+     "end": 11.6
+    }
+   ],
+   "read_total": 11.6,
+   "explain": [
+    {
+     "text": "用善良和悅的態度對待他人，彼此就能像親兄弟般和睦融洽；用凶惡暴戾的態度對待他人，其危害將比刀槍相向的戰爭還要深重。",
+     "start": 0.0,
+     "end": 12.22
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。善氣：和善誠懇的神色。迎人：接待對待他人。惡氣：凶狠暴躁的神態。干戈：古代兵器，比喻衝突與戰事。",
+     "start": 12.67,
+     "end": 28.48
+    },
+    {
+     "text": "這句話給我們的生活啟發是：待人接物常懷善意與微笑，是化解一切矛盾的最好良藥。",
+     "start": 28.93,
+     "end": 37.24
+    }
+   ],
+   "explain_total": 37.24,
+   "files": {
+    "read": "audio/q24_read.mp3",
+    "explain": "audio/q24_explain.mp3"
+   }
+  },
+  {
+   "id": 25,
+   "prefix": "q25",
+   "title": "實者無聲",
+   "read": [
+    {
+     "text": "名言佳句，實者無聲",
+     "start": 0.0,
+     "end": 2.71
+    },
+    {
+     "text": "整瓶水不響，",
+     "start": 3.06,
+     "end": 4.93
+    },
+    {
+     "text": "半瓶水有聲。",
+     "start": 5.28,
+     "end": 7.16
+    }
+   ],
+   "read_total": 7.16,
+   "explain": [
+    {
+     "text": "裝得滿滿的瓶子搖晃時沉穩安靜、毫無聲響，只裝了半瓶的水搖晃起來反而叮咚作響。",
+     "start": 0.0,
+     "end": 8.42
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。整瓶水：比喻學識淵博、修養深厚之人。半瓶水：比喻一知半解卻四處炫耀之人。響：吵鬧發出聲音。",
+     "start": 8.87,
+     "end": 23.51
+    },
+    {
+     "text": "這句話給我們的生活啟發是：真正有真才實學的人總是謙虛沉穩，淺薄虛妄的人反而四處張揚喧嘩。",
+     "start": 23.96,
+     "end": 33.56
+    }
+   ],
+   "explain_total": 33.56,
+   "files": {
+    "read": "audio/q25_read.mp3",
+    "explain": "audio/q25_explain.mp3"
+   }
+  },
+  {
+   "id": 26,
+   "prefix": "q26",
+   "title": "克己制勝",
+   "read": [
+    {
+     "text": "名言佳句，克己制勝",
+     "start": 0.0,
+     "end": 2.66
+    },
+    {
+     "text": "一個人最大的敵人常是自己。",
+     "start": 3.01,
+     "end": 6.13
+    }
+   ],
+   "read_total": 6.13,
+   "explain": [
+    {
+     "text": "人在一生中面臨最嚴峻的對手與阻礙，往往不是外在的他人，而是自己內心的懶惰、恐懼與驕傲。",
+     "start": 0.0,
+     "end": 8.98
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。敵人：競爭對手、障礙。自己：指自身的弱點、惰性與私心。",
+     "start": 9.43,
+     "end": 19.89
+    },
+    {
+     "text": "這句話給我們的生活啟發是：戰勝自己的軟弱與怠惰，你就能戰勝世間的一切困難。",
+     "start": 20.34,
+     "end": 28.02
+    }
+   ],
+   "explain_total": 28.02,
+   "files": {
+    "read": "audio/q26_read.mp3",
+    "explain": "audio/q26_explain.mp3"
+   }
+  },
+  {
+   "id": 27,
+   "prefix": "q27",
+   "title": "推己及人",
+   "read": [
+    {
+     "text": "名言佳句，推己及人",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "己所不欲，",
+     "start": 3.04,
+     "end": 4.91
+    },
+    {
+     "text": "勿施於人。",
+     "start": 5.26,
+     "end": 7.13
+    }
+   ],
+   "read_total": 7.13,
+   "explain": [
+    {
+     "text": "如果是自己不願意承受或不喜歡的事情，就千萬不要強加在別人身上。",
+     "start": 0.0,
+     "end": 6.38
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。己：自己。不欲：不願意、不喜悅。勿：不要。施：加諸、給予。",
+     "start": 6.83,
+     "end": 19.17
+    },
+    {
+     "text": "這句話給我們的生活啟發是：設身處地為他人著想，是同理心與仁德大智慧的根本起點。",
+     "start": 19.62,
+     "end": 27.73
+    }
+   ],
+   "explain_total": 27.73,
+   "files": {
+    "read": "audio/q27_read.mp3",
+    "explain": "audio/q27_explain.mp3"
+   }
+  },
+  {
+   "id": 28,
+   "prefix": "q28",
+   "title": "明鏡得失",
+   "read": [
+    {
+     "text": "名言佳句，明鏡得失",
+     "start": 0.0,
+     "end": 2.69
+    },
+    {
+     "text": "以銅為鏡，",
+     "start": 3.04,
+     "end": 4.91
+    },
+    {
+     "text": "可以正衣冠；",
+     "start": 5.26,
+     "end": 7.13
+    },
+    {
+     "text": "以人為鏡，",
+     "start": 7.48,
+     "end": 9.35
+    },
+    {
+     "text": "可以明得失。",
+     "start": 9.7,
+     "end": 11.58
+    }
+   ],
+   "read_total": 11.58,
+   "explain": [
+    {
+     "text": "拿銅鏡當鏡子，可以整理整飭衣帽冠裳；拿他人當鏡子對照自己，可以清楚看見自己的優缺點與成敗得失。",
+     "start": 0.0,
+     "end": 10.06
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。銅為鏡：古代青銅打磨的鏡子。正：整理端正。衣冠：衣服帽子。以人為鏡：以別人的言行為借鑑。明：看清看懂。",
+     "start": 10.51,
+     "end": 26.92
+    },
+    {
+     "text": "這句話給我們的生活啟發是：善於聆聽他人的建言並以此反躬自省，是成就不凡事業的關鍵。",
+     "start": 27.37,
+     "end": 35.94
+    }
+   ],
+   "explain_total": 35.94,
+   "files": {
+    "read": "audio/q28_read.mp3",
+    "explain": "audio/q28_explain.mp3"
+   }
+  },
+  {
+   "id": 29,
+   "prefix": "q29",
+   "title": "惜時如金",
+   "read": [
+    {
+     "text": "名言佳句，惜時如金",
+     "start": 0.0,
+     "end": 2.64
+    },
+    {
+     "text": "一寸光陰一寸金，",
+     "start": 2.99,
+     "end": 5.13
+    },
+    {
+     "text": "寸金難買寸光陰。",
+     "start": 5.48,
+     "end": 7.76
+    }
+   ],
+   "read_total": 7.76,
+   "explain": [
+    {
+     "text": "一寸短暫的光陰就像一寸黃金那樣珍貴無比，而就算擁有無盡的黃金，也難以買回逝去的一剎那光陰。",
+     "start": 0.0,
+     "end": 9.41
+    },
+    {
+     "text": "我們來認識一下這句話的典故與字詞。光陰：時光、時間。寸金：極言黃金之貴重。難買：無法購回。",
+     "start": 9.86,
+     "end": 21.21
+    },
+    {
+     "text": "這句話給我們的生活啟發是：時間如流水一去不復返，必須牢牢把握每一個當下，勤奮向上、不負韶華。",
+     "start": 21.66,
+     "end": 31.6
+    }
+   ],
+   "explain_total": 31.6,
+   "files": {
+    "read": "audio/q29_read.mp3",
+    "explain": "audio/q29_explain.mp3"
+   }
+  }
+ ]
+};
+let playKey = null, playMode = null, playEndAt = Infinity;
+
+voiceHint();
+try {
+  fetch('timings.json').then(r => r.json()).then(j => {
+    if (j) TIM = j;
+    voiceHint();
+  }).catch(() => {});
+} catch (e) {}
+
+function voiceHint() {
+  const el = document.getElementById('vn');
+  if (!el) return;
+  if (TIM) {
+    el.textContent = '語音：曉曉高音質美聲 (女聲) ｜ 智能逐句跟讀 ｜ 側邊靜音撥桿需關閉';
+  } else {
+    el.textContent = (voice ? '語音：' + voice.name : 'Web Speech API 即時語音') + ' ｜ 側邊靜音撥桿需關閉';
+  }
+}
+
+function findVoice() {
+  if (!SS) return;
+  const v = SS.getVoices() || [];
+  voice = v.find(x => /zh[-_]TW/i.test(x.lang)) || v.find(x => /^zh/i.test(x.lang)) || null;
   voiceHint();
 }
-if(SS){findVoice();if(SS.onvoiceschanged!==undefined)SS.onvoiceschanged=findVoice}else{const el=document.getElementById('vn');if(el)el.textContent='（此瀏覽器不支援語音，請改用 Safari）'}
-function stopSpeak(){
-  exStop();sid++;stopAudioOnly();
-  if(SS){try{SS.cancel()}catch(e){}}
-  stopSpeakPaint();
+if (SS) {
+  findVoice();
+  if (SS.onvoiceschanged !== undefined) SS.onvoiceschanged = findVoice;
 }
-function speak(){
-  unlockAudio();applyRate();
-  if(TIM&&timPoem(cur)){playReadFull();return}
-  if(!SS)return;
-  const was=SS.speaking||SS.pending;stopSpeak();const my0=sid;
-  if(was&&IOS){setTimeout(()=>{if(my0==sid)speakNowLegacy()},60)}else{speakNowLegacy()}
+
+// 停止朗讀 (同時解除跟讀狀態，全詩完整呈現)
+function stopSpeak() {
+  isReadingMode = false;
+  poemEl.classList.remove('reading-mode');
+  document.querySelectorAll('#poem p').forEach(p => {
+    p.classList.remove('active', 'read-revealed');
+  });
+  exStop();
+  sid++;
+  playMode = null;
+  try { AU_READ.pause(); } catch (e) {}
+  try { AU_EX.pause(); } catch (e) {}
+  if (SS) { try { SS.cancel(); } catch (e) {} }
 }
-function playReadFull(){
-  const key=cur+':read:full';
-  if(playKey===key&&!AU_READ.paused)return;
-  stopSpeak();const my=sid;stopAudioOnly();sid=my;
-  const tp=timPoem(cur),ps=[...poem.querySelectorAll('p')];
-  t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
-  exStop();applyRate();
-  AU_READ.src=tp.files.read;AU_EX.pause();
-  playKey=key;playMode='readFull';playEndAt=tp.read_total+0.3;
-  dbgM=' ｜朗讀：預生成 mp3';dbgR();preloadPoem(cur);
-  AU_READ.play().catch(e=>{playKey=null;playMode=null;speakNowLegacy()});
+
+function getTim(mode, idx) {
+  if (!TIM) return null;
+  if (mode === 'poem') {
+    if (TIM.poems) return TIM.poems[idx] || null;
+    if (Array.isArray(TIM)) return TIM[idx] || null;
+    return null;
+  } else {
+    if (TIM.quotes) return TIM.quotes[idx] || null;
+    return null;
+  }
 }
-function playSentence(k){
-  unlockAudio();applyRate();
-  const tp=TIM&&timPoem(cur);
-  if(!tp){stopSpeak();LS[k]=T;legacySentence(k);return}
-  const en=tp.read[k+1];if(!en)return;
-  const key=cur+':read:'+k;
-  if(playKey===key&&!AU_READ.paused)return;
-  stopSpeak();const my=sid;stopAudioOnly();sid=my;
-  const ps=[...poem.querySelectorAll('p')];
-  if(LS[k]===Infinity||T-LS[k]>30)LS[k]=T;
-  exStop();AU_EX.pause();
-  if(AU_READ.getAttribute('data-poem')!=String(cur)){AU_READ.src=tp.files.read;AU_READ.setAttribute('data-poem',cur)}
-  applyRate();AU_READ.currentTime=Math.max(0,en.start+.02);
-  playKey=key;playMode='single';playEndAt=en.end;
-  dbgM=' ｜朗讀：預生成 mp3（單句）';dbgR();
-  AU_READ.play().catch(e=>{playKey=null;playMode=null;legacySentence(k)});
+
+function applyRate() {
+  const r = +document.getElementById('rt').value / 0.8;
+  try { AU_READ.playbackRate = r; AU_EX.playbackRate = r; } catch (e) {}
 }
-function speakNow(){playReadFull()}
-function speakNowLegacy(){
-  if(!SS)return;
-  const my=sid,p=P[cur],ps=[...poem.querySelectorAll('p')],rate=+document.getElementById('rt').value;
-  t0=null;LS=ps.map(()=>Infinity);ps.forEach(e=>{e.style.animation='none';e.style.opacity=0});
-  const lines=[p[0]+'，'+p[1].replace('・','，'),...ps.map(e=>e.textContent)];
-  let broken=false;const done=[],wd=[],est=t=>t.length/(4*rate*.9)+.7;
-  const arm=(k,ms)=>{
-    if(k<lines.length)wd[k]=setTimeout(()=>{
-      if(k){broken=true;dbgM=' ｜朗讀事件：備援計時';dbgR()}
-      reveal(k);
-      if(my==sid&&k<lines.length)speakStep(k);
-    },ms);
-  };
-  const reveal=k=>{
-    if(my!=sid||done[k])return;
-    done[k]=true;clearTimeout(wd[k]);
-    ps.forEach(x=>x.style.background='');
-    if(k){
-      const e=ps[k-1];if(LS[k-1]===Infinity)LS[k-1]=T;
-      e.style.animation='f 1s forwards';e.style.opacity=1;e.style.background='rgba(176,48,38,.18)';
+document.getElementById('rt').addEventListener('change', applyRate);
+
+// 定時追蹤音訊時間軸並點亮詩句／名言
+setInterval(() => {
+  if (!playMode) return;
+  const au = playMode.startsWith('ex') ? AU_EX : AU_READ;
+  if (au.paused) return;
+  const t = au.currentTime;
+  if (t >= playEndAt) {
+    stopSpeak();
+    return;
+  }
+  const tp = getTim(curMode, cur);
+  if (!tp) return;
+  if (playMode === 'readFull' || playMode === 'single') {
+    const en = tp.read;
+    for (let k = 1; k < en.length; k++) {
+      if (t >= en[k].start && t < en[k].end) {
+        paintRead(k - 1);
+        break;
+      }
     }
-    arm(k+1,est(lines[k])*(broken?900:1200)+(broken?0:500));
-  };
-  const started=[];
-  function speakStep(k){
-    if(my!=sid||k>=lines.length||started[k])return;
-    started[k]=true;
-    try{
-      const u=new SpeechSynthesisUtterance(lines[k]);
-      window._curU=u;
-      u.lang=voice?voice.lang:'zh-TW';
-      if(voice)u.voice=voice;
-      u.rate=k?rate*.9:rate;
-      u.pitch=1.05;
-      u.onstart=()=>{if(my!=sid)return;if(k&&!done[k]){broken=false;dbgM=' ｜朗讀事件：正常';dbgR()}reveal(k)};
-      u.onend=()=>{if(my!=sid)return;reveal(k+1);if(k+1<lines.length)speakStep(k+1);else ps.forEach(e=>e.style.background='')};
-      u.onerror=()=>{if(my!=sid)return;reveal(k+1);if(k+1<lines.length)speakStep(k+1)};
-      SS.speak(u);
-    }catch(err){reveal(k+1);if(k+1<lines.length)speakStep(k+1)}
+  } else if (playMode === 'exFull') {
+    const en = tp.explain;
+    for (let k = 0; k < en.length; k++) {
+      if (t >= en[k].start && t < en[k].end) {
+        paintEx(k);
+        break;
+      }
+    }
   }
-  arm(0,500);
-  speakStep(0);
+}, 80);
+
+// 渲染跟讀動效：讀到的句子墨染浮現，未讀的句子隱藏，讀過的句子保持顯現
+function paintRead(sentIdx) {
+  const ps = [...poemEl.querySelectorAll('p')];
+  ps.forEach((p, i) => {
+    if (isReadingMode) {
+      if (i <= sentIdx) {
+        p.classList.add('read-revealed');
+      } else {
+        p.classList.remove('read-revealed');
+      }
+    }
+    p.classList.toggle('active', i === sentIdx);
+    if (i === sentIdx && (LS[i] === Infinity || T - LS[i] > 20)) {
+      LS[i] = T;
+    }
+  });
 }
-function legacySentence(k){
-  if(!SS)return;const ps=[...poem.querySelectorAll('p')],e=ps[k];if(!e)return;
-  try{const u=new SpeechSynthesisUtterance(e.textContent);window._curU=u;u.lang=voice?voice.lang:'zh-TW';if(voice)u.voice=voice;u.rate=+document.getElementById('rt').value*.9;u.onstart=()=>{ps.forEach(x=>x.style.background='');e.style.background='rgba(176,48,38,.18)'};u.onend=()=>{e.style.background=''};SS.speak(u)}catch(err){}
+
+function paintEx(idx) {
+  const cards = document.querySelectorAll('#ex-body .ex-card');
+  cards.forEach((c, i) => {
+    c.style.background = i === idx ? 'rgba(176,48,38,0.18)' : '';
+  });
 }
-document.getElementById('sp').onclick=speak;document.getElementById('ss').onclick=stopSpeak;
-AU_READ.onended=()=>{if(playMode==='readFull'||playMode==='single'){stopAudioOnly();stopSpeakPaint()}};
-const _pick=pick;pick=function(i){stopSpeak();_pick(i);try{AU_READ.setAttribute('data-poem','')}catch(e){}try{localStorage.setItem('poemLast',cur)}catch(e){}fit();renderEx();preloadPoem(cur);if(window._started&&document.getElementById('au').checked)setTimeout(speak,200)};
-// 電腦版：依詩句欄數自動撐開右側詩框寬度，完整顯示、不出現捲軸（窄螢幕仍維持整行排列）
-{const K=(i,k,f)=>[...P[i][4],...(X[i]||[])].forEach(e=>{if(e[0]=='fg'&&(!f||f(e))){e[6]=undefined;e[7]=k}});K(0,'elder');K(6,'soldier');K(9,'soldier');K(16,'woman');K(11,'woman',e=>e[4]>=2);const f23=[...P[23][4],...(X[23]||[])].filter(e=>e[0]=='fg');if(f23.length>1){const e=f23[f23.length-1];e[6]=undefined;e[7]='elder'}
-P[17][4].splice(3,1);M[17]='2003';X[17][0]=['sn',0,880,430,34,-10];
-const c20=P[20][4].find(e=>e[0]=='ca');if(c20){X[20].push(['sc',c20[1]+.3,c20[2],c20[3],c20[4]]);M[20]+='2'}}
-const EX=[["賀知章年輕時就離開了家鄉，到很老才回來。他說話還是老家的口音，耳邊的頭髮卻變得稀疏了。村裡的小孩看到他，都不認識，還笑著問：「客人，您從哪裡來呀？」", "鄉音：家鄉的口音。鬢毛：耳朵旁邊的頭髮。", "回到家鄉，家鄉的人卻把他當成客人，心裡又高興又心酸。"], ["月亮落下去了，烏鴉在樹上啼叫，天空好像飄著霜。江邊的楓樹和漁船的燈火，陪著睡不著的我。蘇州城外的寒山寺，半夜的鐘聲傳到了我的船上。", "夜泊：晚上把船停在岸邊。江楓：江邊的楓樹。", "旅途中的夜晚好安靜，鐘聲讓心裡的愁更深了。"], ["秋天的夜裡，銀白的蠟燭照著畫屏，光看起來冷冷的。宮女拿著小扇子，撲打飛來飛去的螢火蟲。夜色涼得像水，她躺在石階上，望著天上的牽牛星和織女星。", "銀燭：銀白色的蠟燭。輕羅小扇：用薄絲做的小圓扇。", "宮女好寂寞，只能看著星星想心事。"], ["我一個人住在別的地方，每到節日就更想念家人。我知道哥哥弟弟們正在爬高山，大家頭上都插著茱萸，卻少了我一個人。", "倍：更加。茱萸：一種有香氣的植物，重陽節那天，人們會帶著它登高。", "家人團聚時少了自己，思念就更深了。"], ["少年很容易變老，學問卻很難學成，所以連一寸的時間都不能隨便浪費。池塘邊的春草夢還沒醒，台階前的梧桐葉已經沙沙作響，秋天又到了。", "輕：看輕。春草夢：春天的美夢。", "時間過得很快，要趁年輕好好讀書。"], ["老朋友在黃鶴樓向我告別，在花開得像煙霧的三月，坐船往揚州去。那一片孤單的帆影越走越遠，消失在藍天的盡頭，只剩長江的水一直流向天邊。", "故人：老朋友。煙花：形容春天的花開得像一片煙霧。惟：只。", "李白一直望著船走遠，捨不得朋友離開。"], ["月亮和關口還是秦漢時代的樣子，可是去很遠的地方打仗的人，還沒有回來。要是名將李廣還在，就不會讓胡人的兵馬越過陰山。", "塞：邊境上重要的地方。還：回來。不教：不讓。度：越過。", "作者想念出征的士兵，也希望有好將軍保護國家。"], ["我勸你不要太愛惜華麗的衣服，要好好珍惜年輕的時光。花開得正美，就該摘下來，不要等到花謝了，才空著手去折枯枝。", "金縷衣：繡著金線的漂亮衣服。直須：儘管，不要猶豫。莫待：不要等到。", "時間不會等人，要趁現在把握好時光。"], ["半畝大的方形池塘，像一面打開的鏡子，天光和雲的影子在水裡來回移動。為什麼池水這麼清澈？因為源頭有活水不停流進來。", "方塘：一方水池。鑑：鏡子。", "常常學新東西，心裡才會像池水一樣清清亮亮。"], ["用葡萄釀的好酒，倒進夜光杯裡。正想喝的時候，琵琶聲響起，催大家出發了。就算醉倒在沙場上，請你別笑我。從古到今，打仗的人有幾個能平安回家呢？", "夜光杯：用白玉做的酒杯。催：催促。沙場：戰場。", "士兵一邊喝酒，一邊想著打仗的辛苦，有點無奈，也有點豪氣。"], ["遠遠看到一座高橋，被山野間的煙霧遮住了。我在河邊的石堆旁，向漁船上的人問路。桃花整天跟著流水漂走，桃花源的洞口，到底在清澈溪水的哪一邊呢？", "飛橋：很高的橋。石磯：河裡露出水面的石堆。", "作者想找到像仙境一樣的桃花源。"], ["慈祥的媽媽拿著針線，為要遠行的孩子縫衣服。她縫得又密又緊，是怕孩子很晚才回家。誰說小小的草心，報答得了春天陽光般的恩情呢？", "遊子：離開家鄉的人。三春暉：春天溫暖的陽光，比喻媽媽的愛。", "媽媽的愛藏在一針一線裡，我們一輩子也報答不完。"], ["天上的鳥兒都飛遠了，孤單的白雲也慢慢飄走。我望著山，山也望著我，我們誰都不嫌棄誰。這時陪著我的，只有敬亭山。", "盡：消失。閒：安靜。厭：厭倦。", "李白很孤單，所以把山當成了好朋友。"], ["從正面看，廬山是一排山嶺，從側面看，就變成高高的山峰。從遠、近、高、低不同的地方看，樣子都不一樣。我們看不清廬山的真面目，因為自己就在山裡面。", "題壁：把字寫在牆上。緣：因為。峰：山的尖頂。", "換個角度看事情，才能看得更清楚。"], ["黃河好像從遠方一直通到白雲裡，一座孤零零的城蓋在高山上。羌笛不用吹出哀怨的〈楊柳〉曲子，因為春風根本吹不到玉門關外。", "孤城：指玉門關。羌笛：羌族人的短笛。何須：何必。", "邊境的士兵離家很遠，春天好像也到不了那裡。"], ["我偶然走到松樹下，就枕著石頭睡著了。山裡沒有日曆，冬天過去了，我也不知道現在是哪一年。", "偶：偶然。高枕：安心地睡覺。曆日：記載日子和節氣的書。", "在山裡過著自由安靜的日子，連時間都忘了。"], ["美麗的女子捲起了珠簾，久久坐著，皺著眉頭。只看見她臉上的淚痕濕了一大片，不知道她心裡在怨誰。", "蹙蛾眉：皺起眉頭。深坐：久久呆坐。", "她很傷心，卻不說出口，讓人心疼。"], ["心裡很有感情，看起來卻好像沒有感情，因為太難過，連笑都笑不出來。桌上的蠟燭好像也捨不得分別，一滴一滴流下蠟油，替我們流淚到天亮。", "唯覺：只覺得。笑不成：想笑卻笑不出來。還惜別：也捨不得分開。", "太捨不得朋友，難過得說不出話。"], ["李白和杜甫的詩傳了很久，現在讀起來已經不覺得新鮮。每個朝代都會出現有才華的人，各自領導風潮好幾百年。", "李杜：李白和杜甫。江山：國家。", "寫作要有自己的新想法，不要只照著前人做。"], ["清明節的時候，細雨一直下，路上的行人心情很煩悶。我向牧童請問哪裡有酒店可以休息，牧童用手指著遠處的杏花村。", "紛紛：很多。欲斷魂：難過得好像靈魂要離開身體。借問：請問。", "淋著雨的旅人，因為牧童的指路，心裡有了方向。"], ["你問我什麼時候回去，我還不知道。巴山的夜晚正下著雨，雨水漲滿了秋天的池塘。什麼時候才能和你坐在西窗下一起剪燭花，說說今晚巴山夜雨的情景呢？", "何當：什麼時候才能。剪燭：把燒焦的燭芯剪掉，燭光才會亮。卻話：回頭再說。", "作者很想念親人，盼望能早點團聚。"], ["我在花叢中拿著一壺酒，一個人喝，沒有人陪。我舉起杯子邀請明月，再加上月光照出來的影子，就像三個人一起喝酒。", "獨酌：一個人喝酒。無相親：沒有親近的人。", "李白很孤單，所以想像月亮和影子是他的朋友。"], ["江上飄著細細的雨，岸邊的草長得很整齊。六朝的繁華像夢一樣過去了，只剩鳥兒空空地叫。最無情的是臺城的柳樹，還是像煙霧一樣罩著十里長堤。", "霏霏：細雨飄飛的樣子。六朝：金陵過去的六個朝代。臺城：六朝時的皇宮。", "人間的繁華會消失，大自然卻一直都在。"], ["半夜三更就點燈讀書，到天快亮、公雞啼叫的時候，正是男孩子讀書最好的時間。年輕時不知道要早點用功，等頭髮白了，才後悔沒有多讀書，已經太晚了。", "三更：半夜。五更：天快亮的時候。黑髮：年輕人。白首：老人。", "讀書要趁早，不要等老了才後悔。"]];
-function renderEx(){const e=EX[cur],d=document.getElementById('ex');if(!e||!d)return;d.innerHTML='<p style="margin:0 0 8px"><button id="exs">🔊 聽解說</button></p><p class="s"><b>🗣 白話說一說</b><br>'+e[0]+'</p><p class="s"><b>🔤 小小字詞</b><br>'+e[1]+'</p><p class="s" style="margin:0"><b>⭐ 記住這句</b><br>'+e[2]+'</p>'}
-let exOn=false;
-function exStop(){exOn=false;const b=document.getElementById('exs');if(b)b.textContent='🔊 聽解說';document.querySelectorAll('#ex p.s').forEach(e=>e.style.background='')}
-function speakEx(){
-  unlockAudio();applyRate();
-  if(TIM&&timPoem(cur)){playExplainFull();return}
-  speakExLegacy();
-}
-function playExplainFull(){
-  const key=cur+':explain:full';
-  if(playKey===key&&!AU_EX.paused)return;
-  if(SS){try{SS.cancel()}catch(e){}}
-  const my=++sid;stopAudioOnly();AU_READ.pause();
-  const tp=timPoem(cur);if(!tp)return;
-  exOn=true;const b=document.getElementById('exs');if(b)b.textContent='⏹ 停止解說';
-  applyRate();AU_EX.src=tp.files.explain;
-  playKey=key;playMode='exFull';playEndAt=tp.explain_total+0.3;
-  dbgM=' ｜解說：預生成 mp3';dbgR();
-  AU_EX.play().catch(e=>{playKey=null;playMode=null;exStop();speakExLegacy()});
-  AU_EX.onended=()=>{if(my==sid){stopAudioOnly();exStop()}};
-}
-function speakExLegacy(){
-  if(!SS)return;unlockAudio();
-  if(exOn){stopSpeak();return}
-  const was=SS.speaking||SS.pending;stopSpeak();const my=sid;
-  const rate=+document.getElementById('rt').value;const ps=[...document.querySelectorAll('#ex p.s')];const e=EX[cur];if(!e)return;
-  const tx=[e[0],'詩裡有幾個詞，我們先來認識一下。'+e[1].split('。').filter(Boolean).map(w=>{const[a,...r]=w.split('：');return '「'+a+'」的意思是'+r.join('：')+'。'}).join(''),'簡單來說，'+e[2]];
-  exOn=true;const b=document.getElementById('exs');if(b)b.textContent='⏹ 停止解說';
-  function stepEx(k){
-    if(my!=sid||!exOn||k>=tx.length){if(k>=tx.length)exStop();return}
-    try{
-      const u=new SpeechSynthesisUtterance(tx[k]);
-      window._curExU=u;
-      u.lang=voice?voice.lang:'zh-TW';
-      if(voice)u.voice=voice;
-      u.rate=rate*.95;u.pitch=1.05;
-      u.onstart=()=>{if(my==sid)ps.forEach((x,i)=>x.style.background=i==k?'rgba(176,48,38,.15)':'')};
-      u.onend=()=>{if(my==sid&&exOn)stepEx(k+1)};
-      u.onerror=()=>{if(my==sid&&exOn)stepEx(k+1)};
-      SS.speak(u);
-    }catch(err){if(my==sid&&exOn)stepEx(k+1)}
+
+// 開始朗讀
+function speak() {
+  unlockAudio();
+  stopSpeak();
+  applyRate();
+  
+  // 開啟跟讀模式
+  isReadingMode = true;
+  poemEl.classList.add('reading-mode');
+  poemEl.querySelectorAll('p').forEach(p => p.classList.remove('read-revealed', 'active'));
+
+  const tp = getTim(curMode, cur);
+  if (tp && tp.files && tp.files.read) {
+    AU_READ.src = tp.files.read;
+    AU_READ.currentTime = 0;
+    playMode = 'readFull';
+    playEndAt = tp.read_total + 0.3;
+    AU_READ.play().catch(e => speakLegacy());
+  } else {
+    speakLegacy();
   }
-  if(was&&IOS){setTimeout(()=>{if(my==sid&&exOn)stepEx(0)},60)}else{stepEx(0)}
 }
-document.getElementById('ex').addEventListener('click',ev=>{if(ev.target.id=='exs')speakEx()});
-document.getElementById('exb').onclick=()=>{const d=document.getElementById('ex'),on=d.classList.toggle('on');document.getElementById('exb').classList.toggle('on',on)};
-function fit(){const pm=document.getElementById('poem');pm.style.flex='';if(innerWidth<=820&&!matchMedia('(orientation:landscape) and (max-height:520px)').matches)return;let w=26;for(const e of pm.children)w+=e.offsetWidth+parseFloat(getComputedStyle(e).marginLeft||0);pm.style.flex='0 0 '+Math.ceil(w)+'px'}
-addEventListener('resize',fit);if(document.fonts)document.fonts.ready.then(fit);
-let st=0;try{const v=parseInt(localStorage.getItem('poemLast'));if(v>=0&&v<P.length)st=v}catch(e){}pick(st);window._started=1;requestAnimationFrame(frame);
-</script></body></html>
+
+function speakLegacy() {
+  if (!SS) return;
+  const my = sid;
+  const ps = [...poemEl.querySelectorAll('p')];
+  const list = curMode === 'poem' ? P : QUOTES_P;
+  const item = list[cur];
+  const rate = +document.getElementById('rt').value;
+  
+  const textLines = ps.map(p => p.textContent);
+  const lines = [item[0] + '。' + item[1], ...textLines];
+  
+  let step = 0;
+  function nextStep() {
+    if (my !== sid || step >= lines.length) return;
+    const u = new SpeechSynthesisUtterance(lines[step]);
+    u.rate = step ? rate * .9 : rate;
+    u.lang = 'zh-TW';
+    if (voice) u.voice = voice;
+    
+    u.onstart = () => {
+      if (my !== sid) return;
+      if (step > 0) {
+        paintRead(step - 1);
+      }
+    };
+    u.onend = () => {
+      if (my !== sid) return;
+      step++;
+      if (step < lines.length) nextStep();
+      else stopSpeak();
+    };
+    u.onerror = () => {
+      step++;
+      if (step < lines.length) nextStep();
+    };
+    SS.speak(u);
+  }
+  nextStep();
+}
+
+function playSentence(k) {
+  unlockAudio();
+  stopSpeak();
+  applyRate();
+  const ps = [...poemEl.querySelectorAll('p')];
+  ps.forEach((p, idx) => p.classList.toggle('active', idx === k));
+  if (LS[k] === Infinity || T - LS[k] > 20) LS[k] = T;
+  
+  const tp = getTim(curMode, cur);
+  if (tp && tp.read && tp.read[k + 1]) {
+    const en = tp.read[k + 1];
+    AU_READ.src = tp.files.read;
+    AU_READ.currentTime = Math.max(0, en.start + 0.02);
+    playMode = 'single';
+    playEndAt = en.end;
+    AU_READ.play().catch(e => legacySingleSentence(k));
+  } else {
+    legacySingleSentence(k);
+  }
+}
+
+function legacySingleSentence(k) {
+  const ps = [...poemEl.querySelectorAll('p')];
+  if (!SS || !ps[k]) return;
+  const lineText = ps[k].textContent;
+  const u = new SpeechSynthesisUtterance(lineText);
+  u.lang = 'zh-TW';
+  if (voice) u.voice = voice;
+  u.rate = +document.getElementById('rt').value * .9;
+  SS.speak(u);
+}
+
+// 賞析解說語音
+let exOn = false;
+function exStop() {
+  exOn = false;
+  const b = document.getElementById('exs');
+  if (b) b.textContent = '🔊 聽解說';
+  document.querySelectorAll('#ex-body .ex-card').forEach(c => c.style.background = '');
+}
+
+function speakEx() {
+  unlockAudio();
+  if (exOn) { stopSpeak(); return; }
+  exOn = true;
+  const b = document.getElementById('exs');
+  if (b) b.textContent = '⏹ 停止解說';
+  applyRate();
+  const tp = getTim(curMode, cur);
+  if (tp && tp.files && tp.files.explain) {
+    AU_EX.src = tp.files.explain;
+    AU_EX.currentTime = 0;
+    playMode = 'exFull';
+    playEndAt = tp.explain_total + 0.3;
+    AU_EX.play().catch(e => speakExLegacy());
+  } else {
+    speakExLegacy();
+  }
+}
+
+function speakExLegacy() {
+  const ex = curMode === 'poem' ? EX[cur] : QUOTES_EX[cur];
+  if (!ex || !SS) return;
+  const text = ex[0] + '。' + ex[1] + '。' + ex[2];
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-TW';
+  if (voice) u.voice = voice;
+  u.rate = +document.getElementById('rt').value * .92;
+  u.onend = () => exStop();
+  u.onerror = () => exStop();
+  SS.speak(u);
+}
+
+// 播畢自動停止，恢復全詩完整顯現
+AU_READ.onended = () => stopSpeak();
+AU_EX.onended = () => stopSpeak();
+document.getElementById('exs').onclick = speakEx;
+
+// 按鈕事件綁定
+document.getElementById('pr').onclick = () => pick(cur - 1);
+document.getElementById('nx').onclick = () => pick(cur + 1);
+document.getElementById('rp').onclick = () => pick(cur);
+document.getElementById('sp').onclick = speak;
+document.getElementById('ss').onclick = stopSpeak;
+document.getElementById('exb').onclick = () => {
+  const d = document.getElementById('ex');
+  const on = d.classList.toggle('on');
+  document.getElementById('exb').classList.toggle('active', on);
+};
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') pick(cur - 1);
+  if (e.key === 'ArrowRight') pick(cur + 1);
+});
+
+// 啟動程序
+renderNav();
+pick(0);
+window._started = true;
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
