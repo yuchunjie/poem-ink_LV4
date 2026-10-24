@@ -1465,6 +1465,37 @@ let LS = [], elems = [], nl = 0;
 const poemEl = document.getElementById('poem');
 const chapterNav = document.getElementById('chapter-nav');
 
+// ===== 使用者設定與偏好記憶 (localStorage) =====
+const PREF_KEY = 'poem_ink_prefs_v4';
+let lastPoemIdx = 0, lastQuoteIdx = 0;
+
+function savePrefs() {
+  try {
+    if (curMode === 'poem') lastPoemIdx = cur;
+    else lastQuoteIdx = cur;
+    const prefs = {
+      mode: curMode,
+      poemIdx: lastPoemIdx,
+      quoteIdx: lastQuoteIdx,
+      semFilter: curSem,
+      monthFilter: curMonth,
+      rate: document.getElementById('rt').value,
+      autoPlay: document.getElementById('au').checked,
+      exOpen: document.getElementById('ex').classList.contains('on')
+    };
+    localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+  } catch (e) {}
+}
+
+function loadPrefs() {
+  try {
+    const raw = localStorage.getItem(PREF_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // 切換 詩詞 / 名言 模組
 function switchMode(mode) {
   stopSpeak();
@@ -1474,7 +1505,9 @@ function switchMode(mode) {
   document.getElementById('seal-mark').textContent = mode === 'poem' ? '詩' : '言';
   document.getElementById('month-filters').style.display = mode === 'quote' ? 'inline-flex' : 'none';
   setSemesterFilter('all');
-  pick(0);
+  const targetIdx = mode === 'poem' ? lastPoemIdx : lastQuoteIdx;
+  pick(targetIdx);
+  savePrefs();
 }
 
 // 學期過濾
@@ -1484,6 +1517,7 @@ function setSemesterFilter(sem) {
     b.classList.toggle('active', sem === 'all' ? i === 0 : (sem === 0 ? i === 1 : i === 2));
   });
   renderNav();
+  savePrefs();
 }
 
 // 學月過濾 (名言專屬)
@@ -1493,6 +1527,7 @@ function setMonthFilter(month) {
     b.classList.toggle('active', month === 'all' ? i === 0 : (+month === i));
   });
   renderNav();
+  savePrefs();
 }
 
 function quoteInfo(idx) {
@@ -1558,6 +1593,7 @@ function pick(idx) {
   if (window._started && document.getElementById('au').checked) {
     setTimeout(speak, 250);
   }
+  savePrefs();
 }
 
 function setup() {
@@ -4692,15 +4728,52 @@ document.getElementById('exb').onclick = () => {
   const d = document.getElementById('ex');
   const on = d.classList.toggle('on');
   document.getElementById('exb').classList.toggle('active', on);
+  savePrefs();
 };
+document.getElementById('au').addEventListener('change', savePrefs);
 addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') pick(cur - 1);
   if (e.key === 'ArrowRight') pick(cur + 1);
 });
 
-// 啟動程序
+// 啟動程序：完整還原用戶最後的選項與設定
+const saved = loadPrefs();
+if (saved) {
+  if (saved.mode === 'quote' || saved.mode === 'poem') curMode = saved.mode;
+  if (saved.semFilter !== undefined) curSem = saved.semFilter;
+  if (saved.monthFilter !== undefined) curMonth = saved.monthFilter;
+  if (typeof saved.poemIdx === 'number') lastPoemIdx = saved.poemIdx;
+  if (typeof saved.quoteIdx === 'number') lastQuoteIdx = saved.quoteIdx;
+  
+  if (saved.rate) {
+    const sel = document.getElementById('rt');
+    if (sel) sel.value = saved.rate;
+  }
+  if (saved.autoPlay !== undefined) {
+    const au = document.getElementById('au');
+    if (au) au.checked = saved.autoPlay;
+  }
+  if (saved.exOpen) {
+    document.getElementById('ex').classList.add('on');
+    document.getElementById('exb').classList.add('active');
+  }
+}
+
+document.getElementById('tab-poem').classList.toggle('active', curMode === 'poem');
+document.getElementById('tab-quote').classList.toggle('active', curMode === 'quote');
+document.getElementById('seal-mark').textContent = curMode === 'poem' ? '詩' : '言';
+document.getElementById('month-filters').style.display = curMode === 'quote' ? 'inline-flex' : 'none';
+
+document.querySelectorAll('#sem-filters .filter-btn').forEach((b, i) => {
+  b.classList.toggle('active', curSem === 'all' ? i === 0 : (curSem === 0 ? i === 1 : i === 2));
+});
+document.querySelectorAll('#month-filters .filter-btn').forEach((b, i) => {
+  b.classList.toggle('active', curMonth === 'all' ? i === 0 : (+curMonth === i));
+});
+
 renderNav();
-pick(0);
+const initialIdx = curMode === 'poem' ? lastPoemIdx : lastQuoteIdx;
+pick(initialIdx);
 window._started = true;
 requestAnimationFrame(frame);
 </script>
