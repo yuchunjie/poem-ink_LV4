@@ -89,3 +89,12 @@ Four specialized evaluation lenses reviewed the proposal and defined precise tec
   - Poem 5: 李白《送孟浩然之廣陵》 (Yellow Crane Tower bracket sets, peach blossom mist, white-sailed lone boat, vast rolling Yangtze river with Li Bai looking into the distance).
   - Poem 6: 王昌齡《出塞》 (Ancient stone frontier fortress, desert poplars, Flying General Li Guang on warhorse drawing bow, Yin mountain snow peaks with beacon fire smoke).
   - Poem 7: 杜秋娘《金縷衣》 (Palace interior with genuine gold-embroidered robe, maiden Du Qiuniang with gold step-shake and goblet, blooming crabapples with delicate hand picking flowers, falling petals with empty bare branches).
+* **Decision 5:** Advance Phase 3 (Poems 8~15) and extend `sentRevealProgress` to 6 slots (`[0..5]`) so 6-line Poem 11 《遊子吟》 adheres strictly to per-sentence reveal:
+  - Poem 8: 朱熹《觀書有感》 (Stone courtyard square pond, mirrored sky/clouds, study pavilion scholar watching clear fish, stepped-rock live spring ripples).
+  - Poem 9: 王翰《涼州詞》 (Army tent silver ewer & luminous jade wine cups, horse-back crooked-neck Pipa musician, moonlit warrior reclining carefree on sands, broken halberd & night crows).
+  - Poem 10: 張旭《桃花谿》 (Misty arch bridge, mossy stone promontory & straw-hat fisherman boat, peach petals drifting down jade stream, hidden grotto mouth with hanging vines).
+  - Poem 11: 孟郊《遊子吟》 (6-stage Gongbi progression: mother drawing thread -> scholar travel robe & sewing basket -> dense stitches & bamboo pack -> doorway parting son -> dewy garden grass shoots -> golden spring sunbeams).
+  - Poem 12: 李白《獨坐敬亭山》 (Vanishing flock of birds -> lone drifting cloud -> Ma Yuan one-corner boulder with white-robed Li Bai -> majestic Mount Jingting ridge & valley mist).
+  - Poem 13: 蘇軾《題西林壁》 (Horizontal ridge vs sheer peak -> layered depth & cliff pines -> surging Mount Lu cloud sea -> Su Shi in bamboo hat on trail with Xilin Temple eaves).
+  - Poem 14: 王之渙《涼州詞》 (High-vantage Yellow River descending from clouds -> solitary earthen citadel amidst towering cliffs -> desert willow & sentry playing Qiang flute -> Yumen Pass gate & windblown sand).
+  - Poem 15: 太上隱者《答人》 (Ancient pine canopy -> bearded recluse sleeping on stone pillow -> misty mountain hermitage & orchids -> melting pine snow alongside spring buds & plum blossoms).
