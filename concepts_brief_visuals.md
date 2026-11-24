@@ -84,3 +84,8 @@ Four specialized evaluation lenses reviewed the proposal and defined precise tec
 * **Decision 1:** Implement 4-Stage Ink Wash Masking in `index.html` linked to audio playback timestamps.
 * **Decision 2:** Rebuild `architecture.html` into the Scholar Ink Architecture Portal with accurate LV4 metrics.
 * **Decision 3:** Produce the 4 Pilot artworks for 《回鄉偶書》, 《楓橋夜泊》, 《秋夕》, 《九月九日憶山東兄弟》 and verify against the verification checklist.
+* **Decision 4:** Advance Phase 2 with 4 additional Song Dynasty Gongbi realistic masterworks:
+  - Poem 4: 朱熹《偶成》 (Scholar Zhu Xi in study with Tyndall dawn beams, sundial, garden spring pond frog, golden autumn wutong leaves).
+  - Poem 5: 李白《送孟浩然之廣陵》 (Yellow Crane Tower bracket sets, peach blossom mist, white-sailed lone boat, vast rolling Yangtze river with Li Bai looking into the distance).
+  - Poem 6: 王昌齡《出塞》 (Ancient stone frontier fortress, desert poplars, Flying General Li Guang on warhorse drawing bow, Yin mountain snow peaks with beacon fire smoke).
+  - Poem 7: 杜秋娘《金縷衣》 (Palace interior with genuine gold-embroidered robe, maiden Du Qiuniang with gold step-shake and goblet, blooming crabapples with delicate hand picking flowers, falling petals with empty bare branches).
