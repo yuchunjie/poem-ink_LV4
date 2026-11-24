@@ -838,6 +838,8 @@
     let curSem = 'all';  // 'all' | 0 | 1
     let curMonth = 'all';// 'all' | 1 | 2 | 3
     let isReadingMode = false; // 跟讀狀態開關
+    let currentRecitedSentence = 3; // 當前朗讀句子索引 (-1 為剛開始讀標題尚未到詩句, 0..3 為當前詩句)
+    let sentRevealProgress = [1, 1, 1, 1]; // 四階段水墨化開遮罩進度 (0~1)
 
     const _er = new Set();
     let dbgM = '';
@@ -2008,6 +2010,9 @@
     }
 
     function setup() {
+      isReadingMode = false;
+      currentRecitedSentence = 3;
+      sentRevealProgress = [1, 1, 1, 1];
       const ps = [...poemEl.querySelectorAll('p')];
       nl = ps.length;
       LS = ps.map((_, k) => 1 + k * 3.5);
@@ -2067,6 +2072,914 @@
     // 墨暈：這些元素邊緣加柔和暈開
     const SH = new Set(['hs', 'kd', 'pp', 'pv', 'fg', 'bo', 'wl', 'br', 'cp', 'sa', 'wv', 'bk']);
 
+    // ===== Google Stitch 詩詞專屬生動畫卷與四階段水墨化開系統 =====
+    // 宋代院體工筆淡彩（張擇端、馬遠、夏珪古法：鐵線描衣褶、細膩五官鬚髮、榫卯斗拱建築、生宣古墨設色）
+    // Pilot 4 首指標名篇：0:《回鄉偶書》, 1:《楓橋夜泊》, 2:《秋夕》, 3:《九月九日憶山東兄弟》
+    const PILOT_SCENES = {
+      // 0. 賀知章《回鄉偶書》：會稽山水全景、寫實賀知章老翁、老槐樹、雙丫髻村童、茅簷炊煙
+      0: (ctx, t, curSent, isReading, prog) => {
+        // Stage 0: 少小離家老大回 (會稽遠山天幕、三孔石拱橋、溪岸垂柳、水鄉波光)
+        if (prog[0] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[0];
+          // 遠景：會稽米氏雲山 (層巒疊嶂，淡墨分染)
+          let mg1 = ctx.createLinearGradient(0, 260, 0, 430);
+          mg1.addColorStop(0, 'rgba(150,165,160, 0.5)');
+          mg1.addColorStop(1, 'rgba(215,225,220, 0.2)');
+          ctx.fillStyle = mg1;
+          ctx.beginPath();
+          ctx.moveTo(0, 360);
+          ctx.bezierCurveTo(160, 280, 290, 370, 460, 305);
+          ctx.bezierCurveTo(640, 240, 820, 325, 1000, 280);
+          ctx.lineTo(1000, 600);
+          ctx.lineTo(0, 600);
+          ctx.closePath();
+          ctx.fill();
+
+          // 次層中景峰巒 (披麻皴法微縮質感)
+          ctx.fillStyle = 'rgba(118,135,130, 0.6)';
+          ctx.beginPath();
+          ctx.moveTo(0, 400);
+          ctx.bezierCurveTo(180, 335, 360, 415, 600, 355);
+          ctx.bezierCurveTo(760, 315, 880, 365, 1000, 330);
+          ctx.lineTo(1000, 600);
+          ctx.lineTo(0, 600);
+          ctx.closePath();
+          ctx.fill();
+
+          // 江南水鄉開闊河道 (波平如鏡，生宣浸潤)
+          let wg = ctx.createLinearGradient(0, 430, 0, 600);
+          wg.addColorStop(0, 'rgba(210,222,216, 0.65)');
+          wg.addColorStop(0.5, 'rgba(195,212,205, 0.5)');
+          wg.addColorStop(1, 'rgba(180,200,192, 0.6)');
+          ctx.fillStyle = wg;
+          ctx.fillRect(0, 430, 1000, 170);
+
+          // 寫實三孔薄墩石拱橋 (200, 425)
+          const bx = 200, by = 430;
+          ctx.fillStyle = 'rgba(85,90,95, 0.85)';
+          // 橋面主拱
+          ctx.beginPath();
+          ctx.moveTo(bx - 70, by + 5);
+          ctx.quadraticCurveTo(bx, by - 22, bx + 70, by + 5);
+          ctx.lineTo(bx + 70, by + 12);
+          ctx.quadraticCurveTo(bx, by - 8, bx - 70, by + 12);
+          ctx.closePath();
+          ctx.fill();
+          // 拱券石縫與橋欄望柱
+          ctx.strokeStyle = 'rgba(55,60,65, 0.9)';
+          ctx.lineWidth = 1;
+          for (let p = -5; p <= 5; p++) {
+            ctx.beginPath();
+            ctx.moveTo(bx + p * 12, by - 12);
+            ctx.lineTo(bx + p * 12, by - 6);
+            ctx.stroke();
+          }
+          // 拱橋水中倒影
+          ctx.fillStyle = 'rgba(85,90,95, 0.22)';
+          ctx.beginPath();
+          ctx.moveTo(bx - 70, by + 14);
+          ctx.quadraticCurveTo(bx, by + 28, bx + 70, by + 14);
+          ctx.closePath();
+          ctx.fill();
+
+          // 江畔千年古垂柳 (柔韌柳絲與嫩綠墨點，隨風撫浪)
+          const sw1 = Math.sin(t * 1.3) * 10;
+          ctx.strokeStyle = 'rgba(50,42,34, 0.95)';
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.moveTo(820, 465);
+          ctx.quadraticCurveTo(795, 370, 775 + sw1 * 0.4, 310);
+          ctx.stroke();
+          // 細膩飄逸柳絲 (鐵線游絲描)
+          ctx.strokeStyle = 'rgba(75,105,70, 0.75)';
+          ctx.lineWidth = 1.1;
+          for (let w = 0; w < 9; w++) {
+            const wx = 760 + w * 7;
+            const wsw = Math.sin(t * 1.5 + w * 0.4) * 14;
+            ctx.beginPath();
+            ctx.moveTo(775 + sw1 * 0.4, 310);
+            ctx.quadraticCurveTo(wx + wsw * 0.5, 385, wx + 6 + wsw, 455);
+            ctx.stroke();
+            // 柳葉嫩點
+            ctx.fillStyle = 'rgba(95,135,80, 0.8)';
+            for (let l = 0; l < 4; l++) {
+              ctx.fillRect(wx + wsw * (0.3 + l * 0.2), 340 + l * 28, 2.5, 3.5);
+            }
+          }
+          ctx.restore();
+        }
+
+        // Stage 1: 鄉音無改鬢毛催 (寫實賀知章：宋代襴衫衣褶鐵線描、銀白長髯、竹癭杖、滄桑神態)
+        if (prog[1] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[1];
+          // 青石板鄉間小徑 (寫實石紋與嵌縫泥青)
+          ctx.fillStyle = 'rgba(175,170,155, 0.65)';
+          ctx.beginPath();
+          ctx.moveTo(210, 600);
+          ctx.lineTo(430, 470);
+          ctx.lineTo(495, 470);
+          ctx.lineTo(365, 600);
+          ctx.closePath();
+          ctx.fill();
+          // 石板橫縫刻線
+          ctx.strokeStyle = 'rgba(120,115,100, 0.4)';
+          ctx.lineWidth = 1;
+          for (let st = 0; st < 6; st++) {
+            const sy = 485 + st * 20;
+            ctx.beginPath();
+            ctx.moveTo(410 - st * 32, sy);
+            ctx.lineTo(475 - st * 18, sy);
+            ctx.stroke();
+          }
+
+          // 賀知章寫實人物形象 (365, 465)
+          const ox = 365, oy = 465;
+          // 長袍下擺 (宋代圓領大袖深衣，懸垂鐵線描)
+          ctx.fillStyle = 'rgba(58,62,68, 0.95)';
+          ctx.beginPath();
+          ctx.moveTo(ox, oy);
+          ctx.lineTo(ox - 16, oy + 58);
+          ctx.quadraticCurveTo(ox, oy + 62, ox + 18, oy + 58);
+          ctx.closePath();
+          ctx.fill();
+          // 衣褶陰影分染
+          ctx.strokeStyle = 'rgba(30,32,36, 0.9)';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(ox - 8, oy + 10);
+          ctx.quadraticCurveTo(ox - 10, oy + 35, ox - 14, oy + 58);
+          ctx.moveTo(ox + 4, oy + 12);
+          ctx.quadraticCurveTo(ox + 6, oy + 36, ox + 14, oy + 58);
+          ctx.stroke();
+
+          // 上身微僂、懷舊感慨體態
+          ctx.fillStyle = 'rgba(70,75,82, 0.95)';
+          ctx.beginPath();
+          ctx.moveTo(ox - 11, oy);
+          ctx.lineTo(ox + 11, oy);
+          ctx.lineTo(ox + 8, oy - 30);
+          ctx.lineTo(ox - 8, oy - 30);
+          ctx.closePath();
+          ctx.fill();
+
+          // 頭部面容神態 (膚色微暖、眼角滄桑欣慰細紋)
+          ctx.fillStyle = 'rgba(235,218,198, 0.95)';
+          ctx.beginPath();
+          ctx.arc(ox + 2, oy - 40, 8.5, 0, 7);
+          ctx.fill();
+          // 額前老者冠髻 (宋代黑色軟腳幞頭)
+          ctx.fillStyle = 'rgba(32,32,35, 0.95)';
+          ctx.beginPath();
+          ctx.arc(ox - 1, oy - 45, 6, Math.PI * 0.9, 0);
+          ctx.fill();
+
+          // 飄逸銀白長髯與兩鬢衰毛 (細膩絲縷，根根清晰)
+          ctx.strokeStyle = 'rgba(250,250,250, 0.95)';
+          ctx.lineWidth = 0.9;
+          for (let b = 0; b < 9; b++) {
+            ctx.beginPath();
+            ctx.moveTo(ox + 3 + (b % 3), oy - 35 + b * 0.5);
+            ctx.quadraticCurveTo(ox + 12 + Math.sin(t * 2 + b) * 2, oy - 22 + b * 2, ox + 6 + b, oy - 12 + b * 2.5);
+            ctx.stroke();
+          }
+
+          // 天然竹癭拐杖 (帶竹節與天然木瘤)
+          ctx.strokeStyle = '#523e2a';
+          ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          ctx.moveTo(ox + 19, oy - 22);
+          ctx.quadraticCurveTo(ox + 21, oy + 15, ox + 24, oy + 58);
+          ctx.stroke();
+
+          // 斜背行囊包裹 (宋代泥金赭石色)
+          ctx.fillStyle = 'rgba(175,135,75, 0.9)';
+          ctx.beginPath();
+          ctx.ellipse(ox - 9, oy - 16, 7.5, 5.5, 0.45, 0, 7);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(130,95,45, 0.9)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Stage 2: 兒童相見不相識 (寫實雙丫髻村童、古老槐樹粗獷皴法、石磨)
+        if (prog[2] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[2];
+          // 千年古槐樹 (粗獷深裂樹皮，宋代斧劈與解索皴)
+          const tx = 680, ty = 465;
+          ctx.strokeStyle = 'rgba(38,30,24, 0.96)';
+          ctx.lineWidth = 15;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty + 42);
+          ctx.quadraticCurveTo(tx + 18, ty - 38, tx - 28, ty - 125);
+          ctx.stroke();
+          ctx.lineWidth = 9;
+          ctx.beginPath();
+          ctx.moveTo(tx + 12, ty - 28);
+          ctx.quadraticCurveTo(tx + 72, ty - 78, tx + 95, ty - 135);
+          ctx.stroke();
+          ctx.lineWidth = 5.5;
+          ctx.beginPath();
+          ctx.moveTo(tx - 18, ty - 92);
+          ctx.quadraticCurveTo(tx - 78, ty - 122, tx - 112, ty - 145);
+          ctx.stroke();
+          // 濃蔭槐樹葉簇 (層層積墨)
+          for (let k = 0; k < 28; k++) {
+            const kx = tx - 85 + (k % 7) * 28 + Math.sin(k * 2) * 16;
+            const ky = ty - 155 + Math.floor(k / 7) * 22;
+            ctx.fillStyle = k % 2 === 0 ? 'rgba(48,68,42, 0.82)' : 'rgba(35,52,32, 0.88)';
+            ctx.beginPath();
+            ctx.ellipse(kx, ky, 22, 13, Math.sin(k), 0, 7);
+            ctx.fill();
+          }
+
+          // 村童一 (年約七歲，藍染窄袖短袍，停步回眸，童趣盎然)
+          const cx1 = 510, cy1 = 485;
+          ctx.fillStyle = 'rgba(52,72,108, 0.92)';
+          ctx.beginPath();
+          ctx.moveTo(cx1, cy1 - 2);
+          ctx.lineTo(cx1 - 9, cy1 + 36);
+          ctx.lineTo(cx1 + 9, cy1 + 36);
+          ctx.closePath();
+          ctx.fill();
+          // 雙抓丫髻 (用硃砂紅頭繩繫束)
+          ctx.fillStyle = 'rgba(240,215,195, 0.95)';
+          ctx.beginPath();
+          ctx.arc(cx1, cy1 - 10, 6.5, 0, 7);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(25,25,28, 0.98)';
+          ctx.beginPath();
+          ctx.arc(cx1, cy1 - 12, 6, Math.PI * 0.8, Math.PI * 0.2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx1 - 5.5, cy1 - 16, 3.2, 0, 7);
+          ctx.arc(cx1 + 5.5, cy1 - 16, 3.2, 0, 7);
+          ctx.fill();
+          // 紅頭繩點睛
+          ctx.fillStyle = '#b03026';
+          ctx.fillRect(cx1 - 7, cy1 - 14, 3, 2);
+          ctx.fillRect(cx1 + 4, cy1 - 14, 3, 2);
+
+          // 地上旋轉的小木陀螺
+          ctx.fillStyle = '#8a5028';
+          ctx.beginPath();
+          ctx.moveTo(cx1 + 16, cy1 + 38);
+          ctx.lineTo(cx1 + 22, cy1 + 38);
+          ctx.lineTo(cx1 + 19, cy1 + 43);
+          ctx.closePath();
+          ctx.fill();
+
+          // 村童二 (年幼幼童，赭褐布衫，蹲坐石磨旁好奇仰望)
+          const cx2 = 540, cy2 = 492;
+          ctx.fillStyle = 'rgba(165,88,58, 0.92)';
+          ctx.beginPath();
+          ctx.moveTo(cx2, cy2);
+          ctx.lineTo(cx2 - 8, cy2 + 30);
+          ctx.lineTo(cx2 + 8, cy2 + 30);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = 'rgba(240,215,195, 0.95)';
+          ctx.beginPath();
+          ctx.arc(cx2, cy2 - 8, 6, 0, 7);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(25,25,28, 0.98)';
+          ctx.beginPath();
+          ctx.arc(cx2, cy2 - 13, 3, 0, 7);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Stage 3: 笑問客從何處來 (村童拱手歡容相問、農舍茅簷、裊裊炊煙、靈動波瀾)
+        if (prog[3] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[3];
+          // 農舍茅簷角樓 (右側，實木榫卯與層疊厚茅草)
+          ctx.fillStyle = 'rgba(110,95,78, 0.85)';
+          ctx.beginPath();
+          ctx.moveTo(850, 442);
+          ctx.lineTo(985, 408);
+          ctx.lineTo(995, 448);
+          ctx.lineTo(875, 475);
+          ctx.closePath();
+          ctx.fill();
+          // 木柱與掛串金黃玉米
+          ctx.fillStyle = '#523e2a';
+          ctx.fillRect(885, 450, 6, 45);
+          ctx.fillStyle = '#d4a230';
+          for (let c = 0; c < 5; c++) {
+            ctx.fillRect(894, 445 + c * 5, 4, 3.5);
+          }
+
+          // 裊裊輕柔白炊煙 (隨風起伏消散)
+          ctx.strokeStyle = 'rgba(255,255,255, 0.42)';
+          ctx.lineWidth = 2.8;
+          for (let sm = 0; sm < 3; sm++) {
+            const smOff = (t * 22 + sm * 32) % 95;
+            ctx.beginPath();
+            ctx.moveTo(925, 408 - smOff * 0.8);
+            ctx.quadraticCurveTo(940 + Math.sin(t * 1.6 + sm) * 16, 375 - smOff, 920 + Math.cos(t + sm) * 22, 325 - smOff);
+            ctx.stroke();
+          }
+
+          // 清澈水面柔和泛波
+          ctx.strokeStyle = 'rgba(255,255,255, 0.38)';
+          ctx.lineWidth = 1.3;
+          for (let r = 0; r < 5; r++) {
+            const rx = 280 + (r * 110 + t * 16) % 440;
+            const ry = 465 + r * 16;
+            ctx.beginPath();
+            ctx.moveTo(rx - 28, ry);
+            ctx.quadraticCurveTo(rx, ry + 2.5, rx + 28, ry);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      },
+
+      // 1. 張繼《楓橋夜泊》：深藍霜天、月落寒鴉、寫實烏篷客船木紋、倚窗詩人、江楓漁火、寒山寺斗拱飛簷、鐘聲金青音波
+      1: (ctx, t, curSent, isReading, prog) => {
+        // Stage 0: 月落烏啼霜滿天 (深藍夜空、下弦殘月清輝、飛霜微粒、驚起寒鴉)
+        if (prog[0] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[0];
+          // 沉落的下弦殘月 (780, 138)
+          let mg = ctx.createRadialGradient(780, 138, 5, 780, 138, 55);
+          mg.addColorStop(0, 'rgba(255,248,220, 0.75)');
+          mg.addColorStop(0.35, 'rgba(255,242,195, 0.28)');
+          mg.addColorStop(1, 'rgba(255,242,195, 0)');
+          ctx.fillStyle = mg;
+          ctx.fillRect(715, 75, 130, 130);
+          ctx.fillStyle = 'rgba(255,252,238, 0.96)';
+          ctx.beginPath();
+          ctx.arc(780, 138, 23, -0.85, 1.85);
+          ctx.arc(773, 138, 20, 1.85, -0.85, true);
+          ctx.fill();
+
+          // 漫天飛霜結晶粒子
+          ctx.fillStyle = 'rgba(238,245,255, 0.78)';
+          for (let f = 0; f < 38; f++) {
+            const fx = (f * 39 + t * 14) % 1000;
+            const fy = (f * 57 + t * 30) % 600;
+            ctx.fillRect(fx, fy, 1.8, 1.8);
+          }
+
+          // 枯柯老枝
+          ctx.strokeStyle = 'rgba(18,22,32, 0.92)';
+          ctx.lineWidth = 3.2;
+          ctx.beginPath();
+          ctx.moveTo(855, 265);
+          ctx.quadraticCurveTo(830, 218, 785, 198);
+          ctx.stroke();
+
+          // 驚起振翅寒鴉 (805, 172)
+          const aw = Math.sin(t * 6.5) * 6;
+          ctx.fillStyle = 'rgba(12,15,22, 0.98)';
+          ctx.beginPath();
+          ctx.moveTo(805, 172);
+          ctx.quadraticCurveTo(798, 160 - aw, 788, 164);
+          ctx.quadraticCurveTo(798, 172, 805, 175);
+          ctx.quadraticCurveTo(814, 172, 824, 164);
+          ctx.quadraticCurveTo(812, 160 - aw, 805, 172);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Stage 1: 江楓漁火對愁眠 (寫實烏篷客船木質紋理、船中倚窗張繼、江畔赤紅霜楓、防風漁火金光)
+        if (prog[1] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[1];
+          // 江畔江南霜楓
+          const mx = 230, my = 460;
+          ctx.strokeStyle = 'rgba(32,25,28, 0.95)';
+          ctx.lineWidth = 8.5;
+          ctx.beginPath();
+          ctx.moveTo(mx - 45, my + 65);
+          ctx.quadraticCurveTo(mx - 5, my - 22, mx + 35, my - 95);
+          ctx.stroke();
+          for (let m = 0; m < 30; m++) {
+            const lx = mx - 25 + (m % 6) * 17 + Math.sin(m * 1.5) * 14;
+            const ly = my - 118 + Math.floor(m / 6) * 19;
+            ctx.fillStyle = m % 3 === 0 ? 'rgba(205,42,32, 0.9)' : (m % 3 === 1 ? 'rgba(165,32,28, 0.85)' : 'rgba(215,85,35, 0.85)');
+            ctx.beginPath();
+            ctx.arc(lx, ly, 7.5 + (m % 3) * 2, 0, 7);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,245,240, 0.5)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+
+          // 寫實烏篷客船 (440, 505)
+          const bx = 440, by = 505;
+          const bBob = Math.sin(t * 1.8) * 2.6;
+          ctx.fillStyle = 'rgba(22,25,32, 0.98)';
+          ctx.beginPath();
+          ctx.moveTo(bx - 65, by + bBob);
+          ctx.quadraticCurveTo(bx, by + 20 + bBob, bx + 75, by + bBob);
+          ctx.lineTo(bx + 65, by - 7 + bBob);
+          ctx.quadraticCurveTo(bx, by - 3 + bBob, bx - 55, by - 7 + bBob);
+          ctx.closePath();
+          ctx.fill();
+          // 木板拼縫
+          ctx.strokeStyle = 'rgba(45,50,60, 0.8)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx - 55, by + 6 + bBob);
+          ctx.quadraticCurveTo(bx, by + 12 + bBob, bx + 65, by + 6 + bBob);
+          ctx.stroke();
+
+          // 烏篷竹蓆編織紋頂
+          ctx.fillStyle = 'rgba(34,38,45, 0.96)';
+          ctx.beginPath();
+          ctx.arc(bx - 5, by - 7 + bBob, 28, Math.PI, 0);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(55,60,70, 0.6)';
+          for (let arc = 1; arc <= 3; arc++) {
+            ctx.beginPath();
+            ctx.arc(bx - 5, by - 7 + bBob, 28 - arc * 7, Math.PI, 0);
+            ctx.stroke();
+          }
+
+          // 艙窗內詩人張繼剪影
+          ctx.fillStyle = 'rgba(15,16,20, 0.95)';
+          ctx.beginPath();
+          ctx.arc(bx - 14, by - 16 + bBob, 4.5, 0, 7);
+          ctx.fill();
+          ctx.fillRect(bx - 17, by - 11 + bBob, 8, 9);
+
+          // 防風漁火 (動態溫暖光芒)
+          const fGlow = 0.82 + Math.sin(t * 4.2) * 0.18;
+          let fg = ctx.createRadialGradient(bx + 12, by - 12 + bBob, 2, bx + 12, by - 12 + bBob, 42);
+          fg.addColorStop(0, 'rgba(255,185,55, ' + (0.98 * fGlow) + ')');
+          fg.addColorStop(0.35, 'rgba(255,125,25, ' + (0.48 * fGlow) + ')');
+          fg.addColorStop(1, 'rgba(255,95,15, 0)');
+          ctx.fillStyle = fg;
+          ctx.beginPath();
+          ctx.arc(bx + 12, by - 12 + bBob, 42, 0, 7);
+          ctx.fill();
+
+          // 水面漁火波光倒影
+          let rg = ctx.createRadialGradient(bx + 12, by + 26, 3, bx + 12, by + 26, 52);
+          rg.addColorStop(0, 'rgba(255,175,45, ' + (0.52 * fGlow) + ')');
+          rg.addColorStop(1, 'rgba(255,115,20, 0)');
+          ctx.fillStyle = rg;
+          ctx.fillRect(bx - 45, by + 12, 105, 45);
+          ctx.restore();
+        }
+
+        // Stage 2: 姑蘇城外寒山寺 (水霧空濛、寒山寺寶塔斗拱榫卯、飛簷挑角、古剎夜燈)
+        if (prog[2] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[2];
+          const hx = 740, hy = 360;
+          ctx.fillStyle = 'rgba(24,30,42, 0.92)';
+          ctx.fillRect(hx - 24, hy + 22, 48, 32);
+          for (let tier = 0; tier < 3; tier++) {
+            const ty = hy + 20 - tier * 19;
+            const tw = 30 - tier * 4.5;
+            ctx.fillRect(hx - tw / 2, ty - 11, tw, 11);
+            ctx.beginPath();
+            ctx.moveTo(hx - tw / 2 - 8, ty - 11);
+            ctx.lineTo(hx + tw / 2 + 8, ty - 11);
+            ctx.lineTo(hx, ty - 17);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(hx - tw / 2 - 8, ty - 10, 1.5, 3);
+            ctx.strokeRect(hx + tw / 2 + 6.5, ty - 10, 1.5, 3);
+          }
+          ctx.fillStyle = '#b39b64';
+          ctx.fillRect(hx - 1.5, hy - 44, 3, 10);
+          ctx.beginPath();
+          ctx.arc(hx, hy - 46, 2.8, 0, 7);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,225,110, 0.92)';
+          ctx.fillRect(hx - 2.5, hy + 3, 5, 6);
+          ctx.restore();
+        }
+
+        // Stage 3: 夜半鐘聲到客船 (寒山寺銅鐘同心金青震波、水面共振回紋)
+        if (prog[3] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[3];
+          const bellX = 740, bellY = 350;
+          for (let r = 0; r < 4; r++) {
+            const ph = (t * 0.35 + r * 0.25) % 1;
+            const rad = ph * 480;
+            ctx.strokeStyle = 'rgba(225,190,115, ' + ((1 - ph) * 0.7) + ')';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.ellipse(bellX, bellY, rad, rad * 0.54, -0.1, 0, 7);
+            ctx.stroke();
+          }
+          ctx.strokeStyle = 'rgba(255,255,255, 0.4)';
+          ctx.lineWidth = 1.3;
+          for (let w = 0; w < 3; w++) {
+            const ph = (t * 0.85 + w * 0.33) % 1;
+            ctx.beginPath();
+            ctx.ellipse(440, 522, ph * 55, ph * 13, 0, 0, 7);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      },
+
+      // 2. 杜牧《秋夕》：深宮漢白玉石階、四扇嵌螺鈿絹面畫屏、螭龍銀燭台、執羅扇寫實仕女、動態群螢、銀河牽牛織女
+      2: (ctx, t, curSent, isReading, prog) => {
+        // Stage 0: 銀燭秋光冷畫屏 (四扇黑漆嵌螺鈿山水絹畫屏、銀燭台螭龍紋、嫋嫋冷煙)
+        if (prog[0] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[0];
+          const sx = 135, sy = 422;
+          ctx.strokeStyle = 'rgba(42,38,35, 0.95)';
+          ctx.lineWidth = 2.8;
+          for (let p = 0; p < 4; p++) {
+            const px = sx + p * 40;
+            ctx.strokeRect(px, sy - 115, 38, 115);
+            ctx.fillStyle = '#b3cde0';
+            ctx.fillRect(px + 1, sy - 114, 3, 3);
+            ctx.fillRect(px + 34, sy - 114, 3, 3);
+            ctx.fillStyle = 'rgba(235,226,210, 0.4)';
+            ctx.fillRect(px + 3, sy - 112, 32, 110);
+            ctx.fillStyle = 'rgba(65,72,78, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(px + 5, sy - 22);
+            ctx.lineTo(px + 20, sy - 65 - (p % 2) * 22);
+            ctx.lineTo(px + 34, sy - 22);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          const cx = 335, cy = 465;
+          ctx.fillStyle = 'rgba(195,200,210, 0.95)';
+          ctx.fillRect(cx - 12, cy, 24, 7);
+          ctx.fillRect(cx - 3, cy - 38, 6, 38);
+          ctx.fillRect(cx - 8, cy - 42, 16, 4.5);
+          ctx.fillStyle = 'rgba(255,252,245, 0.98)';
+          ctx.fillRect(cx - 2.5, cy - 54, 5, 12);
+          const cFlick = 0.85 + Math.sin(t * 5.2) * 0.15;
+          let cg = ctx.createRadialGradient(cx, cy - 60, 2, cx, cy - 60, 34);
+          cg.addColorStop(0, 'rgba(255,248,200, ' + (0.98 * cFlick) + ')');
+          cg.addColorStop(0.35, 'rgba(255,205,125, ' + (0.45 * cFlick) + ')');
+          cg.addColorStop(1, 'rgba(255,185,85, 0)');
+          ctx.fillStyle = cg;
+          ctx.beginPath();
+          ctx.arc(cx, cy - 60, 34, 0, 7);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(220,225,235, 0.55)';
+          ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 64);
+          ctx.quadraticCurveTo(cx + Math.sin(t * 2.2) * 9, cy - 88, cx - Math.cos(t * 1.6) * 14, cy - 120);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Stage 1: 輕羅小扇撲流螢 (寫實宮女姿容、朝雲高髻、輕羅披帛、真絲紈扇、動態群螢)
+        if (prog[1] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[1];
+          const fx = 435, fy = 468;
+          ctx.fillStyle = 'rgba(105,98,125, 0.9)';
+          ctx.beginPath();
+          ctx.moveTo(fx, fy - 12);
+          ctx.lineTo(fx - 16, fy + 58);
+          ctx.quadraticCurveTo(fx, fy + 62, fx + 18, fy + 58);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(165,185,180, 0.85)';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(fx - 12, fy + 20);
+          ctx.quadraticCurveTo(fx - 24, fy - 8, fx - 8, fy - 32);
+          ctx.quadraticCurveTo(fx + 22, fy - 18, fx + 26, fy + 22);
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(172,165,190, 0.92)';
+          ctx.beginPath();
+          ctx.moveTo(fx - 9, fy - 12);
+          ctx.lineTo(fx + 9, fy - 12);
+          ctx.lineTo(fx + 7, fy - 38);
+          ctx.lineTo(fx - 7, fy - 38);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(240,218,205, 0.96)';
+          ctx.beginPath();
+          ctx.arc(fx + 2, fy - 48, 7.8, 0, 7);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(22,22,26, 0.98)';
+          ctx.beginPath();
+          ctx.ellipse(fx - 2, fy - 56, 5.5, 9, -0.28, 0, 7);
+          ctx.fill();
+          ctx.fillStyle = '#d4af37';
+          ctx.fillRect(fx + 4, fy - 58, 4.5, 1.5);
+          ctx.fillRect(fx + 7, fy - 57, 1.2, 5);
+
+          // 輕羅紈扇
+          const fanArmX = fx + 18 + Math.sin(t * 2.2) * 7;
+          const fanArmY = fy - 30 + Math.cos(t * 2.2) * 5;
+          ctx.strokeStyle = '#c8beac';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.arc(fanArmX, fanArmY, 14, 0, 7);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(255,255,255, 0.52)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(60,80,65, 0.7)';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(fanArmX - 4, fanArmY + 8);
+          ctx.lineTo(fanArmX + 4, fanArmY - 4);
+          ctx.stroke();
+          ctx.strokeStyle = '#5a4630';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(fanArmX, fanArmY + 14);
+          ctx.lineTo(fanArmX - 4, fanArmY + 30);
+          ctx.stroke();
+          ctx.fillStyle = '#b03026';
+          ctx.fillRect(fanArmX - 5.5, fanArmY + 30, 2.8, 5);
+
+          // 動態群螢
+          for (let g = 0; g < 14; g++) {
+            const gx = 355 + Math.sin(t * 1.7 + g * 1.3) * 115 + g * 21;
+            const gy = 355 + Math.cos(t * 2.2 + g * 0.9) * 58 + (g % 3) * 22;
+            const glow = 0.5 + Math.sin(t * 4.2 + g * 2.1) * 0.5;
+            let gg = ctx.createRadialGradient(gx, gy, 1, gx, gy, 15);
+            gg.addColorStop(0, 'rgba(185,255,125, ' + (0.98 * glow) + ')');
+            gg.addColorStop(0.4, 'rgba(145,230,85, ' + (0.45 * glow) + ')');
+            gg.addColorStop(1, 'rgba(105,205,65, 0)');
+            ctx.fillStyle = gg;
+            ctx.beginPath();
+            ctx.arc(gx, gy, 15, 0, 7);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // Stage 2: 天階夜色涼如水 (宮廷漢白玉青石天階、秋涼水色、零落槐葉)
+        if (prog[2] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[2];
+          for (let st = 0; st < 4; st++) {
+            const sty = 488 + st * 29;
+            ctx.fillStyle = 'rgba(' + (115 - st * 8) + ', ' + (130 - st * 8) + ', ' + (155 - st * 8) + ', 0.7)';
+            ctx.fillRect(90, sty, 870, 8);
+            ctx.fillStyle = 'rgba(180,200,230, ' + (0.28 - st * 0.05) + ')';
+            ctx.fillRect(90, sty + 8, 870, 21);
+          }
+          ctx.fillStyle = 'rgba(190,155,90, 0.75)';
+          for (let l = 0; l < 9; l++) {
+            ctx.beginPath();
+            ctx.ellipse(210 + l * 85, 522 + (l % 3) * 24, 5.5, 2.8, l * 0.8, 0, 7);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // Stage 3: 臥看牽牛織女星 (天幕浩瀚銀河天河、牛郎星與織女星璀璨十字星華)
+        if (prog[3] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[3];
+          let mg = ctx.createLinearGradient(540, 35, 960, 265);
+          mg.addColorStop(0, 'rgba(165,195,245, 0)');
+          mg.addColorStop(0.5, 'rgba(205,230,255, 0.25)');
+          mg.addColorStop(1, 'rgba(165,195,245, 0)');
+          ctx.fillStyle = mg;
+          ctx.beginPath();
+          ctx.moveTo(490, 25);
+          ctx.bezierCurveTo(690, 65, 790, 125, 985, 195);
+          ctx.lineTo(955, 265);
+          ctx.bezierCurveTo(755, 185, 645, 105, 450, 75);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(255,255,255, 0.88)';
+          for (let s = 0; s < 50; s++) {
+            const sx = 510 + (s * 34) % 450;
+            const sy = 35 + (s * 20) % 185;
+            const sz = 0.8 + (s % 3) * 0.7;
+            ctx.fillRect(sx, sy, sz, sz);
+          }
+
+          const stars = [[660, 88], [850, 68]];
+          stars.forEach(([stX, stY]) => {
+            const stTw = 0.82 + Math.sin(t * 3.2 + stX) * 0.18;
+            let sg = ctx.createRadialGradient(stX, stY, 2, stX, stY, 24);
+            sg.addColorStop(0, 'rgba(255,255,255, ' + (0.98 * stTw) + ')');
+            sg.addColorStop(0.35, 'rgba(185,225,255, ' + (0.52 * stTw) + ')');
+            sg.addColorStop(1, 'rgba(155,205,255, 0)');
+            ctx.fillStyle = sg;
+            ctx.beginPath();
+            ctx.arc(stX, stY, 24, 0, 7);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255, ' + (0.85 * stTw) + ')';
+            ctx.lineWidth = 1.3;
+            ctx.beginPath();
+            ctx.moveTo(stX - 11, stY);
+            ctx.lineTo(stX + 11, stY);
+            ctx.moveTo(stX, stY - 11);
+            ctx.lineTo(stX + 11, stY);
+            ctx.stroke();
+          });
+          ctx.restore();
+        }
+      },
+
+      // 3. 王維《九月九日憶山東兄弟》：異鄉孤客王維風帽披風、重陽落照秋山、絕壁奇松、峰頂兄弟共飲、近景鮮紅山茱萸
+      3: (ctx, t, curSent, isReading, prog) => {
+        // Stage 0: 獨在異鄉為異客 (孤身行者王維、崎嶇山麓怪石嶙峋、回首北望)
+        if (prog[0] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[0];
+          ctx.fillStyle = 'rgba(105,100,90, 0.75)';
+          ctx.beginPath();
+          ctx.moveTo(75, 600);
+          ctx.lineTo(255, 518);
+          ctx.lineTo(395, 600);
+          ctx.closePath();
+          ctx.fill();
+
+          const wx = 272, wy = 512;
+          ctx.fillStyle = 'rgba(75,70,65, 0.95)';
+          ctx.beginPath();
+          ctx.moveTo(wx, wy);
+          ctx.lineTo(wx - 14, wy + 52);
+          ctx.quadraticCurveTo(wx, wy + 55, wx + 16, wy + 52);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = 'rgba(48,42,36, 0.98)';
+          ctx.beginPath();
+          ctx.ellipse(wx + 2, wy - 33, 15, 4.5, 0, 0, 7);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(wx + 2, wy - 37, 7.5, Math.PI, 0);
+          ctx.fill();
+          ctx.strokeStyle = '#423224';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(wx - 11, wy - 10);
+          ctx.lineTo(wx - 20, wy + 54);
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(225,208,192, 0.95)';
+          ctx.beginPath();
+          ctx.arc(wx + 8, wy - 27, 5.5, 0, 7);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Stage 1: 每逢佳節倍思親 (重九夕陽暖照、連綿起伏秋山重巒、長空人字南飛秋雁)
+        if (prog[1] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[1];
+          let yg = ctx.createRadialGradient(825, 235, 10, 825, 235, 165);
+          yg.addColorStop(0, 'rgba(255,212,125, 0.65)');
+          yg.addColorStop(0.45, 'rgba(238,155,75, 0.28)');
+          yg.addColorStop(1, 'rgba(220,125,55, 0)');
+          ctx.fillStyle = yg;
+          ctx.fillRect(660, 75, 330, 330);
+
+          ctx.fillStyle = 'rgba(162,126,90, 0.6)';
+          ctx.beginPath();
+          ctx.moveTo(0, 435);
+          ctx.bezierCurveTo(240, 365, 480, 445, 720, 355);
+          ctx.bezierCurveTo(860, 305, 950, 345, 1000, 315);
+          ctx.lineTo(1000, 600);
+          ctx.lineTo(0, 600);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(38,32,28, 0.9)';
+          ctx.lineWidth = 1.5;
+          const geese = [[475, 182], [490, 174], [505, 166], [520, 174], [535, 182], [550, 190]];
+          geese.forEach(([gx, gy]) => {
+            const gw = Math.sin(t * 3.2 + gx * 0.1) * 3.2;
+            ctx.beginPath();
+            ctx.moveTo(gx - 7, gy + gw);
+            ctx.quadraticCurveTo(gx, gy - 3.2, gx + 7, gy + gw);
+            ctx.stroke();
+          });
+          ctx.restore();
+        }
+
+        // Stage 2: 遙知兄弟登高處 (泰山/華山玉皇絕頂之巔、倒掛懸崖古松、兄弟三人舉爵祝酒)
+        if (prog[2] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[2];
+          const px = 712, py = 288;
+          ctx.fillStyle = 'rgba(62,56,50, 0.92)';
+          ctx.beginPath();
+          ctx.moveTo(px - 95, 600);
+          ctx.lineTo(px - 52, py + 38);
+          ctx.lineTo(px, py);
+          ctx.lineTo(px + 72, py + 18);
+          ctx.lineTo(px + 125, 600);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(25,22,18, 0.98)';
+          ctx.lineWidth = 6.5;
+          ctx.beginPath();
+          ctx.moveTo(px + 8, py + 12);
+          ctx.quadraticCurveTo(px + 62, py - 32, px + 98, py - 8);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(42,58,38, 0.9)';
+          for (let p = 0; p < 9; p++) {
+            ctx.beginPath();
+            ctx.arc(px + 62 + (p % 4) * 16, py - 27 + Math.floor(p / 4) * 14, 13, 0, 7);
+            ctx.fill();
+          }
+
+          const bGroup = [[px - 26, py + 4], [px - 11, py + 2], [px + 9, py + 5]];
+          bGroup.forEach(([bx, by], idx) => {
+            ctx.fillStyle = 'rgba(32,28,25, 0.98)';
+            ctx.beginPath();
+            ctx.moveTo(bx, by);
+            ctx.lineTo(bx - 4.5, by + 19);
+            ctx.lineTo(bx + 5.5, by + 19);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(bx, by - 4.5, 3.8, 0, 7);
+            ctx.fill();
+            if (idx === 1) {
+              ctx.strokeStyle = 'rgba(32,28,25, 0.98)';
+              ctx.lineWidth = 1.3;
+              ctx.beginPath();
+              ctx.moveTo(bx + 3, by);
+              ctx.lineTo(bx + 9, by - 7);
+              ctx.stroke();
+            }
+          });
+          ctx.restore();
+        }
+
+        // Stage 3: 遍插茱萸少一人 (近景寫實山茱萸枝、晶瑩透亮瑪瑙果串、思念聚焦)
+        if (prog[3] > 0) {
+          ctx.save();
+          ctx.globalAlpha = prog[3];
+          const zx = 132, zy = 488;
+          const zWind = Math.sin(t * 1.9) * 6.5;
+          ctx.strokeStyle = 'rgba(55,45,35, 0.98)';
+          ctx.lineWidth = 3.8;
+          ctx.beginPath();
+          ctx.moveTo(zx - 42, zy + 62);
+          ctx.quadraticCurveTo(zx + 8, zy + 8, zx + 42 + zWind, zy - 32);
+          ctx.stroke();
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(zx + 14, zy + 8);
+          ctx.quadraticCurveTo(zx + 62, zy + 14, zx + 88 + zWind, zy - 6);
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(72,92,58, 0.9)';
+          for (let y = 0; y < 8; y++) {
+            const yx = zx + y * 12.5 + zWind * (y / 8);
+            const yy = zy - 11 + (y % 2 === 0 ? -13 : 11);
+            ctx.beginPath();
+            ctx.ellipse(yx, yy, 9.5, 4.2, 0.52 * (y % 2 === 0 ? 1 : -1), 0, 7);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(45,60,35, 0.8)';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(yx - 8, yy);
+            ctx.lineTo(yx + 8, yy);
+            ctx.stroke();
+          }
+
+          const berries = [
+            [zx + 25 + zWind * 0.4, zy - 20],
+            [zx + 32 + zWind * 0.5, zy - 26],
+            [zx + 39 + zWind * 0.6, zy - 18],
+            [zx + 45 + zWind * 0.7, zy - 24],
+            [zx + 41 + zWind * 0.6, zy - 34],
+            [zx + 66 + zWind * 0.8, zy - 3],
+            [zx + 74 + zWind * 0.9, zy - 9],
+            [zx + 80 + zWind, zy + 1]
+          ];
+          berries.forEach(([bx, by]) => {
+            let bg = ctx.createRadialGradient(bx - 1.5, by - 1.5, 0.8, bx, by, 5);
+            bg.addColorStop(0, '#e84234');
+            bg.addColorStop(0.7, '#b03026');
+            bg.addColorStop(1, '#68150f');
+            ctx.fillStyle = bg;
+            ctx.beginPath();
+            ctx.arc(bx, by, 5, 0, 7);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,245,240, 0.95)';
+            ctx.beginPath();
+            ctx.arc(bx - 1.6, by - 1.6, 1.4, 0, 7);
+            ctx.fill();
+          });
+          ctx.restore();
+        }
+      }
+    };
 
     function frame(ts) {
       requestAnimationFrame(frame);
@@ -2100,23 +3013,42 @@
       c.fillStyle = g;
       c.fillRect(0, 0, 1000, 600);
 
-      // 繪製各層水墨元素
-      for (const { e, l } of elems) {
-        const [n, d, ...a] = e;
-        Q = T - (LS[l] + d * .25);
-        if (!(Q > 0)) continue;
-        R = Math.min(1, Q / 1.6);
-        R = R * R * (3 - 2 * R);
-        c.save();
+      // 逐幀平滑推進四階段水墨化開進度 (四階段水墨擴散遮罩)
+      for (let i = 0; i < 4; i++) {
+        if (!isReadingMode || i <= currentRecitedSentence) {
+          sentRevealProgress[i] = Math.min(1, sentRevealProgress[i] + 0.04);
+        } else {
+          sentRevealProgress[i] = 0;
+        }
+      }
+
+      // 檢查是否為 Pilot 專屬生動畫卷
+      if (curMode === 'poem' && PILOT_SCENES[cur]) {
         try {
-          c.globalAlpha = Math.min(1, R * 2);
-          if (SH.has(n)) {
-            c.shadowColor = I(.4);
-            c.shadowBlur = 7;
-          }
-          if (E[n]) E[n](...a);
-        } catch (e) { err(e); }
-        c.restore();
+          PILOT_SCENES[cur](c, T, currentRecitedSentence, isReadingMode, sentRevealProgress);
+        } catch (err_pilot) {
+          err(err_pilot);
+        }
+      } else {
+        // 繪製各層水墨元素（含嚴格逐句跟讀約束：未讀句子嚴格隱藏）
+        for (const { e, l } of elems) {
+          if (isReadingMode && l > currentRecitedSentence) continue;
+          const [n, d, ...a] = e;
+          Q = T - (LS[l] + d * .25);
+          if (!(Q > 0)) continue;
+          R = Math.min(1, Q / 1.6);
+          R = R * R * (3 - 2 * R);
+          c.save();
+          try {
+            c.globalAlpha = Math.min(1, R * 2);
+            if (SH.has(n)) {
+              c.shadowColor = I(.4);
+              c.shadowBlur = 7;
+            }
+            if (E[n]) E[n](...a);
+          } catch (e) { err(e); }
+          c.restore();
+        }
       }
 
       // 宣紙纖維、雲煙霧氣與四角墨暈貼合
@@ -4902,8 +5834,12 @@
     // 停止朗讀 (同時解除跟讀狀態，全詩完整呈現)
     function stopSpeak() {
       isReadingMode = false;
+      currentRecitedSentence = 3;
+      sentRevealProgress = [1, 1, 1, 1];
+      const ps = [...poemEl.querySelectorAll('p')];
+      LS = ps.map((_, k) => 1 + k * 3.5);
       poemEl.classList.remove('reading-mode');
-      document.querySelectorAll('#poem p').forEach(p => {
+      ps.forEach(p => {
         p.classList.remove('active', 'read-revealed');
       });
       exStop();
@@ -4965,6 +5901,7 @@
 
     // 渲染跟讀動效：讀到的句子墨染浮現，未讀的句子隱藏，讀過的句子保持顯現
     function paintRead(sentIdx) {
+      currentRecitedSentence = sentIdx;
       const ps = [...poemEl.querySelectorAll('p')];
       ps.forEach((p, i) => {
         if (isReadingMode) {
@@ -4975,7 +5912,7 @@
           }
         }
         p.classList.toggle('active', i === sentIdx);
-        if (i === sentIdx && (LS[i] === Infinity || T - LS[i] > 20)) {
+        if (i === sentIdx && (LS[i] === Infinity || !LS[i] || T - LS[i] > 20)) {
           LS[i] = T;
         }
       });
@@ -4994,10 +5931,14 @@
       stopSpeak();
       applyRate();
 
-      // 開啟跟讀模式
+      // 開啟跟讀模式 (重置四階段水墨擴散遮罩，畫面依唸到的句子逐句浮現)
       isReadingMode = true;
+      currentRecitedSentence = -1;
+      sentRevealProgress = [0, 0, 0, 0];
+      const ps = [...poemEl.querySelectorAll('p')];
+      LS = ps.map(() => Infinity);
       poemEl.classList.add('reading-mode');
-      poemEl.querySelectorAll('p').forEach(p => p.classList.remove('read-revealed', 'active'));
+      ps.forEach(p => p.classList.remove('read-revealed', 'active'));
 
       const tp = getTim(curMode, cur);
       if (tp && tp.files && tp.files.read) {
@@ -5055,9 +5996,17 @@
       unlockAudio();
       stopSpeak();
       applyRate();
+      isReadingMode = true;
+      currentRecitedSentence = k;
+      sentRevealProgress = [0, 0, 0, 0];
+      for (let i = 0; i <= k; i++) sentRevealProgress[i] = 1;
+      poemEl.classList.add('reading-mode');
       const ps = [...poemEl.querySelectorAll('p')];
-      ps.forEach((p, idx) => p.classList.toggle('active', idx === k));
-      if (LS[k] === Infinity || T - LS[k] > 20) LS[k] = T;
+      ps.forEach((p, idx) => {
+        p.classList.toggle('read-revealed', idx <= k);
+        p.classList.toggle('active', idx === k);
+      });
+      if (LS[k] === Infinity || !LS[k] || T - LS[k] > 20) LS[k] = T;
 
       const tp = getTim(curMode, cur);
       if (tp && tp.read && tp.read[k + 1]) {
